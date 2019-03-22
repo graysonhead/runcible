@@ -10,7 +10,8 @@ setuptools.setup(
     packages=setuptools.find_packages(),
     license='GPL V3',
     install_requires=[
-        'paramiko>=2.4.2'
+        'paramiko>=2.4.2',
+        'colorama>=0.4.1'
     ],
     long_description=open('README.md').read(),
     entry_points={

@@ -1,16 +1,8 @@
-import runcible
-import argparse
+from runcible.core.cli import Cli
 
 
 def main():
-    parser = argparse.ArgumentParser(
-        description="Runcible is an application to orchestrate network device infrastructure"
-    )
-    parser.add_argument('--version', action='store_true')
-    args = parser.parse_args()
-    if args.version:
-        print(runcible.__version__)
-        exit(0)
+    Cli()
 
 
 if __name__ == '__main__':
