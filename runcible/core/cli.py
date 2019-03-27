@@ -1,8 +1,8 @@
 import argparse
-import colorama
 import runcible
 import os
 from runcible.callbacks.terminalcallbacks import TermCallback
+
 
 class Cli(object):
     """

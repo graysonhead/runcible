@@ -14,3 +14,11 @@ class TermCallback(object):
     @staticmethod
     def info(msg):
         print(msg)
+
+    @staticmethod
+    def error(msg):
+        print(f"{Fore.RED}{msg}{Style.RESET_ALL}")
+
+    @staticmethod
+    def success(msg):
+        print(f"{Fore.GREEN}{msg}{Style.RESET_ALL}")
