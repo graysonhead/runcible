@@ -1,5 +1,5 @@
-from runcible.callbacks.callback import Callback, CBType
-from runcible.callbacks.terminalcallbacks import TermCallback
+from runcible.core.callback import Callback, CBType
+from runcible.core.terminalcallbacks import TermCallback
 from enum import Enum
 
 
@@ -10,16 +10,17 @@ class CBMethod(Enum):
     JSON = 1  # Return JSON
     TERMINAL = 2  # Print text to stdout/stderr
 
+
 class Callbacks(object):
     """
     An instance of this class is attached to executor objects in Runicble. It stores instances of callbacks
     in itself, so they can be returned at a later time.
     """
 
-    def __init__(self):
+    def __init__(self, callback_method=CBMethod.JSON):
         self.callbacks = []
         self.is_failed = False
-        self.callback_method = CBMethod.TERMINAL
+        self.callback_method = callback_method
 
     def add_callback(self, callback_object):
         # TODO: This should accept a list as well
@@ -31,6 +32,30 @@ class Callbacks(object):
             self.is_failed = True
 
     def run_callbacks(self):
+        if self.callback_method is CBMethod.TERMINAL:
+            return self.run_terminal_callbacks()
+        elif self.callback_method is CBMethod.JSON:
+            return self.run_json_callbacks()
+
+    def run_json_callbacks(self):
+        callbacks = {
+            "has_fatal": False,
+            "has_errors": False,
+            "log": []
+        }
+        for callback in self.callbacks:
+            if callback.type in [CBType.INFO, CBType.SUCCESS]:
+                callbacks['log'].append(callback.get_dict())
+            elif callback.type is CBType.FATAL:
+                callbacks['log'].append(callback.get_dict())
+                callbacks['has_fatal'] = True
+                callbacks['has_errors'] = True
+            elif callback.type is CBType.ERROR:
+                callbacks['log'].append(callback.get_dict())
+                callbacks['has_errors'] = True
+        return callbacks
+
+    def run_terminal_callbacks(self):
         for callback in self.callbacks:
             if callback.type == CBType.INFO:
                 TermCallback.info(callback.message)

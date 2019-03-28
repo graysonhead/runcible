@@ -1,7 +1,7 @@
 import argparse
 import runcible
 import os
-from runcible.callbacks.terminalcallbacks import TermCallback
+from runcible.core.terminalcallbacks import TermCallback
 
 
 class Cli(object):

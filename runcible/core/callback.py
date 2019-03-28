@@ -16,3 +16,9 @@ class Callback(object):
     def __init__(self, message, call_type=CBType.INFO):
         self.message = message
         self.type = call_type
+
+    def get_dict(self):
+        return {
+            "message": self.message,
+            "callback_type": self.type.name
+        }
