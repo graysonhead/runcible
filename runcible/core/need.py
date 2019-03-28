@@ -79,3 +79,4 @@ class Need(object):
         if self.value:
             value = f"value '{self.value}' "
         return f"{self.operation.name} {value}on resource {sub_resource}{self.resource}"
+

@@ -1,9 +1,10 @@
 from runcible.core.errors import ValidationError
-
+from runcible.core.need import Need
 
 class Module(object):
     module_name = ''
     configuration_attributes = {}
+    needed_actions = []
 
     def __init__(self, config_dictionary):
         """
@@ -42,13 +43,13 @@ class Module(object):
         # values of attributes specified in self.configuration_attributes
         return all(getattr(self, key) == getattr(other, key) for key in self.configuration_attributes.keys())
 
-    def determine_needs(self, other):
-        """
-        Iterate through the attributes of two instances, and determine what actions are needed to make the other match
-        self
-        :param other:
-            The other instance to compare this class against.
-        :return:
-            None, this method adds needed action to self.needs
-        """
+    def needs(self, need):
+        if not isinstance(need, Need):
+            raise ValidationError("need objects must be an instance of need class")
+        self.needed_actions.append(need)
 
+    def get_needs(self):
+        need_strings = []
+        for need in self.needed_actions:
+            need_strings.append(need.get_formatted_string())
+        return need_strings
