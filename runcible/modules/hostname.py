@@ -1,6 +1,8 @@
 from runcible.modules.module import Module, Need
 from runcible.core.need import NeedOperation as Op
 
+PLUGIN_PROVIDES = {'hostname': 'Hostname'}
+
 
 class HostnameResources(object):
     HOSTNAME = 'hostname'

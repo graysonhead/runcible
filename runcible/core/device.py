@@ -20,3 +20,5 @@ class Device(object):
     def load_dstate(self, dstate):
         if not isinstance(dstate, dict):
 
+    def load_modules(self):
+
