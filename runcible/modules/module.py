@@ -53,3 +53,6 @@ class Module(object):
         for need in self.needed_actions:
             need_strings.append(need.get_formatted_string())
         return need_strings
+
+    def __repr__(self):
+        return f"<Runcible Module: {self.module_name}>"
