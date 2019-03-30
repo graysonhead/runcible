@@ -1,6 +1,7 @@
 from runcible.core.errors import ValidationError
 from runcible.core.need import Need
 
+
 class Module(object):
     module_name = ''
     configuration_attributes = {}
@@ -32,10 +33,10 @@ class Module(object):
             # First ensure that all of the keys supplied in the configuration dictionary exist in
             # self.configuration_attributes
             if k not in self.configuration_attributes.keys():
-                raise ValidationError(f"Key {k} not defined in module {self.module_name}")
+                raise ValidationError(f"Key {k} not defined in module {self._module_name}")
             # Then ensure the values match the supplied type attribute
             if not isinstance(v, self.configuration_attributes[k]['type']):
-                raise ValidationError(f"Value {v} of key {v} in {self.module_name} "
+                raise ValidationError(f"Value {v} of key {v} in {self._module_name} "
                                       f"must be a {self.configuration_attributes[k]['type']}")
 
     def __eq__(self, other):
@@ -55,4 +56,4 @@ class Module(object):
         return need_strings
 
     def __repr__(self):
-        return f"<Runcible Module: {self.module_name}>"
+        return f"<Runcible Module: {self._module_name}>"

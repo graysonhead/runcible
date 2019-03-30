@@ -1,7 +1,8 @@
 from runcible.core.callbacks import CBMethod, Callbacks
 from runcible.core.callback import CBType as CBT
-from runcible.core.module_registry import ModuleRegistry
+from runcible.core.plugin_registry import PluginRegistry
 from runcible.core.errors import ValidationError
+from runcible.protocols.ssh import SSHClient
 
 
 class Device(object):
@@ -24,5 +25,12 @@ class Device(object):
             raise ValidationError("load_dstate accepts a dict")
         for key, value in dstate.items():
             if key not in ['meta']:
-                self.modules.append(ModuleRegistry.get_module(key)(value))
+                # Any key in the dstate that isn't 'meta' is a module, so load that
+                # module and inject it's configuration
+                self.modules.append(PluginRegistry.get_module(key)(value))
+            elif key == 'meta':
+                # Store the meta dict in self.meta so we can use it to load and configure the driver
+                self.meta = value
+
+    def load_config_from_meta(self):
 

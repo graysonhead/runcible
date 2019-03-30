@@ -1,15 +1,13 @@
 from runcible.modules.module import Module, Need
 from runcible.core.need import NeedOperation as Op
 
-PLUGIN_PROVIDES = {'hostname': 'Hostname'}
 
-
-class HostnameResources(object):
+class SystemResources(object):
     HOSTNAME = 'hostname'
 
 
-class Hostname(Module):
-    module_name='hostname'
+class System(Module):
+    module_name= 'system'
     configuration_attributes = {
         "hostname": {
             'type': str,
@@ -30,12 +28,12 @@ class Hostname(Module):
         """
         if self.hostname is False:
             self.needs(Need(
-                HostnameResources.HOSTNAME,
+                SystemResources.HOSTNAME,
                 Op.DELETE
             ))
         elif self.hostname != other.hostname:
             self.needs(Need(
-                HostnameResources.HOSTNAME,
+                SystemResources.HOSTNAME,
                 Op.SET,
                 value=self.hostname
             ))

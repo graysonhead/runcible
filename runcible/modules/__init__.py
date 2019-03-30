@@ -1,3 +1,3 @@
-from runcible.modules import hostname
+from runcible.modules import system
 
-__all__ = ['hostname']
+__all__ = ['system']
