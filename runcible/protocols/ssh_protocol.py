@@ -1,5 +1,5 @@
 from paramiko import SSHClient, RejectPolicy
-from runcible.core.errors import ClientExecutionError, RuncibleConnectionError
+from runcible.core.errors import ClientExecutionError, RuncibleConnectionError, RuncibleNotConnectedError
 
 
 class SSHProtocol(object):
@@ -32,7 +32,7 @@ class SSHProtocol(object):
              ClientExecutionError
         """
         if self.client is None:
-            raise RuncibleConnectionError("You must activate the client with self.connect() before executing commands")
+            raise RuncibleNotConnectedError("You must activate the client with self.connect() before executing commands")
         stdin, stdout, stderr = self.client.exec_command(command)
         err = '\n'.join(stderr.readlines())
         if err:

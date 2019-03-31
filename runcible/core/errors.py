@@ -16,13 +16,22 @@ class ValidationError(RuncibleError):
         return f"<ValidationError: {self.msg}>"
 
 
+class RuncibleNotConnectedError(RuncibleError):
+
+    def __init(self, msg=None):
+        self.msg = msg
+
+    def __str__(self):
+        return self.msg
+
+
 class RuncibleConnectionError(RuncibleError):
 
     def __init(self, msg=None):
         self.msg = msg
 
     def __str__(self):
-        return msg
+        return self.msg
 
 
 class ClientExecutionError(RuncibleError):

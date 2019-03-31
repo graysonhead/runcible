@@ -5,9 +5,8 @@ from runcible.core.need import Need
 class Module(object):
     module_name = ''
     configuration_attributes = {}
-    needed_actions = []
 
-    def __init__(self, config_dictionary, device=None):
+    def __init__(self, config_dictionary):
         """
         This class is the base class for all Modules in Runcible.
         :param config_dictionary:
@@ -17,7 +16,6 @@ class Module(object):
         for k, v in config_dictionary.items():
             setattr(self, k, v)
         self.provider = None
-        self.device = device
 
     def validate(self, dictionary):
         """
@@ -35,30 +33,16 @@ class Module(object):
             # First ensure that all of the keys supplied in the configuration dictionary exist in
             # self.configuration_attributes
             if k not in self.configuration_attributes.keys():
-                raise ValidationError(f"Key {k} not defined in module {self._module_name}")
+                raise ValidationError(f"Key {k} not defined in module {self.module_name}")
             # Then ensure the values match the supplied type attribute
             if not isinstance(v, self.configuration_attributes[k]['type']):
-                raise ValidationError(f"Value {v} of key {v} in {self._module_name} "
+                raise ValidationError(f"Value {v} of key {v} in {self.module_name} "
                                       f"must be a {self.configuration_attributes[k]['type']}")
 
     def __eq__(self, other):
         # This causes comparison operations between two instances of this class to only take into consideration the
         # values of attributes specified in self.configuration_attributes
         return all(getattr(self, key) == getattr(other, key) for key in self.configuration_attributes.keys())
-
-    def needs(self, need):
-        if not isinstance(need, Need):
-            raise ValidationError("need objects must be an instance of need class")
-        self.needed_actions.append(need)
-
-    def get_needs(self):
-        need_strings = []
-        for need in self.needed_actions:
-            need_strings.append(need.get_formatted_string())
-        return need_strings
-
-    def load_provider(self, provider_class):
-        self.provider = provider_class(self)
 
     def __repr__(self):
         return f"<Runcible Module: {self.module_name}>"

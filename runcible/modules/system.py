@@ -26,14 +26,16 @@ class System(Module):
         :return:
             None, this method adds needed action to self.needs
         """
+        needs_list = []
         if self.hostname is False:
-            self.needs(Need(
+            needs_list.append(Need(
                 SystemResources.HOSTNAME,
                 Op.DELETE
             ))
         elif self.hostname != other.hostname:
-            self.needs(Need(
+            needs_list.append(Need(
                 SystemResources.HOSTNAME,
                 Op.SET,
                 value=self.hostname
             ))
+        return needs_list
