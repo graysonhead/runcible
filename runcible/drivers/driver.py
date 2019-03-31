@@ -8,5 +8,10 @@ class DriverBase(object):
     # Maps modules to providers
     module_provider_map = {}
 
-    def load_provider(self, module_name):
-        return self.module_provider_map[module_name]
+    @classmethod
+    def load_provider(cls, module_name):
+        return cls.module_provider_map[module_name]
+
+    @classmethod
+    def __repr__(cls):
+        return f"<RuncibleDriver: {cls.driver_name}>"

@@ -7,7 +7,7 @@ class Module(object):
     configuration_attributes = {}
     needed_actions = []
 
-    def __init__(self, config_dictionary):
+    def __init__(self, config_dictionary, device=None):
         """
         This class is the base class for all Modules in Runcible.
         :param config_dictionary:
@@ -16,6 +16,8 @@ class Module(object):
         self.validate(config_dictionary)
         for k, v in config_dictionary.items():
             setattr(self, k, v)
+        self.provider = None
+        self.device = device
 
     def validate(self, dictionary):
         """
@@ -55,5 +57,8 @@ class Module(object):
             need_strings.append(need.get_formatted_string())
         return need_strings
 
+    def load_provider(self, provider_class):
+        self.provider = provider_class(self)
+
     def __repr__(self):
-        return f"<Runcible Module: {self._module_name}>"
+        return f"<Runcible Module: {self.module_name}>"

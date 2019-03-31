@@ -1,8 +1,8 @@
 from paramiko import SSHClient, RejectPolicy
-from runcible.core.errors import ClientExecutionError
+from runcible.core.errors import ClientExecutionError, RuncibleConnectionError
 
 
-class SSHClient(object):
+class SSHProtocol(object):
 
     def __init__(self, hostname=None, username=None, password=None, port=22):
         self.hostname = hostname
@@ -13,10 +13,10 @@ class SSHClient(object):
 
     def connect(self):
         """Adds a paramiko ssh client to self.client"""
-        self.ssh = SSHClient()
-        self.ssh.load_system_host_keys()
-        self.ssh.set_missing_host_key_policy(RejectPolicy)
-        self.ssh.connect(hostname=self.hostname, port=self.port, username=self.username, password=self.password)
+        self.client = SSHClient()
+        self.client.load_system_host_keys()
+        self.client.set_missing_host_key_policy(RejectPolicy)
+        self.client.connect(hostname=self.hostname, port=self.port, username=self.username, password=self.password)
 
     def run_command(self, command):
         """
@@ -31,7 +31,10 @@ class SSHClient(object):
         :raises:
              ClientExecutionError
         """
-        stdin, stdout, stderr = self.ssh.exec_command(command)
+        if self.client is None:
+            raise RuncibleConnectionError("You must activate the client with self.connect() before executing commands")
+        stdin, stdout, stderr = self.client.exec_command(command)
         err = '\n'.join(stderr.readlines())
         if err:
             raise ClientExecutionError(msg=stdout.read(), command=command, system=self.hostname)
+        return stdout.read().decode('utf-8')
