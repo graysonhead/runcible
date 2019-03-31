@@ -14,9 +14,11 @@ class ProviderBase(object):
             this instance so the provider can make use of it's client functions
         """
         self.device = device_instance
-        self.cstate = self.load_module_dstate(dstate)
+        self.cstate = None
         self.dstate = None
-        needed_actions = []
+        self.needed_actions = []
+
+        self.load_module_dstate(dstate)
 
     def load_module_dstate(self, dstate):
         self.dstate = self.provides_for(dstate)

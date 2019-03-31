@@ -31,17 +31,28 @@ class Device(object):
         else:
             self.protocol = self.clients[self.default_client]
 
-    # def get_cstate(self):
-    #     self.protocol.connect()
-    #     for module in self.modules:
-    #         module.provider.get_cstate()
+    def plan(self):
+        self.load_cstate()
 
     def send_command(self, command):
+        """
+        A wrapper for sending commands via the default protocol. If you attempt to send a command while the client isn't
+        connected and returns a RuncibleNotConnectedError, the client will attempt to connect and re-send the message.
+
+        :param command:
+            Command to be executed
+
+        :return:
+            stdout of command
+
+        :raises:
+            ClientExecutionError on a non 0 return code on the client
+        """
         try:
             return self.protocol.run_command(command)
         except RuncibleNotConnectedError:
             self.protocol.connect()
-            self.protocol.run_command(command)
+            return self.protocol.run_command(command)
 
     def load_dstate(self, dstate):
         if not isinstance(dstate, dict):
@@ -49,7 +60,19 @@ class Device(object):
         for key, value in dstate.items():
             if key not in ['meta']:
                 # Any key in the dstate that isn't 'meta' is a module, so load the provider for that module
-                self.providers.append(self.driver.module_provider_map[key](self, dstate[key]))
+                self.providers.append(self.driver.module_provider_map[key](self, value))
+
+    def load_cstate(self):
+        """
+        This initializes the selected connection protocol and begins loading cstate from the devices via it's providers
+        :return:
+        """
+        for provider in self.providers:
+            provider.load_module_cstate()
+
+    def determine_needs(self):
+        for provider in self.providers:
+            provider.determine_needs()
 
     def load_config_from_meta(self, meta_device):
         self.meta_device = meta_device
@@ -76,7 +99,3 @@ class Device(object):
 
     def load_driver(self, driver_name):
         self.driver = PluginRegistry.get_driver(driver_name)
-
-    # def load_module_providers(self):
-    #     for module in self.modules:
-    #         module.load_provider(self.driver.load_provider(module.module_name))

@@ -80,3 +80,11 @@ class Need(object):
             value = f"value '{self.value}' "
         return f"{self.operation.name} {value}on resource {sub_resource}{self.resource}"
 
+    def __repr__(self):
+        sub_resource = ''
+        value = ''
+        if self.sub_resource:
+            sub_resource = f"{self.sub_resource}."
+        if self.value:
+            value = f"value '{self.value}' "
+        return f"<Needs: {self.resource}:{sub_resource}:{self.operation.name}:{value}>"
