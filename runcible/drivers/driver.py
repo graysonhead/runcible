@@ -15,3 +15,11 @@ class DriverBase(object):
     @classmethod
     def __repr__(cls):
         return f"<RuncibleDriver: {cls.driver_name}>"
+
+    @staticmethod
+    def pre_run_tasks():
+        return None
+
+    @staticmethod
+    def post_run_tasks():
+        return None

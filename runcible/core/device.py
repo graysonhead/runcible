@@ -1,5 +1,5 @@
 from runcible.core.callbacks import CBMethod, Callbacks
-from runcible.core.callback import CBType as CBT
+from runcible.core.callback import CBType, Callback
 from runcible.core.plugin_registry import PluginRegistry
 from runcible.core.errors import ValidationError, RuncibleNotConnectedError
 from runcible.protocols.ssh_protocol import SSHProtocol
@@ -33,6 +33,10 @@ class Device(object):
 
     def plan(self):
         self.load_cstate()
+        self.determine_needs()
+        self.needs_as_callbacks()
+        self.callbacks.run_callbacks()
+
 
     def send_command(self, command):
         """
@@ -73,6 +77,22 @@ class Device(object):
     def determine_needs(self):
         for provider in self.providers:
             provider.determine_needs()
+
+    def needs_as_callbacks(self):
+        for provider in self.providers:
+            if provider.needed_actions:
+                self.echo(f"{provider.provides_for.module_name} needs:")
+                for need in provider.needed_actions:
+                    self.echo(need.get_formatted_string(),
+                              cb_type=CBType.CHANGED,
+                              indent=True)
+            else:
+                self.echo(f"{provider.provides_for.module_name} needs no changes.")
+
+    def echo(self, message, indent=False, cb_type=CBType.INFO):
+        self.callbacks.add_callback(
+            Callback(message, call_type=cb_type, indent=indent)
+        )
 
     def load_config_from_meta(self, meta_device):
         self.meta_device = meta_device

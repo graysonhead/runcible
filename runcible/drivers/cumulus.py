@@ -8,3 +8,7 @@ class CumulusDriver(DriverBase):
     module_provider_map = {
         "system": CumulusSystemProvider
     }
+    post_exec_tasks = [
+        'net commit'
+    ]
+

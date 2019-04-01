@@ -32,7 +32,8 @@ class NeedOperation(Enum):
 
     ADD = 5
     """
-    List: adds a new value (or values) to the list
+    List: adds a new value (or values) to the listfrom runcible.core.need import NeedOperation as Op
+
     """
 
 

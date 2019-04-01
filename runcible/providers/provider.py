@@ -17,6 +17,8 @@ class ProviderBase(object):
         self.cstate = None
         self.dstate = None
         self.needed_actions = []
+        self.completed_actions = []
+        self.failed_actions = []
 
         self.load_module_dstate(dstate)
 
@@ -28,7 +30,7 @@ class ProviderBase(object):
 
     def determine_needs(self):
         needs = self.dstate.determine_needs(self.cstate)
-        self.needed_actions.append(needs)
+        self.needed_actions = needs
 
     def get_cstate(self):
         """
@@ -36,3 +38,7 @@ class ProviderBase(object):
         :return:
         """
         raise NotImplemented
+
+    def complete(self, need):
+        self.needed_actions.remove(need)
+        self.completed_actions.append(need)

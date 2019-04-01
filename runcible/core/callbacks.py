@@ -58,10 +58,13 @@ class Callbacks(object):
     def run_terminal_callbacks(self):
         for callback in self.callbacks:
             if callback.type == CBType.INFO:
-                TermCallback.info(callback.message)
+                TermCallback.info(callback.message, indent=callback.indent)
             elif callback.type == CBType.SUCCESS:
-                TermCallback.success(callback.message)
+                TermCallback.success(callback.message, indent=callback.indent)
             elif callback.type == CBType.ERROR:
-                TermCallback.error(callback.message)
+                TermCallback.error(callback.message, indent=callback.indent)
             elif callback.type == CBType.FATAL:
-                TermCallback.fatal(callback.message)
+                TermCallback.fatal(callback.message, indent=callback.indent)
+            elif callback.type == CBType.CHANGED:
+                TermCallback.changed(callback.message, indent=callback.indent)
+            self.callbacks.remove(callback)
