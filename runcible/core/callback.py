@@ -14,10 +14,11 @@ class Callback(object):
     A callback is a message to be delivered to the user via some means
     """
 
-    def __init__(self, message, call_type=CBType.INFO, indent=False):
+    def __init__(self, message, call_type=CBType.INFO, indent=False, decoration=False):
         self.message = message
         self.type = call_type
         self.indent = indent
+        self.decoration = decoration
 
     def get_dict(self):
         return {

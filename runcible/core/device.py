@@ -19,6 +19,7 @@ class Device(object):
         self.meta_device = {}
         self.clients = {}
         self.providers = []
+        self.needs_changes = False
         self.driver = None
         self.default_client = None
         self.callbacks = Callbacks(callback_method=callback_method)
@@ -37,6 +38,33 @@ class Device(object):
         self.needs_as_callbacks()
         self.callbacks.run_callbacks()
 
+    def execute(self):
+        if self.needs_changes:
+            self.fix_provider_needs()
+            self.completed_as_callbacks()
+            self.post_execution_tasks()
+        else:
+            self.echo("No changes needed",
+                      cb_type=CBType.SUCCESS,
+                      indent=True,
+                      decoration=True)
+        self.callbacks.run_callbacks()
+
+    def post_execution_tasks(self, changed=False):
+        if self.driver.post_exec_tasks:
+            for command in self.driver.post_exec_tasks:
+                self.send_command(command)
+
+    def fix_provider_needs(self):
+        for provider in self.providers:
+            provider.fix_needs()
+
+    def completed_as_callbacks(self):
+        for provider in self.providers:
+            for need in provider.completed_actions:
+                self.echo(f"{provider.provides_for.module_name}.{need.get_formatted_string()}",
+                          cb_type=CBType.SUCCESS,
+                          indent=True)
 
     def send_command(self, command):
         """
@@ -77,21 +105,23 @@ class Device(object):
     def determine_needs(self):
         for provider in self.providers:
             provider.determine_needs()
+            if provider.needed_actions:
+                self.needs_changes = True
 
     def needs_as_callbacks(self):
         for provider in self.providers:
             if provider.needed_actions:
-                self.echo(f"{provider.provides_for.module_name} needs:")
+                self.echo(f"{provider.provides_for.module_name} needs:", decoration=True)
                 for need in provider.needed_actions:
-                    self.echo(need.get_formatted_string(),
+                    self.echo(f"{provider.provides_for.module_name}.{need.get_formatted_string()}",
                               cb_type=CBType.CHANGED,
                               indent=True)
             else:
                 self.echo(f"{provider.provides_for.module_name} needs no changes.")
 
-    def echo(self, message, indent=False, cb_type=CBType.INFO):
+    def echo(self, message, indent=False, cb_type=CBType.INFO, decoration=False):
         self.callbacks.add_callback(
-            Callback(message, call_type=cb_type, indent=indent)
+            Callback(message, call_type=cb_type, indent=indent, decoration=decoration)
         )
 
     def load_config_from_meta(self, meta_device):

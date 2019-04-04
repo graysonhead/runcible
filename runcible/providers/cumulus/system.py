@@ -16,8 +16,8 @@ class CumulusSystemProvider(ProviderBase):
     def _set_hostname(self, hostname):
         return self.device.send_command(f"net add hostname {hostname}")
 
-    def fix_needs(self, needs):
-        for need in needs:
+    def fix_needs(self):
+        for need in self.needed_actions:
             if need.resource is SystemResources.HOSTNAME:
                 if need.operation is OP.SET:
                     self._set_hostname(need.value)

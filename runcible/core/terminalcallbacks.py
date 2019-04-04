@@ -39,5 +39,5 @@ class TermCallback(object):
     def changed(msg, indent=False):
         indent = ""
         if indent:
-            indent = "    "
+            indent = "   "
         print(f"{indent}{Fore.YELLOW}{msg}{Style.RESET_ALL}")
