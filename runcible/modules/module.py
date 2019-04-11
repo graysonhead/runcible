@@ -35,7 +35,7 @@ class Module(object):
             if k not in self.configuration_attributes.keys():
                 raise ValidationError(f"Key {k} not defined in module {self.module_name}")
             # Then ensure the values match the supplied type attribute
-            if not isinstance(v, self.configuration_attributes[k]['type']):
+            if not isinstance(v, self.configuration_attributes[k]['type']) and v is not False:
                 raise ValidationError(f"Value {v} of key {v} in {self.module_name} "
                                       f"must be a {self.configuration_attributes[k]['type']}")
 

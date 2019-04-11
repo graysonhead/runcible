@@ -7,11 +7,11 @@ class SystemResources(object):
 
 
 class System(Module):
-    module_name= 'system'
+    module_name = 'system'
     configuration_attributes = {
         "hostname": {
             'type': str,
-            'allowed_operations': [Op.SET, Op.DELETE]
+            'allowed_operations': [Op.SET]
         }
     }
 
@@ -27,12 +27,7 @@ class System(Module):
             None, this method adds needed action to self.needs
         """
         needs_list = []
-        if self.hostname is False:
-            needs_list.append(Need(
-                SystemResources.HOSTNAME,
-                Op.DELETE
-            ))
-        elif self.hostname != other.hostname:
+        if self.hostname != other.hostname:
             needs_list.append(Need(
                 SystemResources.HOSTNAME,
                 Op.SET,

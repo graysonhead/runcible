@@ -1,6 +1,6 @@
 from runcible.modules.system import System, SystemResources
 from runcible.providers.provider import ProviderBase
-from runcible.core.need import NeedOperation as OP
+from runcible.core.need import NeedOperation as Op
 
 
 class CumulusSystemProvider(ProviderBase):
@@ -19,6 +19,6 @@ class CumulusSystemProvider(ProviderBase):
     def fix_needs(self):
         for need in self.needed_actions:
             if need.resource is SystemResources.HOSTNAME:
-                if need.operation is OP.SET:
+                if need.operation is Op.SET:
                     self._set_hostname(need.value)
                     self.complete(need)
