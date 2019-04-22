@@ -1,5 +1,4 @@
 from runcible.core.errors import ValidationError
-from runcible.core.need import Need
 
 
 class Module(object):
