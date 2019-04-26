@@ -1,11 +1,11 @@
-from runcible.core.errors import ValidationError
+from runcible.core.errors import ValidationError, NotImplementedError
 
 
 class Module(object):
     module_name = ''
     configuration_attributes = {}
 
-    def __init__(self, config_dictionary):
+    def __init__(self, config_dictionary: dict):
         """
         This class is the base class for all Modules in Runcible.
         :param config_dictionary:
@@ -16,7 +16,24 @@ class Module(object):
             setattr(self, k, v)
         self.provider = None
 
-    def validate(self, dictionary):
+    # Override the following classes in each subclass
+
+    def determine_needs(self, other):
+        """
+        Iterate through the attributes of two instances, and determine what actions are needed to make the other match
+        self
+
+        :param other:
+            The other instance to compare this class against.
+
+        :return:
+            None, this method adds needed action to self.needs
+        """
+        raise NotImplementedError(f"Module \"{self.module_name}\" does not provide a \"determine_needs\" method")
+
+    # Inherited modules below
+
+    def validate(self, dictionary: dict):
         """
         This validates the configuration, and make sure that there are no typos in key names, or keys called that the
         module doesn't support.

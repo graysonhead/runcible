@@ -1,4 +1,5 @@
-from runcible.modules.module import Module, Need
+from runcible.modules.module import Module
+from runcible.core.need import Need
 from runcible.core.need import NeedOperation as Op
 
 
@@ -24,7 +25,7 @@ class System(Module):
             The other instance to compare this class against.
 
         :return:
-            None, this method adds needed action to self.needs
+            A list of needs
         """
         needs_list = []
         if self.hostname != other.hostname:

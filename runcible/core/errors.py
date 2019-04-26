@@ -18,7 +18,7 @@ class ValidationError(RuncibleError):
 
 class RuncibleNotConnectedError(RuncibleError):
 
-    def __init(self, msg=None):
+    def __init__(self, msg=None):
         self.msg = msg
 
     def __str__(self):
@@ -27,7 +27,16 @@ class RuncibleNotConnectedError(RuncibleError):
 
 class RuncibleConnectionError(RuncibleError):
 
-    def __init(self, msg=None):
+    def __init__(self, msg=None):
+        self.msg = msg
+
+    def __str__(self):
+        return self.msg
+
+
+class NotImplementedError(RuncibleError):
+
+    def __init__(self, msg=None):
         self.msg = msg
 
     def __str__(self):

@@ -92,7 +92,10 @@ class Device(object):
         for key, value in dstate.items():
             if key not in ['meta']:
                 # Any key in the dstate that isn't 'meta' is a module, so load the provider for that module
-                self.providers.append(self.driver.module_provider_map[key](self, value))
+                try:
+                    self.providers.append(self.driver.module_provider_map[key](self, value))
+                except KeyError:
+                    raise ValidationError(f"{self.driver.driver_name} driver doesn't have a {key} module")
 
     def load_cstate(self):
         """
