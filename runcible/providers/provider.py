@@ -1,4 +1,4 @@
-from runcible.core.errors import ValidationError
+from runcible.core.errors import ValidationError, NotImplementedError
 
 
 class ProviderBase(object):
@@ -37,7 +37,7 @@ class ProviderBase(object):
         Create a module for the current state and return it
         :return:
         """
-        raise NotImplemented
+        raise NotImplementedError(f"The provider class {str(self)} has not provided a get_cstate method")
 
     def complete(self, need):
         self.needed_actions.remove(need)

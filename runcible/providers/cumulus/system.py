@@ -11,7 +11,7 @@ class CumulusSystemProvider(ProviderBase):
         return System({'hostname': hostname})
 
     def _get_hostname(self):
-        return self.device.send_command('hostname').strip()
+        return self.device.send_command('net show hostname').strip()
 
     def _set_hostname(self, hostname):
         return self.device.send_command(f"net add hostname {hostname}")

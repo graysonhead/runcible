@@ -23,6 +23,8 @@ class Device(object):
         self.driver = None
         self.default_client = None
         self.callbacks = Callbacks(callback_method=callback_method)
+        self._memoized_comands = {}
+        self._kvstore = {}
 
         self.load_config_from_meta(config['meta']['device'])
         self.load_dstate(config)
@@ -33,6 +35,9 @@ class Device(object):
             self.protocol = self.clients[self.default_client]
 
     def plan(self):
+        self._clear_memoization()
+        self.clear_kv_store()
+        self.driver.pre_plan_tasks(self)
         self.load_cstate()
         self.determine_needs()
         self.needs_as_callbacks()
@@ -66,7 +71,7 @@ class Device(object):
                           cb_type=CBType.SUCCESS,
                           indent=True)
 
-    def send_command(self, command):
+    def send_command(self, command, memoize: bool = False):
         """
         A wrapper for sending commands via the default protocol. If you attempt to send a command while the client isn't
         connected and returns a RuncibleNotConnectedError, the client will attempt to connect and re-send the message.
@@ -74,14 +79,28 @@ class Device(object):
         :param command:
             Command to be executed
 
+        :param memoize:
+            If True, this method will return the previous result without re-running the command. Memoization operates
+            only within the scope of each instance. This method will only store results from commands run with memoize
+            = True
+
         :return:
             stdout of command
 
         :raises:
             ClientExecutionError on a non 0 return code on the client
         """
+        # If the user
+        if memoize:
+            for key, value in self._memoized_comands:
+                if key == command:
+                    return self._memoized_comands[command]
         try:
-            return self.protocol.run_command(command)
+            result = self.protocol.run_command(command)
+            # Store the result if memoize is True
+            if memoize:
+                self._memoized_comands.update({'command': result})
+            return result
         except RuncibleNotConnectedError:
             self.protocol.connect()
             return self.protocol.run_command(command)
@@ -127,6 +146,9 @@ class Device(object):
             Callback(message, call_type=cb_type, indent=indent, decoration=decoration)
         )
 
+    def _clear_memoization(self):
+        self._memoized_comands = {}
+
     def load_config_from_meta(self, meta_device):
         self.meta_device = meta_device
         # First load the driver
@@ -152,3 +174,39 @@ class Device(object):
 
     def load_driver(self, driver_name):
         self.driver = PluginRegistry.get_driver(driver_name)
+        # Pass the driver an instance of this object so it can call it's methods
+        self.driver.device = self
+
+    def store(self, key: str, value):
+        """
+        Store is used when one method needs to share data with another. The self.retrieve method can
+        be used to access stored values/objects. All kvs are erased when the plan method is run.
+
+        :param key:
+            Key to store an object under
+
+        :param value:
+            An object to be stored under a key
+        :return:
+            None
+        """
+        self._kvstore.update({key: value})
+
+    def retrieve(self, key: str):
+        """
+        Allows an object to be retrieved from this instances KV store.
+
+        :param key:
+            Key used to retrieve object
+
+        :return:
+            Value of the key
+        """
+        return self._kvstore[key]
+
+    def clear_kv_store(self):
+        """
+        Clears the key/value store
+        :return:
+        """
+        self._kvstore = {}
