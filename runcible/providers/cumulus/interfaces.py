@@ -20,4 +20,8 @@ class CumulusInterfacesProvider(ProviderBase):
                         interface_commands.update({if_name: []})
                     interface_commands[if_name].append(truncated_line)
         for key, value in interface_commands.items():
-            pass
+            interface_config = {}
+            for command in  value:
+                if command[0] == 'bridge':
+                    if command[1] == 'pvid':
+                        interface_config.update({'pvid': command[2]})
