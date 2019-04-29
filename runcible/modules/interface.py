@@ -33,13 +33,15 @@ class Interface(Module):
         needs_list = []
         if self.pvid is False and other.pvid:
             needs_list.append(Need(
-                InterfaceResources.PVID,
-                Op.DELETE
+                self.name,
+                Op.DELETE,
+                sub_resource=InterfaceResources.PVID
             ))
         elif self.pvid != other.pvid:
             needs_list.append(Need(
-                InterfaceResources.PVID,
+                self.name,
                 Op.SET,
+                sub_resource=InterfaceResources.PVID,
                 value=self.pvid
             ))
         return needs_list

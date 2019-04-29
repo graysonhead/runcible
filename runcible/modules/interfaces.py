@@ -1,5 +1,6 @@
 from runcible.modules.module import Module
 from runcible.modules.interface import Interface
+from runcible.core.need import Need
 
 class Interfaces(Module):
     module_name = 'interfaces'
@@ -15,3 +16,13 @@ class Interfaces(Module):
         self.interfaces = []
         for interface in config_dictionary:
             self.interfaces.append(Interface(interface))
+
+    def determine_needs(self, other):
+        """
+        Iterate through the attached modules from another Interfaces module and compare the interfaces, matching them
+        via their "name" attributes.
+
+        :param other:
+        :return:
+        """
+        needs_list = []
