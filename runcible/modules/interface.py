@@ -37,7 +37,7 @@ class Interface(Module):
                 Op.DELETE,
                 sub_resource=InterfaceResources.PVID
             ))
-        elif self.pvid != other.pvid:
+        elif getattr(self, 'pvid', None) != getattr(other, 'pvid', None):
             needs_list.append(Need(
                 self.name,
                 Op.SET,

@@ -30,6 +30,10 @@ class ProviderBase(object):
 
     def determine_needs(self):
         needs = self.dstate.determine_needs(self.cstate)
+        # Some module containers like ModuleArray will return an array of needs
+        # if type(needs) == list:
+        #     self.needed_actions = self.needed_actions.extend(needs)
+        # else:
         self.needed_actions = needs
 
     def get_cstate(self):

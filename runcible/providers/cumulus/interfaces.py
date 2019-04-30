@@ -11,7 +11,6 @@ class CumulusInterfacesProvider(ProviderBase):
         commands = self.device.retrieve('parsed_commands')
         # Associate commands with their respective interfaces
         interface_commands = {}
-        module_instances = []
         for line in commands:
             if "interface" in line or "bond" in line:
                 split_line = line.split(' ')
@@ -25,6 +24,7 @@ class CumulusInterfacesProvider(ProviderBase):
                     if split_line.__len__() > 4:
                         truncated_line = split_line[4:]
                         interface_commands[if_name].append(truncated_line)
+        interfaces_config = []
         for key, value in interface_commands.items():
             # Build the parameter list to pass to each interface module
             interface_config = {"name": key}
@@ -34,5 +34,5 @@ class CumulusInterfacesProvider(ProviderBase):
                     if command[0] == 'bridge':
                         if command[1] == 'pvid':
                             interface_config.update({'pvid': command[2]})
-            module_instances.append(Interface(interface_config))
-        return module_instances
+            interfaces_config.append(interface_config)
+        return Interfaces(interfaces_config)

@@ -11,7 +11,8 @@ setuptools.setup(
     license='GPL V3',
     install_requires=[
         'paramiko>=2.4.2',
-        'colorama>=0.4.1'
+        'colorama>=0.4.1',
+        'cryptography==2.4.2'
     ],
     long_description=open('README.md').read(),
     entry_points={
