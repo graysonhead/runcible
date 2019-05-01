@@ -81,6 +81,14 @@ class Need(object):
             value = f": {self.value}"
         return f"{self.resource}.{sub_resource}{self.operation.name}{value}"
 
+    def __eq__(self, other):
+        comparison_list = []
+        comparison_list.append(self.resource == other.resource)
+        comparison_list.append(self.operation == other.operation)
+        comparison_list.append(self.value == other.value)
+        comparison_list.append(self.sub_resource == other.sub_resource)
+        return all(comparison_list)
+
     def __repr__(self):
         sub_resource = ''
         value = ''
