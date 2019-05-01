@@ -1,4 +1,4 @@
-from runcible.core.errors import ValidationError, NotImplementedError
+from runcible.core.errors import RuncibleValidationError, RuncibleNotImplementedError
 
 
 class Module(object):
@@ -29,7 +29,7 @@ class Module(object):
         :return:
             None, this method adds needed action to self.needs
         """
-        raise NotImplementedError(f"Module \"{self.module_name}\" does not provide a \"determine_needs\" method")
+        raise RuncibleNotImplementedError(f"Module \"{self.module_name}\" does not provide a \"determine_needs\" method")
 
     # Inherited modules below
 
@@ -51,7 +51,7 @@ class Module(object):
             # First ensure that all of the keys supplied in the configuration dictionary exist in
             # self.configuration_attributes
             if k not in self.configuration_attributes.keys():
-                raise ValidationError(f"Key {k} not defined in module {self.module_name}")
+                raise RuncibleValidationError(f"Key {k} not defined in module {self.module_name}")
             # If the string only has numbers and the type is int, we cast it to int
             if self.configuration_attributes[k]['type'] is int and type(v) is str:
                 if v.isdigit():
@@ -59,7 +59,7 @@ class Module(object):
                     dictionary[k] = v
             # Then ensure the values match the supplied type attribute
             if not isinstance(v, self.configuration_attributes[k]['type']) and v is not False:
-                raise ValidationError(f"Value {v} of key {k} in {self.module_name} "
+                raise RuncibleValidationError(f"Value {v} of key {k} in {self.module_name} "
                                       f"must be a {self.configuration_attributes[k]['type']}")
         return dictionary
 

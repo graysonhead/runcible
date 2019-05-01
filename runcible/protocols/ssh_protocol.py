@@ -1,5 +1,5 @@
 from paramiko import SSHClient, RejectPolicy
-from runcible.core.errors import ClientExecutionError, RuncibleConnectionError, RuncibleNotConnectedError
+from runcible.core.errors import RuncibleClientExecutionError, RuncibleConnectionError, RuncibleNotConnectedError
 
 
 class SSHProtocol(object):
@@ -36,5 +36,5 @@ class SSHProtocol(object):
         stdin, stdout, stderr = self.client.exec_command(command)
         err = '\n'.join(stderr.readlines())
         if err:
-            raise ClientExecutionError(msg=stdout.read(), command=command, system=self.hostname)
+            raise RuncibleClientExecutionError(msg=stdout.read(), command=command, system=self.hostname)
         return stdout.read().decode('utf-8')

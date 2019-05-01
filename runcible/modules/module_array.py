@@ -1,4 +1,4 @@
-from runcible.core.errors import NotImplementedError
+from runcible.core.errors import RuncibleNotImplementedError
 
 
 class ModuleArray(object):
@@ -13,7 +13,7 @@ class ModuleArray(object):
         :param configuration_array:
         """
         if self.sub_module is None:
-            raise NotImplementedError(f"The module {self.__str__()} does not set a sub_module attribute")
+            raise RuncibleNotImplementedError(f"The module {self.__str__()} does not set a sub_module attribute")
         setattr(self, self.module_name, [])
         for list_item in configuration_array:
             getattr(self, self.module_name).append(self.sub_module(list_item))

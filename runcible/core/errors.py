@@ -7,7 +7,7 @@ class RuncibleError(Exception):
         self.msg = msg
 
 
-class ValidationError(RuncibleError):
+class RuncibleValidationError(RuncibleError):
 
     def __init__(self, msg=None):
         self.msg = msg
@@ -34,7 +34,7 @@ class RuncibleConnectionError(RuncibleError):
         return self.msg
 
 
-class NotImplementedError(RuncibleError):
+class RuncibleNotImplementedError(RuncibleError):
 
     def __init__(self, msg=None):
         self.msg = msg
@@ -43,7 +43,18 @@ class NotImplementedError(RuncibleError):
         return self.msg
 
 
-class ClientExecutionError(RuncibleError):
+class RuncibleActionFailure(RuncibleError):
+
+    def __init__(self, provider=None, tasks=None):
+        self.provider = provider
+        self.tasks = tasks
+
+    def __str__(self):
+        return f"Provider {self.provider} has needed actions {self.tasks} after execution completed." \
+            f"This is likely a bug in the provider."
+
+
+class RuncibleClientExecutionError(RuncibleError):
 
     def __init__(self, msg=None, system=None, command=None):
         self.msg = msg

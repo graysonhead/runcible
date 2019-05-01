@@ -1,7 +1,7 @@
 from runcible.core.callbacks import CBMethod, Callbacks
 from runcible.core.callback import CBType, Callback
 from runcible.core.plugin_registry import PluginRegistry
-from runcible.core.errors import ValidationError, RuncibleNotConnectedError
+from runcible.core.errors import RuncibleValidationError, RuncibleNotConnectedError, RuncibleActionFailure
 from runcible.protocols.ssh_protocol import SSHProtocol
 
 
@@ -54,6 +54,27 @@ class Device(object):
                       indent=True,
                       decoration=True)
         self.callbacks.run_callbacks()
+        self.check_complete()
+        self.clear_actions()
+
+    def check_complete(self):
+        """
+        Checks for needed tasks that haven't run
+        :raises TaskFailure:
+        """
+        for provider in self.providers:
+            if provider.needed_actions:
+                raise RuncibleActionFailure(provider=provider.provides_for, tasks=provider.needed_actions)
+
+    def clear_actions(self):
+        """
+        Clears the completed, failed, and needed actions for each provider.
+        :return:
+        """
+        for provider in self.providers:
+            provider.needed_actions = []
+            provider.completed_actions = []
+            provider.failed_actions = []
 
     def post_execution_tasks(self, changed=False):
         if self.driver.post_exec_tasks:
@@ -107,14 +128,14 @@ class Device(object):
 
     def load_dstate(self, dstate):
         if not isinstance(dstate, dict):
-            raise ValidationError("load_dstate accepts a dict")
+            raise RuncibleValidationError("load_dstate accepts a dict")
         for key, value in dstate.items():
             if key not in ['meta']:
                 # Any key in the dstate that isn't 'meta' is a module, so load the provider for that module
                 try:
                     self.providers.append(self.driver.module_provider_map[key](self, value))
                 except KeyError:
-                    raise ValidationError(f"{self.driver.driver_name} driver doesn't have a {key} module")
+                    raise RuncibleValidationError(f"{self.driver.driver_name} driver doesn't have a {key} module")
 
     def load_cstate(self):
         """
@@ -155,12 +176,12 @@ class Device(object):
         if 'driver' in self.meta_device:
             self.load_driver(self.meta_device['driver'])
         else:
-            raise ValidationError("A device must be specified with a driver")
+            raise RuncibleValidationError("A device must be specified with a driver")
         # Then load the connection protocols
         if 'ssh' in self.meta_device:
             ssh_conf = self.meta_device['ssh']
             if 'hostname' not in ssh_conf or 'username' not in ssh_conf:
-                raise ValidationError("SSH connection method requires a username and hostname at a minimum")
+                raise RuncibleValidationError("SSH connection method requires a username and hostname at a minimum")
             ssh = SSHProtocol(
                 hostname=ssh_conf['hostname'],
                 username=ssh_conf['username'],
