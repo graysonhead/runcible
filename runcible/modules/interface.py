@@ -31,19 +31,21 @@ class Interface(Module):
             A list of needs
         """
         needs_list = []
-        if self.pvid is False and other.pvid:
-            needs_list.append(Need(
-                self.name,
-                Op.DELETE,
-                sub_resource=InterfaceResources.PVID
-            ))
-        elif getattr(self, 'pvid', None) != getattr(other, 'pvid', None):
-            needs_list.append(Need(
-                self.name,
-                Op.SET,
-                sub_resource=InterfaceResources.PVID,
-                value=self.pvid
-            ))
+        if getattr(self, 'pvid', None) is not None:
+            if self.pvid is False:
+                if getattr(other, 'pvid', None) is not None:
+                    needs_list.append(Need(
+                        self.name,
+                        Op.DELETE,
+                        sub_resource=InterfaceResources.PVID
+                    ))
+            elif self.pvid != getattr(other, 'pvid', None):
+                needs_list.append(Need(
+                    self.name,
+                    Op.SET,
+                    sub_resource=InterfaceResources.PVID,
+                    value=self.pvid
+                ))
         return needs_list
 
     def __repr__(self):

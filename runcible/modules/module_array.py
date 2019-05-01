@@ -1,5 +1,6 @@
 from runcible.core.errors import NotImplementedError
 
+
 class ModuleArray(object):
     module_name = ''
     sub_module = None

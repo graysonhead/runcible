@@ -20,6 +20,7 @@ class ProviderBase(object):
         self.completed_actions = []
         self.failed_actions = []
 
+
         self.load_module_dstate(dstate)
 
     def load_module_dstate(self, dstate):

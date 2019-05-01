@@ -1,6 +1,6 @@
 from runcible.providers.provider import ProviderBase
+from runcible.providers.cumulus.interface import CumulusInterfaceProvider
 from runcible.modules.interfaces import Interfaces
-from runcible.modules.interface import Interface
 from runcible.providers.cumulus.utils import pre_parse_commands
 
 
@@ -36,3 +36,7 @@ class CumulusInterfacesProvider(ProviderBase):
                             interface_config.update({'pvid': command[2]})
             interfaces_config.append(interface_config)
         return Interfaces(interfaces_config)
+
+    def fix_needs(self):
+        for need in self.needed_actions:
+            CumulusInterfaceProvider.fix_need(self, need)
