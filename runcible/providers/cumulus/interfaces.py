@@ -4,6 +4,7 @@ from runcible.modules.interfaces import Interfaces
 from runcible.providers.cumulus.utils import pre_parse_commands
 import copy
 
+
 class CumulusInterfacesProvider(ProviderBase):
     provides_for = Interfaces
 
@@ -11,6 +12,7 @@ class CumulusInterfacesProvider(ProviderBase):
         commands = self.device.retrieve('parsed_commands')
         # Associate commands with their respective interfaces
         interface_commands = {}
+        interface_instances = []
         for line in commands:
             if "interface" in line or "bond" in line:
                 split_line = line.split(' ')
@@ -24,18 +26,11 @@ class CumulusInterfacesProvider(ProviderBase):
                     if split_line.__len__() > 4:
                         truncated_line = split_line[4:]
                         interface_commands[if_name].append(truncated_line)
-        interfaces_config = []
-        for key, value in interface_commands.items():
-            # Build the parameter list to pass to each interface module
-            interface_config = {"name": key}
-            # Only parse the command if the list for this interface isn't empty
-            if value:
-                for command in value:
-                    if command[0] == 'bridge':
-                        if command[1] == 'pvid':
-                            interface_config.update({'pvid': command[2]})
-            interfaces_config.append(interface_config)
-        return Interfaces(interfaces_config)
+        for k, v in interface_commands.items():
+            interface_instances.append(CumulusInterfaceProvider.get_cstate(k, v))
+        interfaces_inst = Interfaces({})
+        interfaces_inst.interfaces = interface_instances
+        return interfaces_inst
 
     def fix_needs(self):
         needed_actions = copy.deepcopy(self.needed_actions)

@@ -77,8 +77,8 @@ class Need(object):
         value = ''
         if self.sub_resource:
             sub_resource = f"{self.sub_resource}."
-        if self.value:
-            value = f": {self.value}"
+        if self.value or self.value is False:
+            value = f": {self.value.__str__()}"
         return f"{self.resource}.{sub_resource}{self.operation.name}{value}"
 
     def __eq__(self, other):
@@ -94,6 +94,6 @@ class Need(object):
         value = ''
         if self.sub_resource:
             sub_resource = f"{self.sub_resource}."
-        if self.value:
-            value = f": '{self.value}' "
+        if self.value or self.value is False:
+            value = f": '{self.value.__str__()}' "
         return f"<Needs: {self.resource}.{sub_resource}{self.operation.name}{value}>"

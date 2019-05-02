@@ -5,6 +5,7 @@ from runcible.core.need import NeedOperation as Op
 
 class InterfaceResources(object):
     PVID = 'pvid'
+    STP_BPDUGUARD = 'stp_bpduguard'
 
 
 class Interface(Module):
@@ -17,6 +18,11 @@ class Interface(Module):
         "pvid": {
             'type': int,
             'allowed_operations': [Op.SET, Op.DELETE]
+        },
+        InterfaceResources.STP_BPDUGUARD: {
+            'type': bool,
+            'allowed_operations': [Op.SET],
+            # 'default': False
         }
     }
 
@@ -46,6 +52,24 @@ class Interface(Module):
                     sub_resource=InterfaceResources.PVID,
                     value=self.pvid
                 ))
+        if getattr(self, InterfaceResources.STP_BPDUGUARD, None) is not None:
+            if getattr(self, InterfaceResources.STP_BPDUGUARD, None) is False and \
+                    getattr(other, InterfaceResources.STP_BPDUGUARD, None) is True:
+                needs_list.append(Need(
+                    self.name,
+                    Op.SET,
+                    sub_resource=InterfaceResources.STP_BPDUGUARD,
+                    value=False
+                ))
+            elif getattr(self, InterfaceResources.STP_BPDUGUARD, None) is True:
+                if getattr(other, InterfaceResources.STP_BPDUGUARD, None) is False or \
+                        getattr(other, InterfaceResources.STP_BPDUGUARD, None) is None:
+                    needs_list.append(Need(
+                        self.name,
+                        Op.SET,
+                        sub_resource=InterfaceResources.STP_BPDUGUARD,
+                        value=True
+                    ))
         return needs_list
 
     def __repr__(self):
