@@ -36,5 +36,5 @@ class SSHProtocol(object):
         stdin, stdout, stderr = self.client.exec_command(command)
         err = '\n'.join(stderr.readlines())
         if err:
-            raise RuncibleClientExecutionError(msg=stdout.read(), command=command, system=self.hostname)
+            raise RuncibleClientExecutionError(msg=err, command=command, system=self.hostname)
         return stdout.read().decode('utf-8')

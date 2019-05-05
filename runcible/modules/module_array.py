@@ -49,8 +49,9 @@ class ModuleArray(object):
                 # so all of the needs can be generated on the first execution
                 other_item = self.sub_module({})
                 needs_list.append(Need(
-                    getattr(item, self.sort_key),
-                    Op.ADD
+                    'module',
+                    Op.CREATE,
+                    value=getattr(item, self.sort_key)
                 ))
             needs_list.extend(item.determine_needs(other_item))
         return needs_list

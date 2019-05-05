@@ -8,4 +8,3 @@ class Interfaces(ModuleArray):
     module_name = 'interfaces'
     sub_module = Interface
     sort_key = 'name'
-

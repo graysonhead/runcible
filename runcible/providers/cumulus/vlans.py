@@ -1,11 +1,17 @@
-from runcible.providers.provider import ProviderBase
+from runcible.providers.provider_array import ProviderArrayBase
 from runcible.modules.vlans import Vlans
 from runcible.modules.vlan import Vlan
 from runcible.providers.cumulus.utils import extrapolate_list
 
 
-class CumulusVlansProvider(ProviderBase):
+class CumulusVlansProvider(ProviderArrayBase):
     provides_for = Vlans
+
+    def _create_module(self, vlan):
+        return self.device.send_command(f"net add bridge bridge vids {vlan}")
+
+    def _remove_module(self, vlan):
+        return self.device.send_command(f"net del bridge bridge vids {vlan}")
 
     def get_cstate(self):
         vlan_modules = []
@@ -19,3 +25,4 @@ class CumulusVlansProvider(ProviderBase):
         vlans_module = Vlans({})
         vlans_module.vlans = vlan_modules
         return vlans_module
+

@@ -1,12 +1,20 @@
-from runcible.providers.provider import ProviderBase
+from runcible.providers.provider_array import ProviderArrayBase
 from runcible.providers.cumulus.interface import CumulusInterfaceProvider
+from runcible.core.need import NeedOperation as Op
 from runcible.modules.interfaces import Interfaces
 from runcible.providers.cumulus.utils import pre_parse_commands
 import copy
 
 
-class CumulusInterfacesProvider(ProviderBase):
+class CumulusInterfacesProvider(ProviderArrayBase):
     provides_for = Interfaces
+    sub_module_provider = CumulusInterfaceProvider
+
+    def _create_module(self, interface):
+        return self.device.send_command(f"net add interface {interface}")
+
+    def _remove_module(self, interface):
+        return self.device.send_command(f"net del interface {interface}")
 
     def get_cstate(self):
         commands = self.device.retrieve('parsed_commands')
@@ -31,8 +39,3 @@ class CumulusInterfacesProvider(ProviderBase):
         interfaces_inst = Interfaces({})
         interfaces_inst.interfaces = interface_instances
         return interfaces_inst
-
-    def fix_needs(self):
-        needed_actions = copy.deepcopy(self.needed_actions)
-        for need in needed_actions:
-            CumulusInterfaceProvider.fix_need(self, need)

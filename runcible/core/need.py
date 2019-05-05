@@ -33,7 +33,16 @@ class NeedOperation(Enum):
     ADD = 5
     """
     List: adds a new value (or values) to the listfrom runcible.core.need import NeedOperation as Op
+    """
 
+    CREATE = 6
+    """
+    Module: Creates a sub-module within a module array
+    """
+
+    REMOVE = 7
+    """
+    Module: Deletes a sub-module within a module array
     """
 
 

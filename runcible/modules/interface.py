@@ -5,7 +5,8 @@ from runcible.core.need import NeedOperation as Op
 
 class InterfaceResources(object):
     PVID = 'pvid'
-    STP_BPDUGUARD = 'stp_bpduguard'
+    BPDUGUARD = 'bpduguard'
+    PORTFAST = 'portfast'
 
 
 class Interface(Module):
@@ -19,10 +20,14 @@ class Interface(Module):
             'type': int,
             'allowed_operations': [Op.SET, Op.DELETE]
         },
-        InterfaceResources.STP_BPDUGUARD: {
+        InterfaceResources.BPDUGUARD: {
             'type': bool,
             'allowed_operations': [Op.SET],
             # 'default': False
+        },
+        InterfaceResources.PORTFAST: {
+            'type': bool,
+            'allowed_operations': [Op.SET]
         }
     }
 
@@ -52,22 +57,46 @@ class Interface(Module):
                     sub_resource=InterfaceResources.PVID,
                     value=self.pvid
                 ))
-        if getattr(self, InterfaceResources.STP_BPDUGUARD, None) is not None:
-            if getattr(self, InterfaceResources.STP_BPDUGUARD, None) is False and \
-                    getattr(other, InterfaceResources.STP_BPDUGUARD, None) is True:
+        if getattr(self, InterfaceResources.BPDUGUARD, None) is not None:
+            if getattr(self, InterfaceResources.BPDUGUARD, None) is False and \
+                    getattr(other, InterfaceResources.BPDUGUARD, None) is True:
                 needs_list.append(Need(
                     self.name,
                     Op.SET,
-                    sub_resource=InterfaceResources.STP_BPDUGUARD,
+                    sub_resource=InterfaceResources.BPDUGUARD,
                     value=False
                 ))
-            elif getattr(self, InterfaceResources.STP_BPDUGUARD, None) is True:
-                if getattr(other, InterfaceResources.STP_BPDUGUARD, None) is False or \
-                        getattr(other, InterfaceResources.STP_BPDUGUARD, None) is None:
+            elif getattr(self, InterfaceResources.BPDUGUARD, None) is True:
+                if getattr(other, InterfaceResources.BPDUGUARD, None) is False or \
+                        getattr(other, InterfaceResources.BPDUGUARD, None) is None:
                     needs_list.append(Need(
                         self.name,
                         Op.SET,
-                        sub_resource=InterfaceResources.STP_BPDUGUARD,
+                        sub_resource=InterfaceResources.BPDUGUARD,
+                        value=True
+                    ))
+        needs_list.extend(self.get_bool_needs(other, InterfaceResources.PORTFAST))
+        return needs_list
+
+    def get_bool_needs(self, other, attribute):
+        # TODO: This could probably be put the parent class, as handling of boolean needs is pretty universal
+        needs_list = []
+        if getattr(self, attribute, None) is not None:
+            if getattr(self, attribute, None) is False and \
+                    getattr(other, attribute, None) is True:
+                needs_list.append(Need(
+                    self.name,
+                    Op.SET,
+                    sub_resource=attribute,
+                    value=False
+                ))
+            elif getattr(self, attribute, None) is True:
+                if getattr(other, attribute, None) is False or \
+                        getattr(other, attribute, None) is None:
+                    needs_list.append(Need(
+                        self.name,
+                        Op.SET,
+                        sub_resource=attribute,
                         value=True
                     ))
         return needs_list
