@@ -41,7 +41,9 @@ class Device(object):
         self.load_cstate()
         self.determine_needs()
         self.needs_as_callbacks()
-        self.callbacks.run_callbacks()
+        callbacks = self.callbacks.run_callbacks()
+        self.callbacks.clear_callbacks()
+        return callbacks
 
     def execute(self):
         if self.needs_changes:
@@ -53,9 +55,11 @@ class Device(object):
                       cb_type=CBType.SUCCESS,
                       indent=True,
                       decoration=True)
-        self.callbacks.run_callbacks()
         self.check_complete()
         self.clear_actions()
+        callbacks = self.callbacks.run_callbacks()
+        self.callbacks.clear_callbacks()
+        return callbacks
 
     def check_complete(self):
         """
