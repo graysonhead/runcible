@@ -34,4 +34,4 @@ Yourself) principles.
 I Want to Get Involved
 ----------------------
 
-Great! Head over to the :ref:`contribution-guide`.
+Great! Head over to the :ref:`contribution-guide` or give it a spin: :ref:`getting-started`.

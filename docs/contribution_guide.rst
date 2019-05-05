@@ -10,6 +10,8 @@ Runcible is very early in it's devleopment; however our goal is to provide a ful
 a time, which means it might be useful for certian tasks long before development is complete. It's also a great time to
 get involved, as your input will shape the direction and structure of the project.
 
+During the early stages of development, the most up to date information should be found in the :ref:`getting-started`
+guide.
 
 Roadmap
 -------
