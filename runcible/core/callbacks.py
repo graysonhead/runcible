@@ -67,6 +67,8 @@ class Callbacks(object):
                 TermCallback.fatal(callback.message, indent=callback.indent)
             elif callback.type == CBType.CHANGED:
                 TermCallback.changed(callback.message, indent=callback.indent)
+            elif callback.type == CBType.WARNING:
+                TermCallback.warning(callback.message, indent=callback.indent)
         self.clear_callbacks()
 
     def clear_callbacks(self):

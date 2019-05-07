@@ -1,11 +1,13 @@
 from runcible.providers.provider_array import ProviderArrayBase
 from runcible.modules.vlans import Vlans
 from runcible.modules.vlan import Vlan
+from runcible.providers.cumulus.vlan import CumulusVlanProvider
 from runcible.providers.cumulus.utils import extrapolate_list
 
 
 class CumulusVlansProvider(ProviderArrayBase):
     provides_for = Vlans
+    sub_module_provider = CumulusVlanProvider
 
     def _create_module(self, vlan):
         return self.device.send_command(f"net add bridge bridge vids {vlan}")

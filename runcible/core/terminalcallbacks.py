@@ -40,4 +40,11 @@ class TermCallback(object):
         indent = ""
         if indent:
             indent = "   "
-        print(f"{indent}{Fore.YELLOW}{msg}{Style.RESET_ALL}")
+        print(f"{indent}{Fore.CYAN}{msg}{Style.RESET_ALL}")
+
+    @staticmethod
+    def warning(msg, indent=False):
+        indent = ""
+        if indent:
+            indent = "   "
+        print(f"{indent}{Fore.LIGHTRED_EX}{msg}{Style.RESET_ALL}")

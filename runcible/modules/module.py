@@ -1,4 +1,5 @@
 from runcible.core.errors import RuncibleValidationError, RuncibleNotImplementedError
+from runcible.core.need import Need, NeedOperation as Op
 
 
 class Module(object):
@@ -21,7 +22,7 @@ class Module(object):
     def determine_needs(self, other):
         """
         Iterate through the attributes of two instances, and determine what actions are needed to make the other match
-        self
+        self. Override this in your custom module if you need custom logic.
 
         :param other:
             The other instance to compare this class against.
@@ -29,8 +30,39 @@ class Module(object):
         :return:
             None, this method adds needed action to self.needs
         """
-        raise RuncibleNotImplementedError(f"Module \"{self.module_name}\" does not provide a \"determine_needs\" method")
-
+        #TODO: Clean this up, determine if a need is for a resource or sub-resource
+        needs_list = []
+        for attribute, options in self.configuration_attributes.items():
+            # Boolean Logic
+            if options['type'] is bool:
+                if getattr(self, attribute, None) is not None:
+                    if getattr(self, attribute, None) is False and \
+                            getattr(other, attribute, None) is True:
+                        needs_list.append(Need(
+                            self.name,
+                            Op.SET,
+                            sub_resource=attribute,
+                            value=False
+                        ))
+                    elif getattr(self, attribute, None) is True:
+                        if getattr(other, attribute, None) is False or \
+                                getattr(other, attribute, None) is None:
+                            needs_list.append(Need(
+                                self.name,
+                                Op.SET,
+                                sub_resource=attribute,
+                                value=True
+                            ))
+            if options['type'] is str or options['type'] is int:
+                if getattr(self, attribute, None) is not None:
+                    if getattr(self, attribute) != getattr(other, attribute, None):
+                        needs_list.append(Need(
+                            self.name,
+                            Op.SET,
+                            sub_resource=attribute,
+                            value=getattr(self, attribute)
+                        ))
+        return needs_list
     # Inherited modules below
 
     def validate(self, dictionary: dict):

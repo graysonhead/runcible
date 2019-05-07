@@ -20,9 +20,5 @@ class Vlan(Module):
         }
     }
 
-    def determine_needs(self, other):
-        needs_list = []
-        return needs_list
-
     def __repr__(self):
         return f"<Runcible Module: vlan {self.id}>"

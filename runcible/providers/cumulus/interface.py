@@ -4,7 +4,10 @@ from runcible.core.need import NeedOperation as Op
 
 
 class CumulusInterfaceProvider:
-
+    supported_resources = [
+        'pvid',
+        'portadminedge'
+    ]
     @staticmethod
     def get_cstate(name, interface_commands):
         """

@@ -7,6 +7,7 @@ class CBType(Enum):
     FATAL = 3
     SUCCESS = 4
     CHANGED = 5
+    WARNING = 6
 
 
 class Callback(object):

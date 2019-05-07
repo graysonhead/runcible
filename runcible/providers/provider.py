@@ -1,8 +1,10 @@
 from runcible.core.errors import RuncibleValidationError, RuncibleNotImplementedError
+from runcible.core.callback import CBType
 
 
 class ProviderBase(object):
-    provides_for=None
+    provides_for = None
+    supported_resources = []
 
     def __init__(self, device_instance, dstate):
         """
@@ -21,6 +23,9 @@ class ProviderBase(object):
         self.failed_actions = []
         self.load_module_dstate(dstate)
 
+    def get_supported_resources(self):
+        return self.supported_resources
+
     def load_module_dstate(self, dstate):
         self.dstate = self.provides_for(dstate)
 
@@ -30,6 +35,21 @@ class ProviderBase(object):
     def determine_needs(self):
         needs = self.dstate.determine_needs(self.cstate)
         self.needed_actions = needs
+        # Ensure that the provider supports all of the needs, and raise a warning if not
+        self.check_needs_compatibility()
+
+    def check_needs_compatibility(self):
+        """
+        Ensure that all the needs present are supported by the provider, and raise a warning if not.
+        :return:
+        """
+        supported_resources = self.get_supported_resources()
+        for need in self.needed_actions:
+            if need.resource not in supported_resources:
+                self.device.echo(f"WARNING: need {need.get_formatted_string()} is not supported by module {str(self)}",
+                                 cb_type=CBType.WARNING,
+                                 indent=True)
+                self.remove_need(need)
 
     def get_cstate(self):
         """
@@ -41,3 +61,6 @@ class ProviderBase(object):
     def complete(self, need):
         self.needed_actions.remove(need)
         self.completed_actions.append(need)
+
+    def remove_need(self, need):
+        self.needed_actions.remove(need)
