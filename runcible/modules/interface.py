@@ -4,15 +4,19 @@ from runcible.core.need import NeedOperation as Op
 
 
 class InterfaceResources(object):
+    NAME = 'name'
     PVID = 'pvid'
     BPDUGUARD = 'bpduguard'
     PORTFAST = 'portfast'
 
 
 class Interface(Module):
+    parent_module = 'interfaces'
     module_name = 'interface'
+    identifier_attribute = InterfaceResources.NAME
+
     configuration_attributes = {
-        "name": {
+        InterfaceResources.NAME: {
             'type': str,
             'allowed_operations': []
         },
@@ -47,14 +51,16 @@ class Interface(Module):
                 if getattr(other, 'pvid', None) is not None:
                     needs_list.append(Need(
                         self.name,
+                        InterfaceResources.PVID,
                         Op.DELETE,
-                        sub_resource=InterfaceResources.PVID
+                        parent_module=self.parent_module
                     ))
             elif self.pvid != getattr(other, 'pvid', None):
                 needs_list.append(Need(
                     self.name,
+                    InterfaceResources.PVID,
                     Op.SET,
-                    sub_resource=InterfaceResources.PVID,
+                    parent_module=self.parent_module,
                     value=self.pvid
                 ))
         if getattr(self, InterfaceResources.BPDUGUARD, None) is not None:
@@ -62,8 +68,9 @@ class Interface(Module):
                     getattr(other, InterfaceResources.BPDUGUARD, None) is True:
                 needs_list.append(Need(
                     self.name,
+                    InterfaceResources.BPDUGUARD,
                     Op.SET,
-                    sub_resource=InterfaceResources.BPDUGUARD,
+                    parent_module=self.parent_module,
                     value=False
                 ))
             elif getattr(self, InterfaceResources.BPDUGUARD, None) is True:
@@ -71,8 +78,9 @@ class Interface(Module):
                         getattr(other, InterfaceResources.BPDUGUARD, None) is None:
                     needs_list.append(Need(
                         self.name,
+                        InterfaceResources.BPDUGUARD,
                         Op.SET,
-                        sub_resource=InterfaceResources.BPDUGUARD,
+                        parent_module=self.parent_module,
                         value=True
                     ))
         needs_list.extend(self.get_bool_needs(other, InterfaceResources.PORTFAST))
@@ -86,8 +94,9 @@ class Interface(Module):
                     getattr(other, attribute, None) is True:
                 needs_list.append(Need(
                     self.name,
+                    attribute,
                     Op.SET,
-                    sub_resource=attribute,
+                    parent_module=self.parent_module,
                     value=False
                 ))
             elif getattr(self, attribute, None) is True:
@@ -95,8 +104,9 @@ class Interface(Module):
                         getattr(other, attribute, None) is None:
                     needs_list.append(Need(
                         self.name,
+                        attribute,
                         Op.SET,
-                        sub_resource=attribute,
+                        parent_module=self.parent_module,
                         value=True
                     ))
         return needs_list

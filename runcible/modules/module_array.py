@@ -48,11 +48,11 @@ class ModuleArray(object):
                 # If the item can't be matched to something in the list, compare the dstate to an empty state
                 # so all of the needs can be generated on the first execution
                 other_item = self.sub_module({})
-                needs_list.append(Need(
-                    'module',
-                    Op.CREATE,
-                    value=getattr(item, self.sort_key)
-                ))
+                # needs_list.append(Need(
+                #     self.module_name,
+                #     getattr(item, self.sort_key),
+                #     Op.CREATE
+                # ))
             needs_list.extend(item.determine_needs(other_item))
         return needs_list
 

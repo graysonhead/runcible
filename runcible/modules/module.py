@@ -5,6 +5,12 @@ from runcible.core.need import Need, NeedOperation as Op
 class Module(object):
     module_name = ''
     configuration_attributes = {}
+    parent_module = None
+    identifier_attribute = None
+
+    def _get_instance_name(self):
+        if self.identifier_attribute:
+            return getattr(self, self.identifier_attribute, None)
 
     def __init__(self, config_dictionary: dict):
         """
@@ -30,7 +36,7 @@ class Module(object):
         :return:
             None, this method adds needed action to self.needs
         """
-        #TODO: Clean this up, determine if a need is for a resource or sub-resource
+        #TODO: Clean this up, determine if a need is for a attribute or sub-attribute
         needs_list = []
         for attribute, options in self.configuration_attributes.items():
             # Boolean Logic
@@ -39,27 +45,30 @@ class Module(object):
                     if getattr(self, attribute, None) is False and \
                             getattr(other, attribute, None) is True:
                         needs_list.append(Need(
-                            self.name,
+                            self._get_instance_name(),
+                            attribute,
                             Op.SET,
-                            sub_resource=attribute,
+                            parent_module=self.parent_module,
                             value=False
                         ))
                     elif getattr(self, attribute, None) is True:
                         if getattr(other, attribute, None) is False or \
                                 getattr(other, attribute, None) is None:
                             needs_list.append(Need(
-                                self.name,
+                                self._get_instance_name(),
+                                attribute,
                                 Op.SET,
-                                sub_resource=attribute,
+                                parent_module=self.parent_module,
                                 value=True
                             ))
             if options['type'] is str or options['type'] is int:
                 if getattr(self, attribute, None) is not None:
                     if getattr(self, attribute) != getattr(other, attribute, None):
                         needs_list.append(Need(
-                            self.name,
+                            self._get_instance_name(),
+                            attribute,
                             Op.SET,
-                            sub_resource=attribute,
+                            parent_module=self.parent_module,
                             value=getattr(self, attribute)
                         ))
         return needs_list

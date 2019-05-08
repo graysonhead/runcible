@@ -50,7 +50,7 @@ class RuncibleActionFailure(RuncibleError):
         self.tasks = tasks
 
     def __str__(self):
-        return f"Provider {self.provider} has needed actions {self.tasks} after execution completed." \
+        return f"Provider {self.provider} has uncorrected needs {self.tasks} after execution completed." \
             f"This is likely a bug in the provider."
 
 

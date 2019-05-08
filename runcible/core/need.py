@@ -27,7 +27,7 @@ class NeedOperation(Enum):
 
     GET = 4
     """
-    Only used by ad-hoc commands, returns the value of the resource
+    Only used by ad-hoc commands, returns the value of the attribute
     """
 
     ADD = 5
@@ -48,61 +48,70 @@ class NeedOperation(Enum):
 
 class Need(object):
 
-    def __init__(self, resource, operation, value=None, sub_resource=None):
+    def __init__(self, module, attribute, operation, value=None, parent_module=None):
         """
         Needs are generated when the desired state is compared to the current state. Ideally, if a provider performs
         all of the needs required by a module, the dstate and cstate will be equivalent on the next run. Needs are
-        somewhat arbitrary, and the resource and sub_resource will usually be a string. value will be either a list,
+        somewhat arbitrary, and the attribute and sub_resource will usually be a string. value will be either a list,
         string, integer, or nothing.
 
-        :param resource:
-            The attribute of the module that needs modification
+        :param module:
+            The module from which the need originates.
+
+        :param attribute:
+            The attribute the need modifies, creates, or deletes.
 
         :param operation:
-            How the attribute needs to be modified (see the enumeration class above)
+            The operation to perform on the attribute.
 
         :param value:
-            In the case of Add, Set, and Delete, the value to be added set or deleted
+            If the operation requires a value, the value of the operation.
 
-        :param sub_resource:
-            Generally, multiple layers of attributes are discouraged (plugin writers should nest modules inside of
-            other modules if depth is truly required), but in the rare cases this is necessary it allows the module
-            to differentiate between multiple sub_resources
+        :param sub_module:
+            When operating from a sub_module such as a ModuleArray, the sub_module attribute identifies which
+            sub_module the need is associated with.
         """
-        self.resource = resource
+        self.attribute = attribute
         if not isinstance(operation, NeedOperation):
             raise TypeError("Operation parameter for Need object must be an instance of NeedOperation")
         self.operation = operation
         self.value = value
-        self.sub_resource = sub_resource
+        self.module = module
+        self.parent_module = parent_module
 
     def get_formatted_string(self):
         """
         :return:
             A string suitable to display to the user, detailed enough for them to grasp the intent of the need.
         """
-        # If sub resource or value aren't set, insert an emptystring in their place
-        sub_resource = ''
+        # If sub attribute or value aren't set, insert an emptystring in their place
+        # sub_resource = ''
+        # value = ''
+        # if self.module:
+        #     sub_resource = f"{self.module}."
+        # if self.value or self.value is False:
+        #     value = f": {self.value.__str__()}"
+        # return f"{self.attribute}.{sub_resource}{self.operation.name}{value}"
+        module = ''
+        sub_module = ''
+        parent_module = ''
         value = ''
-        if self.sub_resource:
-            sub_resource = f"{self.sub_resource}."
+        if self.module:
+            module = f"{self.module}."
+        if self.parent_module:
+            parent_module = f"{self.parent_module}."
         if self.value or self.value is False:
             value = f": {self.value.__str__()}"
-        return f"{self.resource}.{sub_resource}{self.operation.name}{value}"
+        return f"{parent_module}{module}{self.attribute}.{self.operation.name}{value}"
 
     def __eq__(self, other):
         comparison_list = []
-        comparison_list.append(self.resource == other.resource)
+        comparison_list.append(self.attribute == other.attribute)
         comparison_list.append(self.operation == other.operation)
         comparison_list.append(self.value == other.value)
-        comparison_list.append(self.sub_resource == other.sub_resource)
+        comparison_list.append(self.module == other.module)
+        comparison_list.append(self.parent_module == other.parent_module)
         return all(comparison_list)
 
     def __repr__(self):
-        sub_resource = ''
-        value = ''
-        if self.sub_resource:
-            sub_resource = f"{self.sub_resource}."
-        if self.value or self.value is False:
-            value = f": '{self.value.__str__()}' "
-        return f"<Needs: {self.resource}.{sub_resource}{self.operation.name}{value}>"
+        return f"<Needs: {self.get_formatted_string()}>"

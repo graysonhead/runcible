@@ -4,7 +4,7 @@ from runcible.core.callback import CBType
 
 class ProviderBase(object):
     provides_for = None
-    supported_resources = []
+    supported_attributes = []
 
     def __init__(self, device_instance, dstate):
         """
@@ -23,8 +23,8 @@ class ProviderBase(object):
         self.failed_actions = []
         self.load_module_dstate(dstate)
 
-    def get_supported_resources(self):
-        return self.supported_resources
+    def get_supported_attributes(self):
+        return self.supported_attributes
 
     def load_module_dstate(self, dstate):
         self.dstate = self.provides_for(dstate)
@@ -43,9 +43,9 @@ class ProviderBase(object):
         Ensure that all the needs present are supported by the provider, and raise a warning if not.
         :return:
         """
-        supported_resources = self.get_supported_resources()
+        supported_attributes = self.get_supported_attributes()
         for need in self.needed_actions:
-            if need.resource not in supported_resources:
+            if need.attribute not in supported_attributes:
                 self.device.echo(f"WARNING: need {need.get_formatted_string()} is not supported by module {str(self)}",
                                  cb_type=CBType.WARNING,
                                  indent=True)

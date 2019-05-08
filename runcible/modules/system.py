@@ -30,6 +30,7 @@ class System(Module):
         needs_list = []
         if self.hostname != other.hostname:
             needs_list.append(Need(
+                self.module_name,
                 SystemResources.HOSTNAME,
                 Op.SET,
                 value=self.hostname

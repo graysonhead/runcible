@@ -4,9 +4,10 @@ from runcible.core.need import NeedOperation as Op
 
 
 class CumulusInterfaceProvider:
-    supported_resources = [
+    supported_attributes = [
         'pvid',
-        'portadminedge'
+        'portadminedge',
+        'bpduguard'
     ]
     @staticmethod
     def get_cstate(name, interface_commands):
@@ -55,16 +56,16 @@ class CumulusInterfaceProvider:
 
     @staticmethod
     def fix_need(provider, need):
-        if need.sub_resource is InterfaceResources.PVID:
+        if need.attribute is InterfaceResources.PVID:
             if need.operation is Op.SET:
-                CumulusInterfaceProvider._set_pvid(provider, need.resource, need.value)
+                CumulusInterfaceProvider._set_pvid(provider, need.module, need.value)
                 provider.complete(need)
             elif need.operation is Op.DELETE:
-                CumulusInterfaceProvider._delete_pvid(provider, need.resource)
+                CumulusInterfaceProvider._delete_pvid(provider, need.module)
                 provider.complete(need)
-        if need.sub_resource is InterfaceResources.BPDUGUARD:
-            CumulusInterfaceProvider._set_bpduguard(provider, need.resource, need.value)
+        if need.attribute is InterfaceResources.BPDUGUARD:
+            CumulusInterfaceProvider._set_bpduguard(provider, need.module, need.value)
             provider.complete(need)
-        if need.sub_resource is InterfaceResources.PORTFAST:
-            CumulusInterfaceProvider._set_portfast(provider, need.resource, need.value)
+        if need.attribute is InterfaceResources.PORTFAST:
+            CumulusInterfaceProvider._set_portfast(provider, need.module, need.value)
             provider.complete(need)

@@ -5,6 +5,9 @@ from runcible.core.need import NeedOperation as Op
 
 class CumulusSystemProvider(ProviderBase):
     provides_for = System
+    supported_attributes = [
+        'hostname'
+    ]
 
     def get_cstate(self):
         hostname = self._get_hostname()
@@ -18,7 +21,7 @@ class CumulusSystemProvider(ProviderBase):
 
     def fix_needs(self):
         for need in self.needed_actions:
-            if need.resource is SystemResources.HOSTNAME:
+            if need.attribute is SystemResources.HOSTNAME:
                 if need.operation is Op.SET:
                     self._set_hostname(need.value)
                     self.complete(need)
