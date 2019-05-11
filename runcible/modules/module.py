@@ -40,37 +40,38 @@ class Module(object):
         needs_list = []
         for attribute, options in self.configuration_attributes.items():
             # Boolean Logic
-            if options['type'] is bool:
-                if getattr(self, attribute, None) is not None:
-                    if getattr(self, attribute, None) is False and \
-                            getattr(other, attribute, None) is True:
-                        needs_list.append(Need(
-                            self._get_instance_name(),
-                            attribute,
-                            Op.SET,
-                            parent_module=self.parent_module,
-                            value=False
-                        ))
-                    elif getattr(self, attribute, None) is True:
-                        if getattr(other, attribute, None) is False or \
-                                getattr(other, attribute, None) is None:
+            if attribute != self.identifier_attribute:
+                if options['type'] is bool:
+                    if getattr(self, attribute, None) is not None:
+                        if getattr(self, attribute, None) is False and \
+                                getattr(other, attribute, None) is True:
                             needs_list.append(Need(
                                 self._get_instance_name(),
                                 attribute,
                                 Op.SET,
                                 parent_module=self.parent_module,
-                                value=True
+                                value=False
                             ))
-            if options['type'] is str or options['type'] is int:
-                if getattr(self, attribute, None) is not None:
-                    if getattr(self, attribute) != getattr(other, attribute, None):
-                        needs_list.append(Need(
-                            self._get_instance_name(),
-                            attribute,
-                            Op.SET,
-                            parent_module=self.parent_module,
-                            value=getattr(self, attribute)
-                        ))
+                        elif getattr(self, attribute, None) is True:
+                            if getattr(other, attribute, None) is False or \
+                                    getattr(other, attribute, None) is None:
+                                needs_list.append(Need(
+                                    self._get_instance_name(),
+                                    attribute,
+                                    Op.SET,
+                                    parent_module=self.parent_module,
+                                    value=True
+                                ))
+                if options['type'] is str or options['type'] is int:
+                    if getattr(self, attribute, None) is not None:
+                        if getattr(self, attribute) != getattr(other, attribute, None):
+                            needs_list.append(Need(
+                                self._get_instance_name(),
+                                attribute,
+                                Op.SET,
+                                parent_module=self.parent_module,
+                                value=getattr(self, attribute)
+                            ))
         return needs_list
     # Inherited modules below
 

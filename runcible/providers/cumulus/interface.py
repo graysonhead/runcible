@@ -5,9 +5,9 @@ from runcible.core.need import NeedOperation as Op
 
 class CumulusInterfaceProvider:
     supported_attributes = [
-        'pvid',
-        'portadminedge',
-        'bpduguard'
+        InterfaceResources.BPDUGUARD,
+        InterfaceResources.PORTFAST,
+        InterfaceResources.PVID
     ]
     @staticmethod
     def get_cstate(name, interface_commands):

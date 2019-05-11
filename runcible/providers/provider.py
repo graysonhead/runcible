@@ -46,7 +46,7 @@ class ProviderBase(object):
         supported_attributes = self.get_supported_attributes()
         for need in self.needed_actions:
             if need.attribute not in supported_attributes:
-                self.device.echo(f"WARNING: need {need.get_formatted_string()} is not supported by module {str(self)}",
+                self.device.echo(f"WARNING: need {need.get_formatted_string()} is not supported by provider {str(self)}",
                                  cb_type=CBType.WARNING,
                                  indent=True)
                 self.remove_need(need)
