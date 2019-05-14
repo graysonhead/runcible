@@ -7,7 +7,8 @@ class CumulusInterfaceProvider:
     supported_attributes = [
         InterfaceResources.BPDUGUARD,
         InterfaceResources.PORTFAST,
-        InterfaceResources.PVID
+        InterfaceResources.PVID,
+        InterfaceResources.VLANS
     ]
     @staticmethod
     def get_cstate(name, interface_commands):

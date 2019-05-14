@@ -1,6 +1,6 @@
 from runcible.core.errors import RuncibleValidationError, RuncibleNotImplementedError
 from runcible.core.need import Need, NeedOperation as Op
-from runcible.core.utilities import smart_append
+from runcible.core.utilities import smart_append, compare_lists
 
 
 class Module(object):
@@ -46,6 +46,32 @@ class Module(object):
                     smart_append(needs_list, self._determine_needs_bool(attribute, other), Need)
                 if options['type'] is str or options['type'] is int:
                     smart_append(needs_list, self._determine_needs_string_or_int(attribute, other), Need)
+                if options['type'] is list:
+                    needs_list.extend(self._determine_needs_list(attribute, other))
+        return needs_list
+
+    def _determine_needs_list(self, attribute, other):
+        needs_list = []
+        if getattr(self, attribute, None) is not None:
+            self_list = getattr(self, attribute)
+            other_list = getattr(other, attribute, [])
+            missing_items = compare_lists(self_list, other_list)
+            for add_item in missing_items['missing_right']:
+                needs_list.append(Need(
+                    self._get_instance_name(),
+                    attribute,
+                    Op.ADD,
+                    parent_module=self.parent_module,
+                    value=add_item
+                ))
+            for del_item in missing_items['missing_left']:
+                needs_list.append(Need(
+                    self._get_instance_name(),
+                    attribute,
+                    Op.DELETE,
+                    parent_module=self.parent_module,
+                    value=del_item
+                ))
         return needs_list
 
     def _determine_needs_string_or_int(self, attribute, other):

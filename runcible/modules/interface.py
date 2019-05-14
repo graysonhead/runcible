@@ -6,8 +6,10 @@ from runcible.core.need import NeedOperation as Op
 class InterfaceResources(object):
     NAME = 'name'
     PVID = 'pvid'
+    VLANS = 'vlans'
     BPDUGUARD = 'bpduguard'
     PORTFAST = 'portfast'
+
 
 
 class Interface(Module):
@@ -32,6 +34,11 @@ class Interface(Module):
         InterfaceResources.PORTFAST: {
             'type': bool,
             'allowed_operations': [Op.SET]
+        },
+        InterfaceResources.VLANS: {
+            'type': list,
+            'sub_type': int,
+            'allowed_operations': [Op.SET, Op.ADD, Op.DELETE, Op.CLEAR]
         }
     }
     #
