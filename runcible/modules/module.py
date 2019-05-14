@@ -1,9 +1,16 @@
 from runcible.core.errors import RuncibleValidationError, RuncibleNotImplementedError
+from runcible.core.need import Need, NeedOperation as Op
 
 
 class Module(object):
     module_name = ''
     configuration_attributes = {}
+    parent_module = None
+    identifier_attribute = None
+
+    def _get_instance_name(self):
+        if self.identifier_attribute:
+            return getattr(self, self.identifier_attribute, None)
 
     def __init__(self, config_dictionary: dict):
         """
@@ -21,7 +28,7 @@ class Module(object):
     def determine_needs(self, other):
         """
         Iterate through the attributes of two instances, and determine what actions are needed to make the other match
-        self
+        self. Override this in your custom module if you need custom logic.
 
         :param other:
             The other instance to compare this class against.
@@ -29,9 +36,52 @@ class Module(object):
         :return:
             None, this method adds needed action to self.needs
         """
-        raise RuncibleNotImplementedError(f"Module \"{self.module_name}\" does not provide a \"determine_needs\" method")
-
+        #TODO: Clean this up, determine if a need is for a attribute or sub-attribute
+        needs_list = []
+        for attribute, options in self.configuration_attributes.items():
+            # Boolean Logic
+            if attribute != self.identifier_attribute:
+                if options['type'] is bool:
+                    needs_list.append(self._determine_needs_bool(attribute, other))
+                if options['type'] is str or options['type'] is int:
+                    needs_list.append(self._determine_needs_string_or_int(attribute, other))
+        return needs_list
     # Inherited modules below
+
+    def _determine_needs_string_or_int(self, attribute, other):
+        if getattr(self, attribute, None) is not None:
+            if getattr(self, attribute) != getattr(other, attribute, None):
+                return Need(
+                    self._get_instance_name(),
+                    attribute,
+                    Op.SET,
+                    parent_module=self.parent_module,
+                    value=getattr(self, attribute)
+                )
+
+    def _determine_needs_bool(self, attribute, other):
+        # If self is set to False or None and other is not False, SET to False
+        if getattr(self, attribute, None) is not None:
+            if getattr(self, attribute, None) is False and \
+                    getattr(other, attribute, None) is True:
+                return Need(
+                    self._get_instance_name(),
+                    attribute,
+                    Op.SET,
+                    parent_module=self.parent_module,
+                    value=False
+                )
+            # If self is set to true and other is False or None, SET it to True
+            elif getattr(self, attribute, None) is True:
+                if getattr(other, attribute, None) is False or \
+                        getattr(other, attribute, None) is None:
+                    return Need(
+                        self._get_instance_name(),
+                        attribute,
+                        Op.SET,
+                        parent_module=self.parent_module,
+                        value=True
+                    )
 
     def validate(self, dictionary: dict):
         """
