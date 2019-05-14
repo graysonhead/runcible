@@ -1,6 +1,7 @@
 from runcible.modules.interface import Interface, InterfaceResources
 from runcible.providers.provider import ProviderBase
 from runcible.core.need import NeedOperation as Op
+from runcible.providers.cumulus.utils import extrapolate_list
 
 
 class CumulusInterfaceProvider:
@@ -22,14 +23,24 @@ class CumulusInterfaceProvider:
             if command[0] == 'bridge':
                 if command[1] == 'pvid':
                     interface_config.update({'pvid': command[2]})
-            if command[0] == 'stp':
+                elif command[1] == 'vids':
+                    interface_config.update({'vlans': extrapolate_list(command[2].split(','), int_out=True)})
+            elif command[0] == 'stp':
                 if command[1] == 'bpduguard':
                     interface_config.update({InterfaceResources.BPDUGUARD: True})
-                if command[1] == 'portadminedge':
+                elif command[1] == 'portadminedge':
                     interface_config.update({InterfaceResources.PORTFAST: True})
 
         interface_config.update({'name': name})
         return Interface(interface_config)
+
+    @staticmethod
+    def _add_vids(provider, interface: str, vids):
+        return provider.device.send_command(f"net add interface {interface} bridge vids {vids}")
+
+    @staticmethod
+    def _del_vids(provider, interface: str, vids):
+        return provider.device.send_command(f"net del interface {interface} bridge vids {vids}")
 
     @staticmethod
     def _set_pvid(provider, interface: str, pvid: int):
@@ -64,9 +75,16 @@ class CumulusInterfaceProvider:
             elif need.operation is Op.DELETE:
                 CumulusInterfaceProvider._delete_pvid(provider, need.module)
                 provider.complete(need)
-        if need.attribute is InterfaceResources.BPDUGUARD:
+        elif need.attribute is InterfaceResources.BPDUGUARD:
             CumulusInterfaceProvider._set_bpduguard(provider, need.module, need.value)
             provider.complete(need)
-        if need.attribute is InterfaceResources.PORTFAST:
+        elif need.attribute is InterfaceResources.PORTFAST:
             CumulusInterfaceProvider._set_portfast(provider, need.module, need.value)
             provider.complete(need)
+        elif need.attribute is InterfaceResources.VLANS:
+            if need.operation is Op.ADD:
+                CumulusInterfaceProvider._add_vids(provider, need.module, need.value)
+                provider.complete(need)
+            elif need.operation is Op.DELETE:
+                CumulusInterfaceProvider._del_vids(provider, need.module, need.value)
+                provider.complete(need)

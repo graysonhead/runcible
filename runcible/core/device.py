@@ -160,7 +160,7 @@ class Device(object):
             if provider.needed_actions:
                 self.echo(f"{provider.provides_for.module_name} needs:", decoration=True)
                 for need in provider.needed_actions:
-                    self.echo(f"{provider.provides_for.module_name}.{need.get_formatted_string()}",
+                    self.echo(f"{need.get_formatted_string()}",
                               cb_type=CBType.CHANGED,
                               indent=True)
             else:
