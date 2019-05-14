@@ -1,5 +1,6 @@
 from runcible.core.errors import RuncibleValidationError, RuncibleNotImplementedError
 from runcible.core.need import Need, NeedOperation as Op
+from runcible.core.utilities import smart_append
 
 
 class Module(object):
@@ -42,11 +43,10 @@ class Module(object):
             # Boolean Logic
             if attribute != self.identifier_attribute:
                 if options['type'] is bool:
-                    needs_list.append(self._determine_needs_bool(attribute, other))
+                    smart_append(needs_list, self._determine_needs_bool(attribute, other), Need)
                 if options['type'] is str or options['type'] is int:
-                    needs_list.append(self._determine_needs_string_or_int(attribute, other))
+                    smart_append(needs_list, self._determine_needs_string_or_int(attribute, other), Need)
         return needs_list
-    # Inherited modules below
 
     def _determine_needs_string_or_int(self, attribute, other):
         if getattr(self, attribute, None) is not None:
@@ -57,6 +57,14 @@ class Module(object):
                     Op.SET,
                     parent_module=self.parent_module,
                     value=getattr(self, attribute)
+                )
+        elif getattr(self, attribute, None) is False:
+            if getattr(other, attribute, None) is not None:
+                return Need(
+                    self._get_instance_name(),
+                    attribute,
+                    Op.DELETE,
+                    parent_module=self.parent_module
                 )
 
     def _determine_needs_bool(self, attribute, other):

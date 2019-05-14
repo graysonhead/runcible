@@ -34,57 +34,57 @@ class Interface(Module):
             'allowed_operations': [Op.SET]
         }
     }
-
-    def determine_needs(self, other):
-        """
-        Iterate through attributes of two instances and determine needed actions
-
-        :param other:
-            Other instance of this class to compare.
-
-        :return:
-            A list of needs
-        """
-        needs_list = []
-        if getattr(self, 'pvid', None) is not None:
-            if self.pvid is False:
-                if getattr(other, 'pvid', None) is not None:
-                    needs_list.append(Need(
-                        self.name,
-                        InterfaceResources.PVID,
-                        Op.DELETE,
-                        parent_module=self.parent_module
-                    ))
-            elif self.pvid != getattr(other, 'pvid', None):
-                needs_list.append(Need(
-                    self.name,
-                    InterfaceResources.PVID,
-                    Op.SET,
-                    parent_module=self.parent_module,
-                    value=self.pvid
-                ))
-        if getattr(self, InterfaceResources.BPDUGUARD, None) is not None:
-            if getattr(self, InterfaceResources.BPDUGUARD, None) is False and \
-                    getattr(other, InterfaceResources.BPDUGUARD, None) is True:
-                needs_list.append(Need(
-                    self.name,
-                    InterfaceResources.BPDUGUARD,
-                    Op.SET,
-                    parent_module=self.parent_module,
-                    value=False
-                ))
-            elif getattr(self, InterfaceResources.BPDUGUARD, None) is True:
-                if getattr(other, InterfaceResources.BPDUGUARD, None) is False or \
-                        getattr(other, InterfaceResources.BPDUGUARD, None) is None:
-                    needs_list.append(Need(
-                        self.name,
-                        InterfaceResources.BPDUGUARD,
-                        Op.SET,
-                        parent_module=self.parent_module,
-                        value=True
-                    ))
-        needs_list.extend(self.get_bool_needs(other, InterfaceResources.PORTFAST))
-        return needs_list
+    #
+    # def determine_needs(self, other):
+    #     """
+    #     Iterate through attributes of two instances and determine needed actions
+    #
+    #     :param other:
+    #         Other instance of this class to compare.
+    #
+    #     :return:
+    #         A list of needs
+    #     """
+    #     needs_list = []
+    #     if getattr(self, 'pvid', None) is not None:
+    #         if self.pvid is False:
+    #             if getattr(other, 'pvid', None) is not None:
+    #                 needs_list.append(Need(
+    #                     self.name,
+    #                     InterfaceResources.PVID,
+    #                     Op.DELETE,
+    #                     parent_module=self.parent_module
+    #                 ))
+    #         elif self.pvid != getattr(other, 'pvid', None):
+    #             needs_list.append(Need(
+    #                 self.name,
+    #                 InterfaceResources.PVID,
+    #                 Op.SET,
+    #                 parent_module=self.parent_module,
+    #                 value=self.pvid
+    #             ))
+    #     if getattr(self, InterfaceResources.BPDUGUARD, None) is not None:
+    #         if getattr(self, InterfaceResources.BPDUGUARD, None) is False and \
+    #                 getattr(other, InterfaceResources.BPDUGUARD, None) is True:
+    #             needs_list.append(Need(
+    #                 self.name,
+    #                 InterfaceResources.BPDUGUARD,
+    #                 Op.SET,
+    #                 parent_module=self.parent_module,
+    #                 value=False
+    #             ))
+    #         elif getattr(self, InterfaceResources.BPDUGUARD, None) is True:
+    #             if getattr(other, InterfaceResources.BPDUGUARD, None) is False or \
+    #                     getattr(other, InterfaceResources.BPDUGUARD, None) is None:
+    #                 needs_list.append(Need(
+    #                     self.name,
+    #                     InterfaceResources.BPDUGUARD,
+    #                     Op.SET,
+    #                     parent_module=self.parent_module,
+    #                     value=True
+    #                 ))
+    #     needs_list.extend(self.get_bool_needs(other, InterfaceResources.PORTFAST))
+    #     return needs_list
 
     def get_bool_needs(self, other, attribute):
         # TODO: This could probably be put the parent class, as handling of boolean needs is pretty universal
