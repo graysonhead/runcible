@@ -42,38 +42,46 @@ class Module(object):
             # Boolean Logic
             if attribute != self.identifier_attribute:
                 if options['type'] is bool:
-                    if getattr(self, attribute, None) is not None:
-                        if getattr(self, attribute, None) is False and \
-                                getattr(other, attribute, None) is True:
-                            needs_list.append(Need(
-                                self._get_instance_name(),
-                                attribute,
-                                Op.SET,
-                                parent_module=self.parent_module,
-                                value=False
-                            ))
-                        elif getattr(self, attribute, None) is True:
-                            if getattr(other, attribute, None) is False or \
-                                    getattr(other, attribute, None) is None:
-                                needs_list.append(Need(
-                                    self._get_instance_name(),
-                                    attribute,
-                                    Op.SET,
-                                    parent_module=self.parent_module,
-                                    value=True
-                                ))
+                    needs_list.append(self._determine_needs_bool(attribute, other))
                 if options['type'] is str or options['type'] is int:
-                    if getattr(self, attribute, None) is not None:
-                        if getattr(self, attribute) != getattr(other, attribute, None):
-                            needs_list.append(Need(
-                                self._get_instance_name(),
-                                attribute,
-                                Op.SET,
-                                parent_module=self.parent_module,
-                                value=getattr(self, attribute)
-                            ))
+                    needs_list.append(self._determine_needs_string_or_int(attribute, other))
         return needs_list
     # Inherited modules below
+
+    def _determine_needs_string_or_int(self, attribute, other):
+        if getattr(self, attribute, None) is not None:
+            if getattr(self, attribute) != getattr(other, attribute, None):
+                return Need(
+                    self._get_instance_name(),
+                    attribute,
+                    Op.SET,
+                    parent_module=self.parent_module,
+                    value=getattr(self, attribute)
+                )
+
+    def _determine_needs_bool(self, attribute, other):
+        # If self is set to False or None and other is not False, SET to False
+        if getattr(self, attribute, None) is not None:
+            if getattr(self, attribute, None) is False and \
+                    getattr(other, attribute, None) is True:
+                return Need(
+                    self._get_instance_name(),
+                    attribute,
+                    Op.SET,
+                    parent_module=self.parent_module,
+                    value=False
+                )
+            # If self is set to true and other is False or None, SET it to True
+            elif getattr(self, attribute, None) is True:
+                if getattr(other, attribute, None) is False or \
+                        getattr(other, attribute, None) is None:
+                    return Need(
+                        self._get_instance_name(),
+                        attribute,
+                        Op.SET,
+                        parent_module=self.parent_module,
+                        value=True
+                    )
 
     def validate(self, dictionary: dict):
         """
