@@ -9,42 +9,48 @@ class TermCallback(object):
 
     @staticmethod
     def fatal(msg, indent=False):
-        indent = ""
         if indent:
-            indent="    "
+            indent = "    "
+        else:
+            indent = ""
         print(f"{indent}{Fore.RED}{msg}{Style.RESET_ALL}")
 
     @staticmethod
     def info(msg, indent=False):
-        indent = ""
         if indent:
             indent = "    "
+        else:
+            indent = ""
         print(f"{indent}{msg}")
 
     @staticmethod
     def error(msg, indent=False):
-        indent = ""
         if indent:
             indent = "    "
+        else:
+            indent = ""
         print(f"{indent}{Fore.RED}{msg}{Style.RESET_ALL}")
 
     @staticmethod
     def success(msg, indent=False):
-        indent = ""
         if indent:
             indent = "    "
+        else:
+            indent = ""
         print(f"{indent}{Fore.GREEN}{msg}{Style.RESET_ALL}")
 
     @staticmethod
     def changed(msg, indent=False):
-        indent = ""
         if indent:
-            indent = "   "
+            indent = "    "
+        else:
+            indent = ""
         print(f"{indent}{Fore.CYAN}{msg}{Style.RESET_ALL}")
 
     @staticmethod
     def warning(msg, indent=False):
-        indent = ""
         if indent:
-            indent = "   "
+            indent = "    "
+        else:
+            indent = ""
         print(f"{indent}{Fore.LIGHTRED_EX}{msg}{Style.RESET_ALL}")

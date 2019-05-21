@@ -6,7 +6,8 @@ from runcible.core.need import NeedOperation as Op
 class CumulusSystemProvider(ProviderBase):
     provides_for = System
     supported_attributes = [
-        'hostname'
+        'hostname',
+        'dns'
     ]
 
     def get_cstate(self):

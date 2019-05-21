@@ -145,11 +145,13 @@ class Module(object):
             if not isinstance(v, self.configuration_attributes[k]['type']) and v is not False:
                 raise RuncibleValidationError(f"Value {v} of key {k} in {self.module_name} "
                                       f"must be a {self.configuration_attributes[k]['type']}")
-        # Set default values for bool attributes
-        # for k, v in self.configuration_attributes.items():
-        #     if 'default' in v:
-        #         if k not in dictionary:
-        #             dictionary.update({k: v['default']})
+            if isinstance(v, list):
+                if self.configuration_attributes[k]['sub_type']:
+                    for item in v:
+                        if not isinstance(item, self.configuration_attributes[k]['sub_type']):
+                            raise RuncibleValidationError(f"Value {item} in {k}: {v} must be a "
+                                                          f"{self.configuration_attributes[k]['sub_type']}")
+
         return dictionary
 
     def __eq__(self, other):
