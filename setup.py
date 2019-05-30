@@ -13,7 +13,8 @@ setuptools.setup(
         'paramiko>=2.4.2',
         'colorama>=0.4.1',
         'cryptography==2.4.2',
-        'pyyaml>=5.1'
+        'pyyaml>=5.1',
+        'mergedb>=0.0.8'
     ],
     long_description=open('README.md').read(),
     entry_points={
