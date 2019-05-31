@@ -16,6 +16,8 @@ class SchedulerBase(object):
         for key, value in self.fabric.items():
             if re.match(self.regex, key):
                 self.devices.append(Device(key, value, callback_method=CBMethod.TERMINAL))
+        if not self.devices:
+            TermCallback.error(msg="No devices matched.")
 
     def apply(self):
         TermCallback.info("The following changes will be applied:")
