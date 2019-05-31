@@ -4,25 +4,75 @@
 Getting Started
 ===============
 
-Example
--------
+Runcible and MergeDB example
+----------------------------
 
-Currently, the only part of Runcible that is usable at this stage is the device level API.
+MergeDB is a project created for Runcible to make declaration of configurations easier, as a result MergeDB is a
+preferred mechanism for defining Runcible declarations (although you can also use flat YAML or JSON files as well.)
 
-If you have access to a Cumulus device (or a Cumulus virtual appliance, which can be downloaded for free and run within
-Vagrant, KVM-QEMU, or GNS3), you can follow the steps below to give the Device API a spin.
+For this example, I will build a simple 3 switch setup inside of GNS3 using Cumulus VX for the operating system.
 
-.. Note::
-    If you are considering contributing to Runcible, it is highly encouraged to download and familiarize yourself with
-    GNS3, as it makes testing actions performed against a topology of virtual switches much easier.
+Here is the topology:
 
-First, install runcible.
+.. image:: screenshots/network_topology_3switch.png
 
-.. code-block:: bash
+.. warning::
+    It is highly recommended to use Runcible with switch fabrics only when you have a dedicated out-of-band management
+    network that won't become inaccessible in the event of misconfiguration.
 
-    pip3 install runcible
+First, create a directory that contains a file named ``mdb.yaml``, which we will leave blank for now. This file
+indicates to MergeDB that we are creating a MergeDB database in this directory. Next we will create two folders,
+one for our device declarations, and one for our configuration layers. We will call these folders ``devices`` and
+``layers``. In the base of those two directories, create a file called ``dir.yaml`` in each directory and leave them
+blank for now. These files inform MergeDB that the .yaml files we will create in these directories are valid MergeDB
+declarations.
 
-Then, create a dict representing the desired state of your device (In this case, a switch using the Cumulus provider)
+.. note::
+    This directory structure is completely arbitrary. MergeDB is designed in a manner that lets you organize your
+    declarations in whatever way makes sense to you.
+
+Next, lets create a few configuration layers that define our switch configurations. Firstly, our switches all have the
+default U: ``cumulus`` P: ``CumulusLinux!`` credentials, so lets create a layer that adds those attributes to the meta
+object:
+
+.. literalinclude:: ../examples/mergedb_getting_started/layers/ssh_auth.yaml
+
+Next, our switches should all contain the same VLANS in this example, so lets make a layer that defines those:
+
+.. literalinclude:: ../examples/mergedb_getting_started/layers/vlans.yaml
+
+Note that we are using jinja2 templating to avoid needing to duplicate the vlan definitions.
+
+Now, lets create some layers that define our switch environment. In this example, we want all of the uplinks from the
+dist1 and dist2 switches to be tagged on all vlans, and the downlinks from the switches to the PCs to be untagged. As a
+result, we will create two different layers called ``core.yaml`` and ``dist.yaml``.
+
+.. literalinclude:: ../examples/mergedb_getting_started/layers/core.yaml
+
+.. literalinclude:: ../examples/mergedb_getting_started/layers/dist.yaml
+
+As you can see, our core has all tagged interfaces, whereas the first two ports on the dist switch are untagged, and the
+last port is tagged.
+
+Now we need to create the declarations for our switches. In the device directory, create a .yaml for each of the
+devices:
+
+.. literalinclude:: ../examples/mergedb_getting_started/devices/core.yaml
+
+.. literalinclude:: ../examples/mergedb_getting_started/devices/dist1.yaml
+
+.. literalinclude:: ../examples/mergedb_getting_started/devices/dist2.yaml
+
+At this point, if you were to run MergeDB, you would get blank output because we haven't added anything to the build
+list. So lets add the rest of our inheritance structure and the build list to the dir.yaml inside the devices directory:
+
+.. literalinclude:: ../examples/mergedb_getting_started/devices/dir.yaml
+
+
+API Device Example
+------------------
+
+Create a dict representing the desired state of your device (In this case, a switch using the Cumulus provider)
 
 .. code-block:: python
 

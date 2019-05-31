@@ -1,0 +1,9 @@
+# examples/mergedb_getting_started/devices/dir.yaml
+---
+inherit:
+  - layers/ssh_auth.yaml
+  - layers/vlans.yaml
+build:
+  - dist1.yaml
+  - dist2.yaml
+  - core.yaml

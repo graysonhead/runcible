@@ -1,0 +1,13 @@
+# examples/mergedb_getting_started/devices/dist2.yaml
+---
+mergedb:
+  inherit:
+    - layers/dist.yaml
+meta:
+  device:
+    ssh:
+      hostname: 192.168.122.231
+    default_management_protocol: ssh
+    driver: cumulus
+  system:
+    hostname: dist2
