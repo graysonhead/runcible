@@ -1,5 +1,6 @@
 from runcible.core.errors import RuncibleValidationError, RuncibleNotImplementedError
 from runcible.core.callback import CBType
+from runcible.core.need import NeedOperation as Op
 
 
 class ProviderBase(object):
@@ -22,6 +23,14 @@ class ProviderBase(object):
         self.completed_actions = []
         self.failed_actions = []
         self.load_module_dstate(dstate)
+
+    def adhoc_need(self, need):
+        if need.operation == Op.GET:
+            return getattr(self.cstate, need.attribute)
+        else:
+            self.needed_actions.append(need)
+            self.check_needs_compatibility()
+            self.fix_needs()
 
     def get_supported_attributes(self):
         return self.supported_attributes
@@ -64,3 +73,6 @@ class ProviderBase(object):
 
     def remove_need(self, need):
         self.needed_actions.remove(need)
+
+    def fix_needs(self):
+        raise RuncibleNotImplementedError(msg="This provider doesn't implement a fix_needs class")

@@ -3,7 +3,10 @@ import runcible
 import os
 from runcible.core.terminalcallbacks import TermCallback
 from runcible.schedulers.naive import NaiveScheduler
+from runcible.core.need import Need, NeedOperation
+from runcible.core.errors import RuncibleSyntaxError
 from mergedb.data_types.database import Database
+
 
 mergedb_default_config = {
     'merge_rules': {
@@ -57,6 +60,36 @@ class Cli(object):
         if self.args.mergedb_database:
             mdb = Database(self.args.mergedb_database, mergedb_default_config)
             inp = mdb.build()
-            scheduler = NaiveScheduler(inp)
-            scheduler.plan()
+        else:
+            raise RuncibleSyntaxError(msg="Runcible requires a datasource, see --help for more information")
+        if self.args.func == 'apply':
+                scheduler = NaiveScheduler(inp, self.args.target)
+                if self.args.target == '*':
+                    scheduler.apply()
+        elif self.args.func:
+            value = self.args.value
+            need = self.get_need_from_func(self.args.func, value=value)
+            scheduler = NaiveScheduler(inp, self.args.target)
+            scheduler.run_adhoc_command(need)
 
+    def get_need_from_func(self, funcstring, value=None):
+        sections = funcstring.split('.')
+        if len(sections) == 4:
+            parent_module = sections[0]
+            module = sections[1]
+            attribute = sections[2]
+            operation = sections[3]
+        elif len(sections) == 3:
+            parent_module = None
+            module = sections[0]
+            attribute = sections[1]
+            operation = sections[2]
+        else:
+            raise RuncibleSyntaxError(msg='Invalid function string')
+
+        try:
+            op_object = getattr(NeedOperation, operation)
+        except AttributeError:
+            raise RuncibleSyntaxError(msg=f"Operation {operation} is not valid. Valid Operations: {list(NeedOperation)}")
+
+        return Need(module, attribute, op_object, value=value, parent_module=parent_module)

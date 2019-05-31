@@ -35,6 +35,15 @@ class ProviderArrayBase(ProviderBase):
             raise RuncibleNotImplementedError(msg=f"Provider_array {str(self)} does not provide a sub_module_provider "
                                                 f"or a list of supported attributes.")
 
+    def adhoc_need(self, need):
+        if need.operation == Op.GET:
+            item = list(filter(lambda x: x.name == need.module, getattr(self.cstate, self.provides_for.module_name)))[0]
+            return getattr(item, need.attribute)
+        else:
+            self.needed_actions.append(need)
+            self.check_needs_compatibility()
+            self.fix_needs()
+
     def fix_needs(self):
         needed_actions = copy.deepcopy(self.needed_actions)
         for need in needed_actions:

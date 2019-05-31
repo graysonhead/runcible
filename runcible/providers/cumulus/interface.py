@@ -68,23 +68,23 @@ class CumulusInterfaceProvider:
 
     @staticmethod
     def fix_need(provider, need):
-        if need.attribute is InterfaceResources.PVID:
-            if need.operation is Op.SET:
+        if need.attribute == InterfaceResources.PVID:
+            if need.operation == Op.SET:
                 CumulusInterfaceProvider._set_pvid(provider, need.module, need.value)
                 provider.complete(need)
-            elif need.operation is Op.DELETE:
+            elif need.operation == Op.DELETE:
                 CumulusInterfaceProvider._delete_pvid(provider, need.module)
                 provider.complete(need)
-        elif need.attribute is InterfaceResources.BPDUGUARD:
+        elif need.attribute == InterfaceResources.BPDUGUARD:
             CumulusInterfaceProvider._set_bpduguard(provider, need.module, need.value)
             provider.complete(need)
-        elif need.attribute is InterfaceResources.PORTFAST:
+        elif need.attribute == InterfaceResources.PORTFAST:
             CumulusInterfaceProvider._set_portfast(provider, need.module, need.value)
             provider.complete(need)
-        elif need.attribute is InterfaceResources.VLANS:
-            if need.operation is Op.ADD:
+        elif need.attribute == InterfaceResources.VLANS:
+            if need.operation == Op.ADD:
                 CumulusInterfaceProvider._add_vids(provider, need.module, need.value)
                 provider.complete(need)
-            elif need.operation is Op.DELETE:
+            elif need.operation == Op.DELETE:
                 CumulusInterfaceProvider._del_vids(provider, need.module, need.value)
                 provider.complete(need)

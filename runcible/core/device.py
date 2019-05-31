@@ -61,6 +61,28 @@ class Device(object):
         self.callbacks.clear_callbacks()
         return callbacks
 
+    def ad_hoc_command(self, need):
+        self._clear_memoization()
+        self.clear_kv_store()
+        self.driver.pre_plan_tasks(self)
+        self.load_cstate()
+        if need.parent_module:
+            provider = list(filter(lambda x: x.provides_for.module_name == need.parent_module, self.providers))[0]
+        else:
+            provider = list(filter(lambda x: x.provides_for.module_name == need.module, self.providers))[0]
+        result = provider.adhoc_need(need)
+        self.check_complete()
+        if not result:
+            for need in provider.completed_actions:
+                self.echo(f"{provider.provides_for.module_name}.{need.get_formatted_string()}",
+                          cb_type=CBType.SUCCESS,
+                          indent=True)
+            callbacks = self.callbacks.run_callbacks()
+            self.callbacks.clear_callbacks()
+        else:
+            self.echo(f"{result}")
+            self.callbacks.run_callbacks()
+
     def check_complete(self):
         """
         Checks for needed tasks that haven't run

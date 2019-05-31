@@ -63,3 +63,10 @@ class RuncibleClientExecutionError(RuncibleError):
 
     def __str__(self):
         return f"A command failed to run on '{self.system}' while running command '{self.command}': {self.msg}"
+
+
+class RuncibleSyntaxError(RuncibleError):
+
+    def __str__(self):
+        return self.msg
+
