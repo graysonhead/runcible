@@ -7,6 +7,9 @@ Getting Started
 Runcible and MergeDB example
 ----------------------------
 
+Setting Up MergeDB
+^^^^^^^^^^^^^^^^^^
+
 MergeDB is a project created for Runcible to make declaration of configurations easier, as a result MergeDB is a
 preferred mechanism for defining Runcible declarations (although you can also use flat YAML or JSON files as well.)
 
@@ -70,6 +73,21 @@ list. So lets add the rest of our inheritance structure and the build list to th
 
 Now, run mergedb and inspect the built configs.
 
+.. command-output:: mergedb ../examples/mergedb_getting_started build
+    :shell:
+    :ellipsis: 20
+
+You can also check the build process for each built declaration to see how MergeDB constructed it at each step.
+
+.. command-output:: mergedb ../examples/mergedb_getting_started detail core.yaml
+    :shell:
+    :ellipsis: 40
+
+Running Runcible from CLI
+^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Now that we have a database constructed with some switch configuration, we can run Runcible to configure our test
+environment.
 
 
 

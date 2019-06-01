@@ -8,7 +8,7 @@ class SchedulerBase(object):
 
     def __init__(self, fabric_config: dict, device_regex: str):
         self.fabric = fabric_config
-        self.regex = device_regex
+        self.regex = device_regex.strip('\'"')
         self.devices = []
         self.set_devices()
 
@@ -31,6 +31,9 @@ class SchedulerBase(object):
                 device.execute()
 
     def run_adhoc_command(self, need):
+        if not self.devices:
+            TermCallback.error("No devices matched")
+            exit(1)
         for device in self.devices:
             TermCallback.info(f"Device {device.name}:")
             TermCallback.info("==========================================")
