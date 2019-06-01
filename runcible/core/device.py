@@ -77,6 +77,7 @@ class Device(object):
                 self.echo(f"{provider.provides_for.module_name}.{need.get_formatted_string()}",
                           cb_type=CBType.SUCCESS,
                           indent=True)
+            self.post_execution_tasks()
             callbacks = self.callbacks.run_callbacks()
             self.callbacks.clear_callbacks()
         else:

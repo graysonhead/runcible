@@ -6,5 +6,5 @@ interfaces:
   - name: swp{{ i }}
     pvid: 10
   {% endfor %}
-  - name: swp7
+  - name: swp6
     vlans: {{ vlans }}

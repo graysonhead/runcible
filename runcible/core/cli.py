@@ -64,8 +64,7 @@ class Cli(object):
             raise RuncibleSyntaxError(msg="Runcible requires a datasource, see --help for more information")
         if self.args.func == 'apply':
                 scheduler = NaiveScheduler(inp, self.args.target)
-                if self.args.target == '*':
-                    scheduler.apply()
+                scheduler.apply()
         elif self.args.func:
             value = self.args.value
             need = self.get_need_from_func(self.args.func, value=value)
