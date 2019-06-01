@@ -68,6 +68,11 @@ list. So lets add the rest of our inheritance structure and the build list to th
 
 .. literalinclude:: ../examples/mergedb_getting_started/devices/dir.yaml
 
+Now, run mergedb and inspect the built configs.
+
+
+
+
 
 API Device Example
 ------------------
