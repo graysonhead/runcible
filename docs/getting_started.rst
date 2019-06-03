@@ -89,6 +89,119 @@ Running Runcible from CLI
 Now that we have a database constructed with some switch configuration, we can run Runcible to configure our test
 environment.
 
+.. code-block:: shell
+
+    [mergedb_getting_started]$ runcible ".*" apply -m .
+    The following changes will be applied:
+    Device core:
+    ==========================================
+        WARNING: need 10.name.SET: vlan10 is not supported by provider <runcible.providers.cumulus.vlans.CumulusVlansProvider object at 0x7fe24e1258d0>
+        WARNING: need 20.name.SET: vlan20 is not supported by provider <runcible.providers.cumulus.vlans.CumulusVlansProvider object at 0x7fe24e1258d0>
+        WARNING: need 30.name.SET: vlan30 is not supported by provider <runcible.providers.cumulus.vlans.CumulusVlansProvider object at 0x7fe24e1258d0>
+    vlans needs:
+        vlans.10.CREATE
+        vlans.20.CREATE
+        vlans.30.CREATE
+    interfaces needs:
+        interfaces.swp1.vlans.ADD: 10
+        interfaces.swp1.vlans.ADD: 20
+        interfaces.swp1.vlans.ADD: 30
+        interfaces.swp2.vlans.ADD: 10
+        interfaces.swp2.vlans.ADD: 20
+        interfaces.swp2.vlans.ADD: 30
+        interfaces.swp3.vlans.ADD: 10
+        interfaces.swp3.vlans.ADD: 20
+        interfaces.swp3.vlans.ADD: 30
+        interfaces.swp4.vlans.ADD: 10
+        interfaces.swp4.vlans.ADD: 20
+        interfaces.swp4.vlans.ADD: 30
+        interfaces.swp5.vlans.ADD: 10
+        interfaces.swp5.vlans.ADD: 20
+        interfaces.swp5.vlans.ADD: 30
+        interfaces.swp6.vlans.ADD: 10
+        interfaces.swp6.vlans.ADD: 20
+        interfaces.swp6.vlans.ADD: 30
+    Device dist2:
+    ==========================================
+        WARNING: need 10.name.SET: vlan10 is not supported by provider <runcible.providers.cumulus.vlans.CumulusVlansProvider object at 0x7fe24e1259e8>
+        WARNING: need 20.name.SET: vlan20 is not supported by provider <runcible.providers.cumulus.vlans.CumulusVlansProvider object at 0x7fe24e1259e8>
+        WARNING: need 30.name.SET: vlan30 is not supported by provider <runcible.providers.cumulus.vlans.CumulusVlansProvider object at 0x7fe24e1259e8>
+    vlans needs:
+        vlans.10.CREATE
+        vlans.20.CREATE
+        vlans.30.CREATE
+    interfaces needs:
+        interfaces.swp1.pvid.SET: 10
+        interfaces.swp2.pvid.SET: 10
+        interfaces.swp6.vlans.ADD: 10
+        interfaces.swp6.vlans.ADD: 20
+        interfaces.swp6.vlans.ADD: 30
+    Device dist1:
+    ==========================================
+        WARNING: need 10.name.SET: vlan10 is not supported by provider <runcible.providers.cumulus.vlans.CumulusVlansProvider object at 0x7fe24e125358>
+        WARNING: need 20.name.SET: vlan20 is not supported by provider <runcible.providers.cumulus.vlans.CumulusVlansProvider object at 0x7fe24e125358>
+        WARNING: need 30.name.SET: vlan30 is not supported by provider <runcible.providers.cumulus.vlans.CumulusVlansProvider object at 0x7fe24e125358>
+    vlans needs:
+        vlans.10.CREATE
+        vlans.20.CREATE
+        vlans.30.CREATE
+    interfaces needs:
+        interfaces.swp1.pvid.SET: 10
+        interfaces.swp2.pvid.SET: 10
+        interfaces.swp6.vlans.ADD: 10
+        interfaces.swp6.vlans.ADD: 20
+        interfaces.swp6.vlans.ADD: 30
+    Would you like to apply the changes? y/[n]
+
+Once you click yes, Runcible will apply all of the changes listed. By default, the naive scheduler will be used which
+will run Runcible against the devices one after the other in the order specified.
+
+.. code-block:: shell
+
+    Device core
+    ==========================================
+        vlans.10.CREATE
+        vlans.20.CREATE
+        vlans.30.CREATE
+        interfaces.swp1.vlans.ADD: 10
+        interfaces.swp1.vlans.ADD: 20
+        interfaces.swp1.vlans.ADD: 30
+        interfaces.swp2.vlans.ADD: 10
+        interfaces.swp2.vlans.ADD: 20
+        interfaces.swp2.vlans.ADD: 30
+        interfaces.swp3.vlans.ADD: 10
+        interfaces.swp3.vlans.ADD: 20
+        interfaces.swp3.vlans.ADD: 30
+        interfaces.swp4.vlans.ADD: 10
+        interfaces.swp4.vlans.ADD: 20
+        interfaces.swp4.vlans.ADD: 30
+        interfaces.swp5.vlans.ADD: 10
+        interfaces.swp5.vlans.ADD: 20
+        interfaces.swp5.vlans.ADD: 30
+        interfaces.swp6.vlans.ADD: 10
+        interfaces.swp6.vlans.ADD: 20
+        interfaces.swp6.vlans.ADD: 30
+    Device dist2
+    ==========================================
+        vlans.10.CREATE
+        vlans.20.CREATE
+        vlans.30.CREATE
+        interfaces.swp1.pvid.SET: 10
+        interfaces.swp2.pvid.SET: 10
+        interfaces.swp6.vlans.ADD: 10
+        interfaces.swp6.vlans.ADD: 20
+        interfaces.swp6.vlans.ADD: 30
+    Device dist1
+    ==========================================
+        vlans.10.CREATE
+        vlans.20.CREATE
+        vlans.30.CREATE
+        interfaces.swp1.pvid.SET: 10
+        interfaces.swp2.pvid.SET: 10
+        interfaces.swp6.vlans.ADD: 10
+        interfaces.swp6.vlans.ADD: 20
+        interfaces.swp6.vlans.ADD: 30
+
 
 
 
