@@ -9,5 +9,5 @@ meta:
       hostname: 192.168.122.231
     default_management_protocol: ssh
     driver: cumulus
-  system:
-    hostname: dist2
+system:
+  hostname: dist2

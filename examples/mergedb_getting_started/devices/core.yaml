@@ -9,5 +9,5 @@ meta:
       hostname: 192.168.122.166
     default_management_protocol: ssh
     driver: cumulus
-  system:
-    hostname: core
+system:
+  hostname: core
