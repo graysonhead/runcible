@@ -1,4 +1,4 @@
-# examples/mergedb_getting_started/devices/dist1.yaml
+# examples/mergedb_getting_started/switches/dist2.yaml
 ---
 mergedb:
   inherit:
@@ -6,8 +6,8 @@ mergedb:
 meta:
   device:
     ssh:
-      hostname: 192.168.122.149
+      hostname: 192.168.122.231
     default_management_protocol: ssh
     driver: cumulus
 system:
-  hostname: dist1
+  hostname: dist2

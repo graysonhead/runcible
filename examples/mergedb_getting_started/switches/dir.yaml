@@ -1,4 +1,4 @@
-# examples/mergedb_getting_started/devices/dir.yaml
+# examples/mergedb_getting_started/switches/dir.yaml
 ---
 inherit:
   - layers/ssh_auth.yaml

@@ -37,11 +37,11 @@ class Device(object):
     def plan(self):
         self._clear_memoization()
         self.clear_kv_store()
-        if getattr(self.driver, 'pre_plan_tasks'):
+        if getattr(self.driver, 'pre_plan_tasks', None):
             self.driver.pre_plan_tasks(self)
         self.load_cstate()
         self.determine_needs()
-        if getattr(self.driver, 'post_plan_tasks'):
+        if getattr(self.driver, 'post_plan_tasks', None):
             self.driver.post_plan_tasks(self)
         self.needs_as_callbacks()
         callbacks = self.callbacks.run_callbacks()
@@ -50,10 +50,10 @@ class Device(object):
 
     def execute(self):
         if self.needs_changes:
-            if getattr(self.driver, 'pre_exec_tasks'):
+            if getattr(self.driver, 'pre_exec_tasks', None):
                 self.driver.pre_exec_tasks(self)
             self.fix_provider_needs()
-            if getattr(self.driver, 'post_exec_tasks'):
+            if getattr(self.driver, 'post_exec_tasks', None):
                 self.driver.post_exec_tasks(self)
             self.completed_as_callbacks()
             self.post_execution_tasks()

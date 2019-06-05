@@ -1,0 +1,11 @@
+# examples/mergedb_getting_started/routers/r1.yaml
+---
+meta:
+  device:
+    ssh:
+      hostname: 192.168.122.60
+      username: vyos
+    default_management_protocol: ssh
+    driver: vyos
+system:
+  hostname: testthishostname

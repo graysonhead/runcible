@@ -1,0 +1,4 @@
+# examples/mergedb_getting_started/routers/dir.yaml
+---
+build:
+  - r1.yaml
