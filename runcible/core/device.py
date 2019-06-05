@@ -37,9 +37,12 @@ class Device(object):
     def plan(self):
         self._clear_memoization()
         self.clear_kv_store()
-        self.driver.pre_plan_tasks(self)
+        if getattr(self.driver, 'pre_plan_tasks'):
+            self.driver.pre_plan_tasks(self)
         self.load_cstate()
         self.determine_needs()
+        if getattr(self.driver, 'post_plan_tasks'):
+            self.driver.post_plan_tasks(self)
         self.needs_as_callbacks()
         callbacks = self.callbacks.run_callbacks()
         self.callbacks.clear_callbacks()
@@ -47,7 +50,11 @@ class Device(object):
 
     def execute(self):
         if self.needs_changes:
+            if getattr(self.driver, 'pre_exec_tasks'):
+                self.driver.pre_exec_tasks(self)
             self.fix_provider_needs()
+            if getattr(self.driver, 'post_exec_tasks'):
+                self.driver.post_exec_tasks(self)
             self.completed_as_callbacks()
             self.post_execution_tasks()
         else:
@@ -64,7 +71,8 @@ class Device(object):
     def ad_hoc_command(self, need):
         self._clear_memoization()
         self.clear_kv_store()
-        self.driver.pre_plan_tasks(self)
+        # self.driver.pre_plan_tasks(self)
+        # self.pre_execution_tasks()
         self.load_cstate()
         if need.parent_module:
             provider = list(filter(lambda x: x.provides_for.module_name == need.parent_module, self.providers))[0]
@@ -77,7 +85,7 @@ class Device(object):
                 self.echo(f"{provider.provides_for.module_name}.{need.get_formatted_string()}",
                           cb_type=CBType.SUCCESS,
                           indent=True)
-            self.post_execution_tasks()
+            # self.post_execution_tasks()
             callbacks = self.callbacks.run_callbacks()
             self.callbacks.clear_callbacks()
         else:
@@ -102,6 +110,11 @@ class Device(object):
             provider.needed_actions = []
             provider.completed_actions = []
             provider.failed_actions = []
+
+    def pre_execution_tasks(self):
+        if self.driver.pre_exec_tasks:
+            for command in self.driver.pre_exec_tasks:
+                self.send_command(command)
 
     def post_execution_tasks(self, changed=False):
         if self.driver.post_exec_tasks:

@@ -2,6 +2,7 @@ import inspect
 from runcible import modules, drivers
 from runcible.modules.module import Module
 from runcible.drivers.driver import DriverBase
+import pkg_resources
 
 
 class PluginRegistry:
@@ -11,6 +12,7 @@ class PluginRegistry:
     @classmethod
     def load_drivers(cls):
         cls.load_core_drivers()
+        cls.load_plugin_drivers()
 
     @classmethod
     def load_core_drivers(cls):
@@ -21,6 +23,16 @@ class PluginRegistry:
         )
         for drv in driver_list:
             cls.add_driver_to_registry(drv)
+
+    @classmethod
+    def load_plugin_drivers(cls):
+        plugins = {
+            entry_point.name: entry_point.load()
+            for entry_point
+            in pkg_resources.iter_entry_points('runcible.drivers')
+        }
+        for name, driver_class in plugins.items():
+            cls.add_driver_to_registry(driver_class)
 
     @classmethod
     def load_modules(cls):

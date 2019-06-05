@@ -5,7 +5,6 @@ from runcible.drivers.driver import DriverBase
 from runcible.providers.cumulus.utils import pre_parse_commands
 
 
-
 class CumulusDriver(DriverBase):
     driver_name = "cumulus"
 
@@ -14,9 +13,13 @@ class CumulusDriver(DriverBase):
         "interfaces": CumulusInterfacesProvider,
         "vlans": CumulusVlansProvider
     }
-    post_exec_tasks = [
-        'net commit'
-    ]
+    # post_exec_tasks = [
+    #     'net commit'
+    # ]
+
+    @staticmethod
+    def post_exec_tasks(device):
+        device.send_command('net commit')
 
     @staticmethod
     def pre_plan_tasks(device):
