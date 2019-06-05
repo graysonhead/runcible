@@ -77,6 +77,7 @@ class Device(object):
                 self.echo(f"{provider.provides_for.module_name}.{need.get_formatted_string()}",
                           cb_type=CBType.SUCCESS,
                           indent=True)
+            self.post_execution_tasks()
             callbacks = self.callbacks.run_callbacks()
             self.callbacks.clear_callbacks()
         else:
@@ -114,7 +115,7 @@ class Device(object):
     def completed_as_callbacks(self):
         for provider in self.providers:
             for need in provider.completed_actions:
-                self.echo(f"{provider.provides_for.module_name}.{need.get_formatted_string()}",
+                self.echo(f"{need.get_formatted_string()}",
                           cb_type=CBType.SUCCESS,
                           indent=True)
 

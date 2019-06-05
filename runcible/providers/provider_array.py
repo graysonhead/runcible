@@ -19,7 +19,11 @@ class ProviderArrayBase(ProviderBase):
         :return:
         """
         supported_attributes = self.get_supported_attributes()
-        for need in self.needed_actions:
+        if self.needed_actions:
+            needed_actions = list(self.needed_actions)
+        else:
+            needed_actions = []
+        for need in needed_actions:
             if need.operation != Op.CREATE and need.operation != Op.REMOVE:
                 if need.attribute not in supported_attributes:
                     self.device.echo(f"WARNING: need "

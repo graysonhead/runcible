@@ -1,0 +1,6 @@
+# examples/mergedb_getting_started/layers/ssh_auth.yaml
+---
+meta:
+  device:
+    ssh:
+      username: cumulus
