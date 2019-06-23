@@ -5,6 +5,7 @@ meta:
     ssh:
       hostname: 192.168.122.60
       username: vyos
+      password: vyos
     default_management_protocol: ssh
     driver: vyos
 system:

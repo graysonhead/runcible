@@ -56,7 +56,6 @@ class Device(object):
             if getattr(self.driver, 'post_exec_tasks', None):
                 self.driver.post_exec_tasks(self)
             self.completed_as_callbacks()
-            self.post_execution_tasks()
         else:
             self.echo("No changes needed",
                       cb_type=CBType.SUCCESS,
@@ -71,15 +70,21 @@ class Device(object):
     def ad_hoc_command(self, need):
         self._clear_memoization()
         self.clear_kv_store()
-        # self.driver.pre_plan_tasks(self)
-        # self.pre_execution_tasks()
+        if getattr(self.driver, 'pre_plan_tasks', None):
+            self.driver.pre_plan_tasks(self)
         self.load_cstate()
+        if getattr(self.driver, 'post_plan_tasks', None):
+            self.driver.post_plan_tasks()
         if need.parent_module:
             provider = list(filter(lambda x: x.provides_for.module_name == need.parent_module, self.providers))[0]
         else:
             provider = list(filter(lambda x: x.provides_for.module_name == need.module, self.providers))[0]
+        if getattr(self.driver, 'pre_exec_tasks', None):
+            self.driver.pre_exec_tasks(self)
         result = provider.adhoc_need(need)
         self.check_complete()
+        if getattr(self.driver, 'post_exec_tasks', None):
+            self.driver.post_exec_tasks(self)
         if not result:
             for need in provider.completed_actions:
                 self.echo(f"{provider.provides_for.module_name}.{need.get_formatted_string()}",
@@ -110,16 +115,6 @@ class Device(object):
             provider.needed_actions = []
             provider.completed_actions = []
             provider.failed_actions = []
-
-    def pre_execution_tasks(self):
-        if self.driver.pre_exec_tasks:
-            for command in self.driver.pre_exec_tasks:
-                self.send_command(command)
-
-    def post_execution_tasks(self, changed=False):
-        if self.driver.post_exec_tasks:
-            for command in self.driver.post_exec_tasks:
-                self.send_command(command)
 
     def fix_provider_needs(self):
         for provider in self.providers:
@@ -218,18 +213,26 @@ class Device(object):
         else:
             raise RuncibleValidationError("A device must be specified with a driver")
         # Then load the connection protocols
-        if 'ssh' in self.meta_device:
-            ssh_conf = self.meta_device['ssh']
-            if 'hostname' not in ssh_conf or 'username' not in ssh_conf:
-                raise RuncibleValidationError("SSH connection method requires a username and hostname at a minimum")
-            ssh = SSHProtocol(
-                hostname=ssh_conf['hostname'],
-                username=ssh_conf['username'],
-                password=getattr(ssh_conf, 'password', None),
-                port=getattr(ssh_conf, 'port', 22)
-
-            )
-            self.clients.update({'ssh': ssh})
+        # if 'ssh' in self.meta_device:
+        #     ssh_conf = self.meta_device['ssh']
+        #     if 'hostname' not in ssh_conf or 'username' not in ssh_conf:
+        #         raise RuncibleValidationError("SSH connection method requires a username and hostname at a minimum")
+        #     ssh = SSHProtocol(
+        #         hostname=ssh_conf['hostname'],
+        #         username=ssh_conf['username'],
+        #         password=getattr(ssh_conf, 'password', None),
+        #         port=getattr(ssh_conf, 'port', 22)
+        #
+        #     )
+        #     self.clients.update({'ssh': ssh})
+        for client_type in ['ssh', 'telnet']:
+            if client_type in self.meta_device:
+                if client_type not in self.driver.protocol_map:
+                    raise RuncibleValidationError(msg=f"Provider {self.driver} doesn't have a {client_type} protocol")
+                else:
+                    self.clients.update({
+                        client_type: self.driver.protocol_map[client_type](self.meta_device[client_type])
+                    })
         if 'default_management_protocol' in self.meta_device:
             self.default_client = self.meta_device['default_management_protocol']
 
