@@ -1,6 +1,7 @@
 from runcible.providers.cumulus.system import CumulusSystemProvider
 from runcible.providers.cumulus.interfaces import CumulusInterfacesProvider
 from runcible.providers.cumulus.vlans import CumulusVlansProvider
+from runcible.protocols.ssh_protocol import SSHProtocol
 from runcible.drivers.driver import DriverBase
 from runcible.providers.cumulus.utils import pre_parse_commands
 
@@ -13,10 +14,10 @@ class CumulusDriver(DriverBase):
         "interfaces": CumulusInterfacesProvider,
         "vlans": CumulusVlansProvider
     }
-    # post_exec_tasks = [
-    #     'net commit'
-    # ]
 
+    protocol_map = {
+        "ssh": SSHProtocol
+    }
     @staticmethod
     def post_exec_tasks(device):
         device.send_command('net commit')

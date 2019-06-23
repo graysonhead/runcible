@@ -9,4 +9,4 @@ meta:
     default_management_protocol: ssh
     driver: vyos
 system:
-  hostname: testthishostname
+  hostname: testthishostname2
