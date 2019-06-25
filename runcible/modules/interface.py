@@ -9,6 +9,7 @@ class InterfaceResources(object):
     VLANS = 'vlans'
     BPDUGUARD = 'bpduguard'
     PORTFAST = 'portfast'
+    MTU = 'mtu'
 
 
 class Interface(Module):
@@ -38,6 +39,10 @@ class Interface(Module):
             'type': list,
             'sub_type': int,
             'allowed_operations': [Op.SET, Op.ADD, Op.DELETE, Op.CLEAR]
+        },
+        InterfaceResources.MTU: {
+            'type': int,
+            'allowed_operations': [Op.SET]
         }
     }
 

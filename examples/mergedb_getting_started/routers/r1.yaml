@@ -10,3 +10,6 @@ meta:
     driver: vyos
 system:
   hostname: testthishostname2
+interfaces:
+  - name: eth1
+    mtu: 1500
