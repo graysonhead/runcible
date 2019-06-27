@@ -26,6 +26,13 @@ class Module(object):
 
     # Override the following classes in each subclass
 
+    def get_state_dict(self):
+        state_dict = {}
+        for attribute, attrval in self.configuration_attributes.items():
+            if getattr(self, attribute, None):
+                state_dict.update({attribute: getattr(self, attribute)})
+        return state_dict
+
     def determine_needs(self, other):
         """
         Iterate through the attributes of two instances, and determine what actions are needed to make the other match

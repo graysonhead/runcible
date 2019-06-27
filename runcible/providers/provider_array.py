@@ -13,6 +13,11 @@ class ProviderArrayBase(ProviderBase):
     encouraged.
     """
 
+    def __init__(self, device_instance, dstate):
+        super().__init__(device_instance, dstate)
+        # self.device = device_instance
+        self.sub_provider = self.sub_module_provider(self, dstate)
+
     def check_needs_compatibility(self):
         """
         Ensure that all the needs present are supported by the provider, and raise a warning if not.
@@ -50,6 +55,21 @@ class ProviderArrayBase(ProviderBase):
 
     def fix_needs(self):
         needed_actions = copy.deepcopy(self.needed_actions)
+
+        # Set the dstate list to a local variable for better readability
+        # dstate_list = getattr(self.dstate, self.provides_for.module_name)
+        # module_attr_name = self.provides_for.module_name
+        # module_key_name = self.provides_for.sort_key
+        # for need in needed_actions:
+        #     if need.parent_module: #Indicates this is a need for a sub_provider to handle
+        #         if not list(filter(lambda x: getattr(x, module_attr_name) == need.module, sub_provider_instances)):
+        #             # Get the dstate for the module we are creating an instance for if it exists
+        #             dstate_for_instance = list(filter(lambda x: getattr(x, module_key_name) == need.module, dstate_list))
+        #             if dstate_for_instance:
+        #                 dstate = dstate_for_instance[0].get_state_dict()
+        #             else:
+        #                 dstate = {}
+        #             sub_provider_instances.append(self.sub_module_provider(self.device, dstate))
         for need in needed_actions:
             if need.operation == Op.CREATE:
                 self._create_module(need.attribute)
@@ -58,4 +78,4 @@ class ProviderArrayBase(ProviderBase):
                 self._remove_module(need.attribute)
                 self.complete(need)
             if self.sub_module_provider:
-                self.sub_module_provider.fix_need(self, need)
+                self.sub_provider.fix_need(need)
