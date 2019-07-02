@@ -55,21 +55,6 @@ class ProviderArrayBase(ProviderBase):
 
     def fix_needs(self):
         needed_actions = copy.deepcopy(self.needed_actions)
-
-        # Set the dstate list to a local variable for better readability
-        # dstate_list = getattr(self.dstate, self.provides_for.module_name)
-        # module_attr_name = self.provides_for.module_name
-        # module_key_name = self.provides_for.sort_key
-        # for need in needed_actions:
-        #     if need.parent_module: #Indicates this is a need for a sub_provider to handle
-        #         if not list(filter(lambda x: getattr(x, module_attr_name) == need.module, sub_provider_instances)):
-        #             # Get the dstate for the module we are creating an instance for if it exists
-        #             dstate_for_instance = list(filter(lambda x: getattr(x, module_key_name) == need.module, dstate_list))
-        #             if dstate_for_instance:
-        #                 dstate = dstate_for_instance[0].get_state_dict()
-        #             else:
-        #                 dstate = {}
-        #             sub_provider_instances.append(self.sub_module_provider(self.device, dstate))
         for need in needed_actions:
             if need.operation == Op.CREATE:
                 self._create_module(need.attribute)
