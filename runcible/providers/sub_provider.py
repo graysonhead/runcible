@@ -24,5 +24,5 @@ class SubProviderBase(object):
     def complete(self, need):
         self.provider.complete(need)
 
-    def fix_needs(self):
+    def fix_need(self):
         raise RuncibleNotImplementedError(msg="This provider doesn't implement a fix_needs class")
