@@ -13,3 +13,4 @@ system:
 interfaces:
   - name: eth1
     mtu: 1234
+    ipv4_address: dhcp
