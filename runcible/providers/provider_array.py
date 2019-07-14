@@ -2,6 +2,9 @@ from runcible.providers.provider import ProviderBase
 from runcible.core.errors import RuncibleNotImplementedError
 from runcible.core.need import NeedOperation as Op
 from runcible.core.callbacks import CBType
+# from runcible.core import logger
+import logging
+logger = logging.getLogger(__name__)
 import copy
 
 
@@ -31,10 +34,12 @@ class ProviderArrayBase(ProviderBase):
         for need in needed_actions:
             if need.operation != Op.CREATE and need.operation != Op.REMOVE:
                 if need.attribute not in supported_attributes:
-                    self.device.echo(f"WARNING: need "
-                                     f"{need.get_formatted_string()} is not supported by provider {str(self)}",
-                                     cb_type=CBType.WARNING,
-                                     indent=True)
+                    # self.device.echo(f"WARNING: need "
+                    #                  f"{need.get_formatted_string()} is not supported by provider {str(self)}",
+                    #                  cb_type=CBType.WARNING,
+                    #                  indent=True)
+                    logger.warning(
+                        f"Need {need.get_formatted_string()} is not supported by provider {str(self)}")
                     self.remove_need(need)
 
     def get_supported_attributes(self):

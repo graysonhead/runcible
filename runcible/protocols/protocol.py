@@ -1,5 +1,6 @@
 from runcible.core.errors import RuncibleNotImplementedError
-from runcible.core import logger
+import logging
+logger = logging.getLogger(__name__)
 
 
 class TerminalProtocolBase(object):
