@@ -13,6 +13,11 @@ class ProviderArrayBase(ProviderBase):
     encouraged.
     """
 
+    def __init__(self, device_instance, dstate):
+        super().__init__(device_instance, dstate)
+        # self.device = device_instance
+        self.sub_provider = self.sub_module_provider(self, dstate)
+
     def check_needs_compatibility(self):
         """
         Ensure that all the needs present are supported by the provider, and raise a warning if not.
@@ -58,4 +63,4 @@ class ProviderArrayBase(ProviderBase):
                 self._remove_module(need.attribute)
                 self.complete(need)
             if self.sub_module_provider:
-                self.sub_module_provider.fix_need(self, need)
+                self.sub_provider.fix_need(need)

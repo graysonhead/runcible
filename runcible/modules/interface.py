@@ -10,6 +10,8 @@ class InterfaceResources(object):
     BPDUGUARD = 'bpduguard'
     PORTFAST = 'portfast'
     MTU = 'mtu'
+    IPV4_ADDRESS = 'ipv4_address'
+    SPEED = 'speed'
 
 
 class Interface(Module):
@@ -43,6 +45,22 @@ class Interface(Module):
         InterfaceResources.MTU: {
             'type': int,
             'allowed_operations': [Op.SET]
+        },
+        InterfaceResources.IPV4_ADDRESS: {
+            'type': str,
+            'allowed_operations': [Op.SET, Op.CLEAR]
+        },
+        InterfaceResources.SPEED: {
+            'type': str,
+            'allowed_operations': [Op.SET, Op.DELETE],
+            'allowed_values': [
+                '10',
+                '100',
+                '1G',
+                '2.5G',
+                '10G',
+                '25G'
+            ]
         }
     }
 

@@ -9,7 +9,10 @@ meta:
     default_management_protocol: ssh
     driver: vyos
 system:
-  hostname: testthishostname2
+  hostname: testthishostname23
 interfaces:
   - name: eth1
-    mtu: 1500
+    mtu: 1200
+    ipv4_address: 10.1.1.1/24
+  - name: eth2
+    ipv4_address: 10.1.4.1/24

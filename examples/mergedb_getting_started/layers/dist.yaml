@@ -1,5 +1,5 @@
 # examples/mergedb_getting_started/layers/dist.yaml
-{% set vlans = [10, 20, 30] %}
+{% set vlans = [10, 20, 30, 40, 50] %}
 ---
 interfaces:
   {% for i in range(1,3) %}
