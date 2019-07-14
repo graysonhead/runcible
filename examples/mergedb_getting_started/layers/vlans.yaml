@@ -1,7 +1,7 @@
 # examples/mergedb_getting_started/layers/vlans.yaml
 ---
 vlans:
-  {% for i in [10, 20, 30, 40] %}
+  {% for i in [10, 20, 30, 40, 50] %}
   - id: {{ i }}
-    name: vlan{{ i }}
+#    name: vlan{{ i }}
   {% endfor %}

@@ -11,6 +11,7 @@ class InterfaceResources(object):
     PORTFAST = 'portfast'
     MTU = 'mtu'
     IPV4_ADDRESS = 'ipv4_address'
+    SPEED = 'speed'
 
 
 class Interface(Module):
@@ -48,6 +49,18 @@ class Interface(Module):
         InterfaceResources.IPV4_ADDRESS: {
             'type': str,
             'allowed_operations': [Op.SET, Op.CLEAR]
+        },
+        InterfaceResources.SPEED: {
+            'type': str,
+            'allowed_operations': [Op.SET, Op.DELETE],
+            'allowed_values': [
+                '10',
+                '100',
+                '1G',
+                '2.5G',
+                '10G',
+                '25G'
+            ]
         }
     }
 
