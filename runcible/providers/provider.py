@@ -4,6 +4,7 @@ from runcible.core.need import NeedOperation as Op
 import logging
 logger = logging.getLogger(__name__)
 
+
 class ProviderBase(object):
     provides_for = None
     supported_attributes = []
