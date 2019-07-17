@@ -12,7 +12,7 @@ setuptools.setup(
     install_requires=[
         'paramiko>=2.4.2',
         'colorama>=0.4.1',
-        'cryptography==2.4.2',
+        'cryptography>=2.5.0',
         'pyyaml>=5.1',
         'mergedb>=0.0.11'
     ],
