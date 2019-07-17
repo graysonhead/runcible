@@ -1,4 +1,6 @@
 from runcible.core.errors import RuncibleNotImplementedError
+import logging
+logger = logging.getLogger(__name__)
 
 
 class TerminalProtocolBase(object):
@@ -29,7 +31,10 @@ class TerminalProtocolBase(object):
             msg=f"Protocol {self.__repr__()} doesn't implement the send_implement method")
 
     def send(self, command):
-        return self.send_implement(command)
+        logger.debug(f"Provider {self} sent command: {command}")
+        response = self.send_implement(command)
+        logger.debug(f"Provider {self} recieved response: {response}")
+        return response
 
     def run_command(self, command):
         return self.send(command)

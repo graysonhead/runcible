@@ -6,6 +6,8 @@ from runcible.schedulers.naive import NaiveScheduler
 from runcible.core.need import Need, NeedOperation
 from runcible.core.errors import RuncibleSyntaxError
 from mergedb.data_types.database import Database
+from runcible.core import logger
+import logging
 
 
 mergedb_default_config = {
@@ -36,6 +38,7 @@ class Cli(object):
         parser.add_argument('func', type=str, default=None, nargs='?')
         parser.add_argument('value', type=str, default=None, nargs='?')
         parser.add_argument('--version', action='store_true')
+        parser.add_argument('--verbose', '-v', action='store_true', dest='verbose')
         # parser.add_argument(
         #     '--fabric',
         #     '-f',
@@ -57,6 +60,8 @@ class Cli(object):
         if self.args.version:
             print(runcible.__version__)
             exit(0)
+        if self.args.verbose:
+            logger.basicConfig(level=logging.DEBUG)
         if self.args.mergedb_database:
             mdb = Database(self.args.mergedb_database, mergedb_default_config)
             inp = mdb.build()

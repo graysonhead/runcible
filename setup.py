@@ -14,7 +14,8 @@ setuptools.setup(
         'colorama>=0.4.1',
         'cryptography>=2.5.0',
         'pyyaml>=5.1',
-        'mergedb>=0.0.11'
+        'mergedb>=0.0.11',
+        'pyserial>=3.4'
     ],
     long_description=open('README.md').read(),
     entry_points={

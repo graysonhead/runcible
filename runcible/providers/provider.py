@@ -1,6 +1,8 @@
 from runcible.core.errors import RuncibleValidationError, RuncibleNotImplementedError
 from runcible.core.callback import CBType
 from runcible.core.need import NeedOperation as Op
+import logging
+logger = logging.getLogger(__name__)
 
 
 class ProviderBase(object):
@@ -55,9 +57,10 @@ class ProviderBase(object):
         supported_attributes = self.get_supported_attributes()
         for need in self.needed_actions:
             if need.attribute not in supported_attributes:
-                self.device.echo(f"WARNING: need {need.get_formatted_string()} is not supported by provider {str(self)}",
-                                 cb_type=CBType.WARNING,
-                                 indent=True)
+                # self.device.echo(f"WARNING: need {need.get_formatted_string()} is not supported by provider {str(self)}",
+                #                  cb_type=CBType.WARNING,
+                #                  indent=True)
+                logger.warning(f"Need {need.get_formatted_string()} is not supported by provider {str(self)}")
                 self.remove_need(need)
 
     def get_cstate(self):
