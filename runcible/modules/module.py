@@ -90,6 +90,13 @@ class Module(object):
         return needs_list
 
     def _determine_needs_string_or_int(self, attribute, other):
+        if getattr(self, attribute, None) is False:
+            return Need(
+                self._get_instance_name(),
+                attribute,
+                Op.DELETE,
+                parent_module=self.parent_module
+            )
         if getattr(self, attribute, None) is not None:
             if getattr(self, attribute) != getattr(other, attribute, None):
                 return Need(

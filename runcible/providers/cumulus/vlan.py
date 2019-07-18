@@ -6,9 +6,10 @@ from runcible.core.need import NeedOperation as Op
 class CumulusVlanProvider(SubProviderBase):
     provides_for = Vlan
     supported_attributes = [
-        'id',
-        'name',
-        VlanResources.IPV4_ADDRESSES
+        VlanResources.ID,
+        VlanResources.NAME,
+        VlanResources.IPV4_ADDRESSES,
+        VlanResources.IPV4_GATEWAY
     ]
 
     @staticmethod
@@ -23,6 +24,8 @@ class CumulusVlanProvider(SubProviderBase):
                     if VlanResources.IPV4_ADDRESSES not in configuration_dict:
                         configuration_dict.update({VlanResources.IPV4_ADDRESSES: []})
                     configuration_dict[VlanResources.IPV4_ADDRESSES].append(line[6])
+                if line[5] == 'gateway':
+                    configuration_dict.update({VlanResources.IPV4_GATEWAY: line[6]})
         return Vlan(configuration_dict)
 
     def _create_vlan(self, vlan):
@@ -46,6 +49,12 @@ class CumulusVlanProvider(SubProviderBase):
     def _clear_vlan_ipv4_address(self, vlan):
         return self.device.send_command(f"net del vlan {vlan} ip address")
 
+    def _set_ipv4_gateway(self, vlan, gateway):
+        return self.device.send_command(f"net add vlan {vlan} ip gateway {gateway}")
+
+    def _del_ipv4_gateway(self, vlan):
+        return self.device.send_command(f"net del vlan {vlan} ip gateway")
+
     def fix_need(self, need):
         if need.attribute == VlanResources.ID:
             if need.operation == Op.ADD:
@@ -66,5 +75,12 @@ class CumulusVlanProvider(SubProviderBase):
                 self.complete(need)
             elif need.operation == Op.CLEAR:
                 self._clear_vlan_ipv4_address(need.module)
+                self.complete(need)
+        elif need.attribute == VlanResources.IPV4_GATEWAY:
+            if need.operation == Op.SET:
+                self._set_ipv4_gateway(need.module, need.value)
+                self.complete(need)
+            elif need.operation == Op.DELETE:
+                self._del_ipv4_gateway(need.module)
                 self.complete(need)
 
