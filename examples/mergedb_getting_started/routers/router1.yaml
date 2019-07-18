@@ -12,7 +12,7 @@ system:
   hostname: testthishostname23
 interfaces:
   - name: eth1
-    mtu: 1205
-    ipv4_address: 10.1.1.1/24
+    mtu: 1200
+    ipv4_address: 10.1.1.3/24
   - name: eth2
-    ipv4_address: 10.1.4.1/24
+    ipv4_address: 10.1.4.4/24
