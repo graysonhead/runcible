@@ -16,7 +16,9 @@ class CumulusVlansProvider(ProviderArrayBase):
         return self.device.send_command(f"net del bridge bridge vids {vlan}")
 
     def get_cstate(self):
+        # Create an instance of the Vlans module_array to hold our Vlan modules
         vlans_module = Vlans({})
+        # Fetch the parsed_commands value from the device key/value store
         commands = self.device.retrieve('parsed_commands')
         vlan_commands = {}
         for line in commands:
@@ -28,12 +30,5 @@ class CumulusVlansProvider(ProviderArrayBase):
                 vlan_commands[vlan_id].append(split_line)
         for key, value in vlan_commands.items():
             vlans_module.vlans.append(CumulusVlanProvider.get_cstate(key, value))
-            # if line.startswith('net add bridge bridge vids'):
-            #     split_line = line.split(' ')
-            #     id_list = extrapolate_list(split_line[5].split(','), int_out=True)
-            #     for id in id_list:
-            #         vlan_modules.append(Vlan({"id": id}))
-        # vlans_module = Vlans({})
-        # vlans_module.vlans = vlan_modules
         return vlans_module
 
