@@ -11,3 +11,9 @@ meta:
     driver: cumulus
 system:
   hostname: core
+vlans:
+  - id: 10
+    name: changeme
+    ipv4_addresses:
+      - 192.168.1.2/24
+      - 192.168.2.3/24

@@ -61,6 +61,14 @@ class Module(object):
         needs_list = []
         if getattr(self, attribute, None) is not None:
             self_list = getattr(self, attribute)
+            if self_list is False:
+                needs_list.append(Need(
+                    self._get_instance_name(),
+                    attribute,
+                    Op.CLEAR,
+                    parent_module=self.parent_module
+                ))
+                return needs_list
             other_list = getattr(other, attribute, [])
             missing_items = compare_lists(self_list, other_list)
             for add_item in missing_items['missing_right']:
@@ -153,12 +161,15 @@ class Module(object):
                 raise RuncibleValidationError(f"Value {v} of key {k} in {self.module_name} "
                                       f"must be a {self.configuration_attributes[k]['type']}")
             if isinstance(v, list):
-                if self.configuration_attributes[k]['sub_type']:
-                    for item in v:
-                        if not isinstance(item, self.configuration_attributes[k]['sub_type']):
-                            raise RuncibleValidationError(f"Value {item} in {k}: {v} must be a "
-                                                          f"{self.configuration_attributes[k]['sub_type']}")
-
+                try:
+                    if self.configuration_attributes[k]['sub_type']:
+                        for item in v:
+                            if not isinstance(item, self.configuration_attributes[k]['sub_type']):
+                                raise RuncibleValidationError(f"Value {item} in {k}: {v} must be a "
+                                                              f"{self.configuration_attributes[k]['sub_type']}")
+                except KeyError:
+                    raise RuncibleValidationError(msg=f"{dictionary} could not validate sub_type for attribute {k}, "
+                    f"ensure a sub_type is defined")
         return dictionary
 
     def __eq__(self, other):

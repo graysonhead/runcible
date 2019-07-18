@@ -5,7 +5,7 @@ from runcible.modules.module import Module
 class VlanResources(object):
     NAME = 'name'
     ID = 'id'
-    IPV4_ADDRESS = 'ipv4_address'
+    IPV4_ADDRESSES = 'ipv4_addresses'
     IPV4_GATEWAY = 'ipv4_gateway'
     MTU = 'mtu'
 
@@ -22,9 +22,10 @@ class Vlan(Module):
             'type': int,
             'allowed_operations': [Op.DELETE, Op.ADD]
         },
-        VlanResources.IPV4_ADDRESS: {
-            'type': str,
-            'allowed_operations': [Op.DELETE, Op.SET]
+        VlanResources.IPV4_ADDRESSES: {
+            'type': list,
+            'sub_type': str,
+            'allowed_operations': [Op.DELETE, Op.SET, Op.ADD, Op.CLEAR]
         },
         VlanResources.IPV4_GATEWAY: {
             'type': str,
