@@ -91,13 +91,14 @@ class Module(object):
 
     def _determine_needs_string_or_int(self, attribute, other):
         if getattr(self, attribute, None) is False:
-            return Need(
-                self._get_instance_name(),
-                attribute,
-                Op.DELETE,
-                parent_module=self.parent_module
-            )
-        if getattr(self, attribute, None) is not None:
+            if getattr(other, attribute, None) is not None:
+                return Need(
+                    self._get_instance_name(),
+                    attribute,
+                    Op.DELETE,
+                    parent_module=self.parent_module
+                )
+        if getattr(self, attribute, None) is not None and getattr(self, attribute, None) is not False:
             if getattr(self, attribute) != getattr(other, attribute, None):
                 return Need(
                     self._get_instance_name(),
@@ -106,14 +107,7 @@ class Module(object):
                     parent_module=self.parent_module,
                     value=getattr(self, attribute)
                 )
-        elif getattr(self, attribute, None) is False:
-            if getattr(other, attribute, None) is not None:
-                return Need(
-                    self._get_instance_name(),
-                    attribute,
-                    Op.DELETE,
-                    parent_module=self.parent_module
-                )
+
 
     def _determine_needs_bool(self, attribute, other):
         # If self is set to False or None and other is not False, SET to False
