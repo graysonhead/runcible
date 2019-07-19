@@ -9,7 +9,8 @@ class CumulusVlanProvider(SubProviderBase):
         VlanResources.ID,
         VlanResources.NAME,
         VlanResources.IPV4_ADDRESSES,
-        VlanResources.IPV4_GATEWAY
+        VlanResources.IPV4_GATEWAY,
+        VlanResources.MTU
     ]
 
     @staticmethod
@@ -19,7 +20,9 @@ class CumulusVlanProvider(SubProviderBase):
         for line in vlan_commands:
             if line[4] == 'alias':
                 configuration_dict.update({VlanResources.NAME: line[5]})
-            if line[4] == 'ip':
+            elif line[4] == 'mtu':
+                configuration_dict.update({VlanResources.MTU: line[5]})
+            elif line[4] == 'ip':
                 if line[5] == 'address':
                     if VlanResources.IPV4_ADDRESSES not in configuration_dict:
                         configuration_dict.update({VlanResources.IPV4_ADDRESSES: []})
@@ -55,6 +58,12 @@ class CumulusVlanProvider(SubProviderBase):
     def _del_ipv4_gateway(self, vlan):
         return self.device.send_command(f"net del vlan {vlan} ip gateway")
 
+    def _del_mtu(self, vlan):
+        return self.device.send_command(f"net del vlan {vlan} mtu")
+
+    def _set_mtu(self, vlan, mtu):
+        return self.device.send_command(f"net add vlan {vlan} mtu {mtu}")
+
     def fix_need(self, need):
         if need.attribute == VlanResources.ID:
             if need.operation == Op.ADD:
@@ -65,6 +74,13 @@ class CumulusVlanProvider(SubProviderBase):
                 self.complete(need)
             elif need.operation == Op.DELETE:
                 self._del_vlan_name(need.module)
+                self.complete(need)
+        elif need.attribute == VlanResources.MTU:
+            if need.operation == Op.SET:
+                self._set_mtu(need.module, need.value)
+                self.complete(need)
+            elif need.operation == Op.DELETE:
+                self._del_mtu(need.module)
                 self.complete(need)
         elif need.attribute == VlanResources.IPV4_ADDRESSES:
             if need.operation == Op.ADD:
