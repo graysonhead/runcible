@@ -19,3 +19,10 @@ vlans:
       - 192.168.2.3/24
     ipv4_gateway: false
     mtu: false
+ntp_client:
+  servers:
+    - 0.cumulusnetworks.pool.ntp.org
+    - 1.cumulusnetworks.pool.ntp.org
+    - 2.cumulusnetworks.pool.ntp.org
+    - 3.cumulusnetworks.pool.ntp.org
+  interface: eth0
