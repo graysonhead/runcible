@@ -2,6 +2,7 @@ from runcible.providers.cumulus.system import CumulusSystemProvider
 from runcible.providers.cumulus.interfaces import CumulusInterfacesProvider
 from runcible.providers.cumulus.vlans import CumulusVlansProvider
 from runcible.providers.cumulus.ntp_client import CumulusNtpClientProvider
+from runcible.providers.cumulus.bonds import CumulusBondsProvider
 from runcible.protocols.ssh_protocol import SSHProtocol
 from runcible.drivers.driver import DriverBase
 from runcible.providers.cumulus.utils import pre_parse_commands
@@ -14,7 +15,8 @@ class CumulusDriver(DriverBase):
         "system": CumulusSystemProvider,
         "interfaces": CumulusInterfacesProvider,
         "vlans": CumulusVlansProvider,
-        "ntp_client": CumulusNtpClientProvider
+        "ntp_client": CumulusNtpClientProvider,
+        "bonds": CumulusBondsProvider
     }
 
     protocol_map = {

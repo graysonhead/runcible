@@ -22,7 +22,7 @@ class CumulusInterfacesProvider(ProviderArrayBase):
         interface_commands = {}
         interface_instances = []
         for line in commands:
-            if "interface" in line or "bond" in line:
+            if "interface" in line:
                 split_line = line.split(' ')
                 if "interface" == split_line[2] or "bond" == split_line[2]:
                     if_name = split_line[3]

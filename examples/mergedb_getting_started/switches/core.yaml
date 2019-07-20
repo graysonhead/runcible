@@ -11,6 +11,10 @@ meta:
     driver: cumulus
 system:
   hostname: core
+bonds:
+  - name: po4
+    slaves: [swp4]
+    mtu: 1200
 vlans:
   - id: 10
     name: changeme
