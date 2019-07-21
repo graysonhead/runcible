@@ -5,8 +5,11 @@ from runcible.core.need import Need, NeedOperation as Op
 class BondResources(object):
     NAME = 'name'
     MTU = 'mtu'
-    IPV4_ADDRESS = 'ipv4_address'
+    IPV4_ADDRESSES = 'ipv4_addresses'
+    IPV4_GATEWAY = 'ipv4_gateway'
     SLAVES = 'slaves'
+    PVID = 'pvid'
+    VLANS = 'vlans'
 
 
 class Bond(Module):
@@ -23,7 +26,7 @@ class Bond(Module):
             'type': int,
             'allowed_operations': [Op.SET, Op.DELETE]
         },
-        BondResources.IPV4_ADDRESS: {
+        BondResources.IPV4_ADDRESSES: {
             'type': list,
             'sub_type': str,
             'allowed_operations': [Op.SET, Op.ADD, Op.DELETE, Op.CLEAR]
@@ -32,7 +35,20 @@ class Bond(Module):
             'type': list,
             'sub_type': str,
             'allowed_operations': [Op.SET, Op.ADD, Op.DELETE, Op.CLEAR]
-        }
+        },
+        BondResources.IPV4_GATEWAY: {
+            'type': str,
+            'allowed_operations': [Op.SET, Op.DELETE]
+        },
+        BondResources.VLANS: {
+            'type': list,
+            'sub_type': int,
+            'allowed_operations': [Op.SET, Op.ADD, Op.DELETE, Op.CLEAR]
+        },
+        BondResources.PVID: {
+            'type': int,
+            'allowed_operations': [Op.SET, Op.DELETE]
+        },
     }
 
     def __repr__(self):

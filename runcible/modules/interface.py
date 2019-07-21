@@ -24,7 +24,7 @@ class Interface(Module):
             'type': str,
             'allowed_operations': []
         },
-        "pvid": {
+        InterfaceResources.PVID: {
             'type': int,
             'allowed_operations': [Op.SET, Op.DELETE]
         },

@@ -14,7 +14,14 @@ system:
 bonds:
   - name: po4
     slaves: [swp4]
-    mtu: 1200
+    mtu: 9000
+    pvid: 25
+    vlans:
+      - 20
+      - 50
+#    ipv4_addresses:
+#      - 10.2.3.4/24
+#    ipv4_gateway: 10.2.3.1
 vlans:
   - id: 10
     name: changeme
