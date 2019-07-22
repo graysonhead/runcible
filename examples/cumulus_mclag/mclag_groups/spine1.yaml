@@ -1,0 +1,7 @@
+# examples/cumulus_mclag/mclag_groups/spine1.yaml
+---
+cumulus_mclag:
+  system_mac_address: 44:38:39:ff:01:01
+  peerlink_interfaces:
+    - swp9
+    - swp10

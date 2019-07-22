@@ -1,0 +1,7 @@
+# examples/cumulus_mclag/switches/dir.yaml
+---
+inherit:
+  - common/vlans.yaml
+build:
+  - spine1a.yaml
+  - spine1b.yaml

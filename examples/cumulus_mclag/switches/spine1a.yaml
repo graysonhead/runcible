@@ -1,0 +1,19 @@
+# examples/cumulus_mclag/switches/spine1a.yaml
+---
+mergedb:
+  inherit:
+    - mclag_groups/spine1.yaml
+meta:
+  device:
+    ssh:
+      hostname: 192.168.122.89
+      username: cumulus
+    default_management_protocol: ssh
+    driver: cumulus
+system:
+  hostname: spine1a
+cumulus_mclag:
+  peerlink_ip: 169.254.2.1/30
+  peer_ip: 169.254.2.2
+  backup_ip: 192.168.122.18
+  priority: 1000
