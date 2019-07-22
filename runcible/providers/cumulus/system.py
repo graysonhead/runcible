@@ -11,6 +11,7 @@ class CumulusSystemProvider(ProviderBase):
     ]
 
     def get_cstate(self):
+        # TODO: Make this like all the other cumulus providers and retrieve the stored commands list
         hostname = self._get_hostname()
         return System({'hostname': hostname})
 
