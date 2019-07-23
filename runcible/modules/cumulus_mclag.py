@@ -8,7 +8,8 @@ class CumulusMCLAGResources(object):
     PRIORITY = 'priority'
     BACKUP_IP = 'backup_ip'
     PEER_IP = 'peer_ip'
-    PEERLINK_IP = 'peerlink_ip'
+    INTERFACE_IP = 'interface_ip'
+    CLAGD_ARGS = 'clagd_args'
 
 
 class CumulusMCLAG(Module):
@@ -35,8 +36,13 @@ class CumulusMCLAG(Module):
             'type': str,
             'allowed_operations': [Op.SET, Op.DELETE]
         },
-        CumulusMCLAGResources.PEERLINK_IP: {
+        CumulusMCLAGResources.INTERFACE_IP: {
             'type': str,
             'allowed_operations': [Op.SET, Op.DELETE]
+        },
+        CumulusMCLAGResources.CLAGD_ARGS: {
+            'type': list,
+            'sub_type': str,
+            'allowed_operations': [Op.SET, Op.ADD, Op.DELETE, Op.CLEAR]
         }
     }

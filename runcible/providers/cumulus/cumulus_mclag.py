@@ -7,12 +7,13 @@ from runcible.core.need import NeedOperation as Op
 class CumulusMCLAGProvider(ProviderBase):
     provides_for = CumulusMCLAG
     supported_attributes = [
-        CumulusMCLAGResources.PEERLINK_IP,
+        CumulusMCLAGResources.INTERFACE_IP,
         CumulusMCLAGResources.PEERLINK_INTERFACES,
         CumulusMCLAGResources.SYSMAC,
         CumulusMCLAGResources.PEER_IP,
         CumulusMCLAGResources.PRIORITY,
-        CumulusMCLAGResources.BACKUP_IP
+        CumulusMCLAGResources.BACKUP_IP,
+        CumulusMCLAGResources.CLAGD_ARGS
     ]
 
     def get_cstate(self):
@@ -21,10 +22,10 @@ class CumulusMCLAGProvider(ProviderBase):
         for line in commands:
             if line.startswith('net add interface peerlink.4094'):
                 split_line = line.split(' ')
-                if split_line[4] == 'ip':
+                if split_line.__len__() > 4 and split_line[4] == 'ip':
                     if split_line[5] == 'address':
-                        configuration_dict.update({'peerlink_ip': split_line[6]})
-                elif split_line[4] == 'clag':
+                        configuration_dict.update({'interface_ip': split_line[6]})
+                elif split_line.__len__() > 4 and split_line[4] == 'clag':
                     if split_line[5] == 'backup-ip':
                         configuration_dict.update({'backup_ip': split_line[6]})
                     elif split_line[5] == 'priority':
@@ -36,6 +37,10 @@ class CumulusMCLAGProvider(ProviderBase):
                         configuration_dict.update({'backup_ip': split_line[6]})
                     elif split_line[5] == 'peer-ip':
                         configuration_dict.update({'peer_ip': split_line[6]})
+                    elif split_line[5] == 'args':
+                        if 'clagd_args' not in configuration_dict:
+                            configuration_dict.update({'clagd_args': []})
+                        configuration_dict['clagd_args'].append(split_line[6])
             elif line.startswith('net add bond peerlink bond slaves'):
                 split_line = line.split(' ')
                 split_interfaces = extrapolate_list(split_line[6].split(','))
@@ -55,10 +60,10 @@ class CumulusMCLAGProvider(ProviderBase):
         return self.device.send_command(f"net del bond peerlink")
 
     def _set_peerlink_ip(self, ip):
-        return self.device.send_command(f"net add interface peerlink.4094 clag peer-ip {ip}")
+        return self.device.send_command(f"net add interface peerlink.4094 ip address {ip}")
 
     def _del_peerlink_ip(self):
-        return self.device.send_command(f"net del interface peerlink.4094 clag peer-ip")
+        return self.device.send_command(f"net del interface peerlink.4094 ip address")
 
     def _set_sysmac(self, mac):
         return self.device.send_command(f"net add interface peerlink.4094 clag sys-mac {mac}")
@@ -84,8 +89,18 @@ class CumulusMCLAGProvider(ProviderBase):
     def _del_backupip(self):
         return self.device.send_command(f"net del interface peerlink.4094 clag backup-ip")
 
+    def _add_clagdargs(self, arg):
+        return self.device.send_command(f"net add interface peerlink.4094 clag args {arg}")
+
+    def _del_clagdargs(self, arg):
+        return self.device.send_command(f"net del interface peerlink.4094 clag args {arg}")
+
+    def _clear_clagdargs(self):
+        return self.device.send_command(f"net del interface peerlink.4094 clag args")
+
     def fix_needs(self):
-        for need in self.needed_actions:
+        # All other actions require the peerlink bond to be created, so we need to fufill any needs related to it first
+        for need in self.get_needs():
             if need.attribute == CumulusMCLAGResources.PEERLINK_INTERFACES:
                 if need.operation == Op.ADD:
                     self._add_peerlink_interface(need.value)
@@ -96,14 +111,18 @@ class CumulusMCLAGProvider(ProviderBase):
                 elif need.operation == Op.CLEAR:
                     self._clear_peerlink_interface()
                     self.complete(need)
-            elif need.attribute == CumulusMCLAGResources.PEERLINK_IP:
+        # All of the CLAG setup requires the peerlink.4094 interface to both exist and have an IP
+        for need in self.get_needs():
+            if need.attribute == CumulusMCLAGResources.INTERFACE_IP:
                 if need.operation == Op.SET:
                     self._set_peerlink_ip(need.value)
                     self.complete(need)
                 elif need.operation == Op.DELETE:
                     self._del_peerlink_ip()
                     self.complete(need)
-            elif need.attribute == CumulusMCLAGResources.SYSMAC:
+        # Once the peerlink bond has been created and IP set, we can do everything else
+        for need in self.get_needs():
+            if need.attribute == CumulusMCLAGResources.SYSMAC:
                 if need.operation == Op.SET:
                     self._set_sysmac(need.value)
                     self.complete(need)
@@ -130,4 +149,14 @@ class CumulusMCLAGProvider(ProviderBase):
                     self.complete(need)
                 elif need.operation == Op.DELETE:
                     self._del_backupip()
+                    self.complete(need)
+            elif need.attribute == CumulusMCLAGResources.CLAGD_ARGS:
+                if need.operation == Op.ADD:
+                    self._add_clagdargs(need.value)
+                    self.complete(need)
+                elif need.operation == Op.DELETE:
+                    self._del_clagdargs(need.value)
+                    self.complete(need)
+                elif need.operation == Op.CLEAR:
+                    self._clear_clagdargs()
                     self.complete(need)

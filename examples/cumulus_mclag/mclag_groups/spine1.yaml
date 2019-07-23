@@ -5,3 +5,5 @@ cumulus_mclag:
   peerlink_interfaces:
     - swp9
     - swp10
+  clagd_args:
+    - "--vm"

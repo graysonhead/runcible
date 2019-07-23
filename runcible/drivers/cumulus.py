@@ -17,8 +17,8 @@ class CumulusDriver(DriverBase):
         "interfaces": CumulusInterfacesProvider,
         "vlans": CumulusVlansProvider,
         "ntp_client": CumulusNtpClientProvider,
-        "bonds": CumulusBondsProvider,
-        "cumulus_mclag": CumulusMCLAGProvider
+        "cumulus_mclag": CumulusMCLAGProvider,
+        "bonds": CumulusBondsProvider
     }
 
     protocol_map = {

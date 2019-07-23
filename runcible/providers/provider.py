@@ -1,6 +1,7 @@
 from runcible.core.errors import RuncibleValidationError, RuncibleNotImplementedError
 from runcible.core.callback import CBType
 from runcible.core.need import NeedOperation as Op
+import copy
 import logging
 logger = logging.getLogger(__name__)
 
@@ -73,6 +74,14 @@ class ProviderBase(object):
     def complete(self, need):
         self.needed_actions.remove(need)
         self.completed_actions.append(need)
+
+    def get_needs(self):
+        """
+        This method gets a deep copy of the current needs set so that it can be safely iterated over by providers
+        :return:
+        """
+        needs = copy.deepcopy(self.needed_actions)
+        return needs
 
     def remove_need(self, need):
         self.needed_actions.remove(need)
