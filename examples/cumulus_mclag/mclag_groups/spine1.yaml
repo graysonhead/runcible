@@ -7,3 +7,19 @@ cumulus_mclag:
     - swp10
   clagd_args:
     - "--vm"
+ntp_client:
+  servers:
+    - 1.pool.ntp.org
+    - 2.pool.ntp.org
+    - 3.pool.ntp.org
+  interface: eth0
+bonds:
+  {% for i in range(1,9) %}
+  - name: po{{ i }}
+    slaves:
+      - swp{{ i }}
+    clag_id: {{ i }}
+    vlans: [10, 20, 30, 40, 50]
+  {% endfor %}
+
+

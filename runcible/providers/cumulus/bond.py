@@ -12,7 +12,8 @@ class CumulusBondProvider(SubProviderBase):
         BondResources.IPV4_ADDRESSES,
         BondResources.IPV4_GATEWAY,
         BondResources.VLANS,
-        BondResources.PVID
+        BondResources.PVID,
+        BondResources.CLAG_ID
     ]
 
     @staticmethod
@@ -40,6 +41,8 @@ class CumulusBondProvider(SubProviderBase):
                     interface_config.update({
                         BondResources.VLANS: extrapolate_list(command[2].split(','), int_out=True)
                     })
+            elif command[0] == 'clag':
+                interface_config.update({BondResources.CLAG_ID: int(command[2])})
 
         return Bond(interface_config)
 
@@ -84,6 +87,12 @@ class CumulusBondProvider(SubProviderBase):
 
     def _del_pvid(self, bond):
         return self.device.send_command(f"net add bond {bond} bridge pvid")
+
+    def _set_clag_id(self, bond, clag_id):
+        return self.device.send_command(f"net add bond {bond} clag id {clag_id}")
+
+    def _del_clag_id(self, bond):
+        return self.device.send_command(f"net add bond {bond} clag id")
 
     def fix_need(self, need):
         if need.attribute == BondResources.SLAVES:
@@ -134,3 +143,11 @@ class CumulusBondProvider(SubProviderBase):
             elif need.operation == Op.DELETE:
                 self._del_pvid(need.module)
                 self.complete(need)
+        elif need.attribute == BondResources.CLAG_ID:
+            if need.operation == Op.SET:
+                self._set_clag_id(need.module, need.value)
+                self.complete(need)
+            elif need.operation == Op.DELETE:
+                self._del_clag_id(need.module)
+                self.complete(need)
+

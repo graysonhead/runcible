@@ -10,6 +10,7 @@ class BondResources(object):
     SLAVES = 'slaves'
     PVID = 'pvid'
     VLANS = 'vlans'
+    CLAG_ID = 'clag_id'
 
 
 class Bond(Module):
@@ -49,6 +50,10 @@ class Bond(Module):
             'type': int,
             'allowed_operations': [Op.SET, Op.DELETE]
         },
+        BondResources.CLAG_ID: {
+            'type': int,
+            'allowed_operations': [Op.SET, Op.DELETE]
+        }
     }
 
     def __repr__(self):
