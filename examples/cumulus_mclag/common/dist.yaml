@@ -1,0 +1,19 @@
+# examples/cumulus_mclag/common/dist.yaml
+---
+meta:
+  device:
+    ssh:
+      username: cumulus
+    default_management_protocol: ssh
+    driver: cumulus
+bonds:
+  - name: downlink
+    slaves:
+      - swp5
+      - swp6
+    vlans: [10, 20, 30, 40, 50]
+interfaces:
+  {% for i in range(1,5) %}
+  - name: swp{{ i }}
+    vlans: [10, 20, 30, 40, 50]
+  {% endfor %}

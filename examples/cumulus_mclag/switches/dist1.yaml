@@ -1,0 +1,15 @@
+# examples/cumulus_mclag/switches/dist1.yaml
+---
+mergedb:
+  inherit:
+    - common/dist.yaml
+meta:
+  device:
+    ssh:
+      hostname: 192.168.122.68
+system:
+  hostname: dist1
+interfaces:
+  - name: swp1
+    pvid: 10
+    vlans: False

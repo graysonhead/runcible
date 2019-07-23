@@ -5,3 +5,5 @@ inherit:
 build:
   - spine1a.yaml
   - spine1b.yaml
+  - dist1.yaml
+  - dist2.yaml

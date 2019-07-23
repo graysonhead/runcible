@@ -1,0 +1,11 @@
+# examples/cumulus_mclag/switches/dist2.yaml
+---
+mergedb:
+  inherit:
+    - common/dist.yaml
+meta:
+  device:
+    ssh:
+      hostname: 192.168.122.219
+system:
+  hostname: dist2
