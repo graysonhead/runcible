@@ -14,7 +14,8 @@ mergedb_default_config = {
     'merge_rules': {
         'keyed_array': [
             {'path': [], 'attribute': 'vlans', 'key': 'id'},
-            {'path': [], 'attribute': 'interfaces', 'key': 'name'}
+            {'path': [], 'attribute': 'interfaces', 'key': 'name'},
+            {'path': [], 'attribute': 'bonds', 'key': 'name'}
         ]
     }
 }
