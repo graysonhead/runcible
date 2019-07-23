@@ -40,7 +40,7 @@ class CumulusNtpClientProvider(ProviderBase):
         return self.device.send_command(f"net del time ntp source")
 
     def fix_needs(self):
-        for need in self.needed_actions:
+        for need in self.get_needs():
             if need.attribute is NtpClientResources.SERVERS:
                 if need.operation == Op.ADD:
                     self._add_server(need.value)
