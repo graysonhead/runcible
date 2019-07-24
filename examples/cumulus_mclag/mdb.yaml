@@ -1,2 +1,14 @@
 # examples/cumulus_mclag/mdb.yaml
 ---
+knockout: '~'
+merge_rules:
+  keyed_array:
+    - path: []
+      attribute: 'vlans'
+      key: 'id'
+    - path: []
+      attribute: 'interfaces'
+      key: name
+    - path: []
+      attribute: 'bonds'
+      key: 'name'

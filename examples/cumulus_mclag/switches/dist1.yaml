@@ -12,4 +12,4 @@ system:
 interfaces:
   - name: swp1
     pvid: 10
-    vlans: False
+    vlans: '~'

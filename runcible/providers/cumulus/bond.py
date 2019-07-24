@@ -24,7 +24,9 @@ class CumulusBondProvider(SubProviderBase):
             if command[1] == 'slaves':
                 if 'slaves' not in interface_config:
                     interface_config.update({'slaves': []})
-                interface_config['slaves'].append(command[2])
+                slave_list = extrapolate_list(command[2].split(','))
+                for slave in slave_list:
+                    interface_config['slaves'].append(slave)
             elif command[0] == 'mtu':
                 interface_config.update({BondResources.MTU: command[1]})
             elif command[0] == 'ip':
