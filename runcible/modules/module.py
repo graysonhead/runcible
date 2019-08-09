@@ -108,7 +108,6 @@ class Module(object):
                     value=getattr(self, attribute)
                 )
 
-
     def _determine_needs_bool(self, attribute, other):
         # If self is set to False or None and other is not False, SET to False
         if getattr(self, attribute, None) is not None:
@@ -172,6 +171,18 @@ class Module(object):
                     raise RuncibleValidationError(msg=f"{dictionary} could not validate sub_type for attribute {k}, "
                     f"ensure a sub_type is defined")
         return dictionary
+
+    def render(self):
+        """
+        Render the module as a dict.
+        :return:
+            A dict representing the module
+        """
+        rendered_dict = {}
+        for key in self.configuration_attributes.keys():
+            if getattr(self, key, None) is not None:
+                rendered_dict.update({key: getattr(self, key)})
+        return rendered_dict
 
     def __eq__(self, other):
         # This causes comparison operations between two instances of this class to only take into consideration the
