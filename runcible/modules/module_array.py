@@ -56,17 +56,6 @@ class ModuleArray(object):
             needs_list.extend(item.determine_needs(other_item))
         return needs_list
 
-    def render(self):
-        """
-        Render the module and all sub_modules as a list.
-        :return:
-            A list representing the module and it's children
-        """
-        rendered_list = []
-        for module in getattr(self, self.module_name):
-            rendered_list.append(module.render())
-        return rendered_list
-
     def validate(self):
         """
         Runs validate method on each module in the array.

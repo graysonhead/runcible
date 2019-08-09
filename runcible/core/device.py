@@ -268,17 +268,6 @@ class Device(object):
         """
         return self._kvstore[key]
 
-    def get_cstate(self):
-        """
-        Renders the cstate of each module and returns it as a single dict
-        :return:
-            A dict of the current state
-        """
-        rendered_dict = {}
-        for provider in self.providers:
-            rendered_dict.update({provider.cstate.module_name: provider.cstate.render()})
-        return rendered_dict
-
     def clear_kv_store(self):
         """
         Clears the key/value store
