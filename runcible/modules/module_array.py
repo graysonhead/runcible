@@ -58,9 +58,9 @@ class ModuleArray(object):
 
     def render(self):
         """
-        Render the module and all sub_modules as a dict.
+        Render the module and all sub_modules as a list.
         :return:
-            A dict representing the module and it's children
+            A list representing the module and it's children
         """
         rendered_list = []
         for module in getattr(self, self.module_name):
