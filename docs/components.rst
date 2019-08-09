@@ -35,8 +35,8 @@ A need is a datatype that abstracts state changes. Needs can be simplified into 
 ``<parent_module>.<module>.<attribute>.<command> <value>`` Where both the parent module and value are optional. For
 example:
 
-``vlans.12.ipv4_addr.SET: 10.1.2.3/24`` Is a need that represents setting the ipv4_addr of the vlan sub_module for vlan
-12 to 10.1.2.3.
+``vlans.12.ipv4_address.SET: 10.1.2.3/24`` Is a need that represents setting the ipv4_address attribute of the vlan
+sub_module for vlan 12 to 10.1.2.3.
 
 ``ntp_client.servers.DEL: 0.pool.ntp.org`` Is a need that represents removing the value ``0.pool.ntp.org`` from the list
 of ntp servers.
