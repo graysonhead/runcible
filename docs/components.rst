@@ -21,7 +21,6 @@ aspects of the "bigger picture" when configuring multiple devices, such as:
 - The order in which the devices are configured
 - Ensuring that certian groups of devices aren't configured at the same time
 - Controlling failure behavior (I.E. failure of a core device results in a stop/rollback of the execution process)
-- Rollback and failure behavior
 
 .. _need:
 
