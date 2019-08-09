@@ -12,9 +12,6 @@ Welcome to runcible's documentation!
 
    introduction
    getting_started
-   components
-   commands
-   api
    contribution_guide
 
 
