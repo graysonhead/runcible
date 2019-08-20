@@ -14,6 +14,7 @@ Welcome to runcible's documentation!
    getting_started
    components
    commands
+   drivers
    api
    contribution_guide
 
