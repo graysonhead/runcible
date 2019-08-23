@@ -1,6 +1,8 @@
 from docutils import nodes
 from docutils.parsers.rst import Directive
 from runcible.core.plugin_registry import PluginRegistry
+from runcible.providers.provider_array import ProviderArrayBase
+from runcible.providers.provider import ProviderBase
 from sphinx import directives
 
 
@@ -26,30 +28,41 @@ class RuncibleDriverDocs(Directive):
         return [title_node] + module_nodes
 
     def gen_driver_nodes(self, driver_class):
-        header = ("Attribute", "Type", "Allowed Operations", "Description", "Examples")
-        colspec = (1, 1, 2, 2, 3)
         # table = self.create_table()
         # data = []
         nodes = []
         for provider_name, provider in driver_class.module_provider_map.items():
             nodes.append(directives.nodes.subtitle(text=provider_name + ':'))
-            nodes.append(directives.nodes.paragraph(text="Supported Attributes:"))
+            if issubclass(provider, ProviderBase) and not issubclass(provider, ProviderArrayBase):
+                nodes.append(directives.nodes.paragraph(text='Type: Module'))
+                nodes.append(directives.nodes.paragraph(text="Supported Attributes:"))
+                nodes.append(self.populate_column(provider))
+            if issubclass(provider, ProviderArrayBase):
+                nodes.append(directives.nodes.paragraph(text='Type: Module Array'))
+                nodes.append(directives.nodes.paragraph(text="Supported Attributes:"))
+                nodes.append(self.populate_column(provider.sub_module_provider))
 
-            # Get data to build tables
-            data = []
-            for attribute in provider.supported_attributes:
-                module = provider.provides_for
-                attribute_name = attribute
-                attribute_type = self.get_type_string(module.configuration_attributes[attribute]['type'])
-                attribute_allowed_ops_list = self.get_formatted_oplist(module.configuration_attributes[attribute]['allowed_operations'])
-                if module.configuration_attributes[attribute].get('examples', None) is not None:
-                    attribute_examples = self.format_examples(module.configuration_attributes[attribute].get('examples', None))
-                else:
-                    attribute_examples = None
-                attribute_description = module.configuration_attributes[attribute].get('description', None)
-                data.append((attribute_name, attribute_type, attribute_allowed_ops_list, attribute_description, attribute_examples))
-            nodes.append(self.create_table(header=header, data=data, colspec=colspec))
         return nodes
+
+    def populate_column(self, provider):
+        header = ("Attribute", "Type", "Allowed Operations", "Description", "Examples")
+        colspec = (1, 1, 2, 2, 3)
+        data = []
+        for attribute in provider.supported_attributes:
+            module = provider.provides_for
+            attribute_name = attribute
+            attribute_type = self.get_type_string(module.configuration_attributes[attribute]['type'])
+            attribute_allowed_ops_list = self.get_formatted_oplist(
+                module.configuration_attributes[attribute]['allowed_operations'])
+            if module.configuration_attributes[attribute].get('examples', None) is not None:
+                attribute_examples = self.format_examples(
+                    module.configuration_attributes[attribute].get('examples', None))
+            else:
+                attribute_examples = None
+            attribute_description = module.configuration_attributes[attribute].get('description', None)
+            data.append(
+                (attribute_name, attribute_type, attribute_allowed_ops_list, attribute_description, attribute_examples))
+        return self.create_table(header=header, data=data, colspec=colspec)
 
     def format_examples(self, example_list):
         join_list = []
