@@ -7,6 +7,7 @@ from runcible.providers.cumulus.utils import extrapolate_list
 class CumulusBondProvider(SubProviderBase):
     provides_for = Bond
     supported_attributes = [
+        BondResources.NAME,
         BondResources.SLAVES,
         BondResources.MTU,
         BondResources.IPV4_ADDRESSES,

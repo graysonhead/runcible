@@ -13,11 +13,15 @@ class NtpClient(Module):
         NtpClientResources.SERVERS: {
             'type': list,
             'sub_type': str,
-            'allowed_operations': [Op.DELETE, Op.SET, Op.ADD, Op.CLEAR]
+            'allowed_operations': [Op.DELETE, Op.SET, Op.ADD, Op.CLEAR],
+            'examples': [['0.pool.ntp.org', '1.pool.ntp.org', '2.pool.ntp.org']],
+            'description': 'A list of servers hostname or IP addresses used for NTP'
         },
         NtpClientResources.INTERFACE: {
             'type': str,
-            'allowed_operations': [Op.DELETE, Op.SET]
+            'allowed_operations': [Op.DELETE, Op.SET],
+            'examples': ['swp1', 'eth0'],
+            'description': 'Interface used for NTP'
         }
     }
 
