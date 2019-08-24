@@ -4,6 +4,10 @@ from runcible.core.plugin_registry import PluginRegistry
 from runcible.providers.provider_array import ProviderArrayBase
 from runcible.providers.provider import ProviderBase
 from sphinx import directives
+import yaml
+
+dump_noalias = yaml.dumper.SafeDumper
+dump_noalias.ignore_aliases = lambda self, data: True
 
 
 class RuncibleDriverDocs(Directive):
@@ -37,10 +41,14 @@ class RuncibleDriverDocs(Directive):
                 nodes.append(directives.nodes.paragraph(text='Type: Module'))
                 nodes.append(directives.nodes.paragraph(text="Supported Attributes:"))
                 nodes.append(self.populate_column(provider))
+                example_yaml = self.get_module_example(provider)
+                nodes.append(directives.nodes.literal_block(example_yaml, example_yaml))
             if issubclass(provider, ProviderArrayBase):
                 nodes.append(directives.nodes.paragraph(text='Type: Module Array'))
                 nodes.append(directives.nodes.paragraph(text="Supported Attributes:"))
                 nodes.append(self.populate_column(provider.sub_module_provider))
+                example_yaml = self.get_module_array_example(provider)
+                nodes.append(directives.nodes.literal_block(example_yaml, example_yaml))
 
         return nodes
 
@@ -55,14 +63,35 @@ class RuncibleDriverDocs(Directive):
             attribute_allowed_ops_list = self.get_formatted_oplist(
                 module.configuration_attributes[attribute]['allowed_operations'])
             if module.configuration_attributes[attribute].get('examples', None) is not None:
-                attribute_examples = self.format_examples(
-                    module.configuration_attributes[attribute].get('examples', None))
+                attribute_examples = module.configuration_attributes[attribute].get('examples', None)
             else:
                 attribute_examples = None
             attribute_description = module.configuration_attributes[attribute].get('description', None)
             data.append(
                 (attribute_name, attribute_type, attribute_allowed_ops_list, attribute_description, attribute_examples))
         return self.create_table(header=header, data=data, colspec=colspec)
+
+    def get_module_array_example(self, provider):
+        module = provider.provides_for
+        example_dict = {module.module_name: []}
+        example_item = {}
+        for attribute in provider.sub_module_provider.supported_attributes:
+            if module.sub_module.configuration_attributes[attribute].get('examples', None) is not None:
+                example_item.update({attribute: module.sub_module.configuration_attributes[attribute]['examples'][0]})
+        example_dict[module.module_name].append(example_item)
+        yaml_string = yaml.dump(example_dict, default_flow_style=False, Dumper=dump_noalias)
+        output = f"# Example Runcible {module.module_name} module array\n---\n" + yaml_string
+        return output
+
+    def get_module_example(self, provider):
+        module = provider.provides_for
+        example_dict = {module.module_name: {}}
+        for attribute in provider.supported_attributes:
+            if module.configuration_attributes[attribute].get('examples', None) is not None:
+                example_dict[module.module_name].update({attribute: module.configuration_attributes[attribute]['examples'][0]})
+        yaml_string = yaml.dump(example_dict, default_flow_style=False, Dumper=dump_noalias)
+        output = f"# Example Runcible {module.module_name} module\n---\n" + yaml_string
+        return output
 
     def format_examples(self, example_list):
         join_list = []
@@ -89,7 +118,7 @@ class RuncibleDriverDocs(Directive):
         op_list = []
         for operation in oplist:
             op_list.append(operation.name)
-        return ', '.join(op_list)
+        return op_list
 
     def create_table(self, header: tuple, data: list, colspec: tuple):
         # header = ("Attribute", "Default")
@@ -116,9 +145,19 @@ class RuncibleDriverDocs(Directive):
     def create_table_row(self, row_cells):
         row = directives.nodes.row()
         for cell in row_cells:
-            entry = directives.nodes.entry()
-            row += entry
-            entry += nodes.paragraph(text=cell)
+            if type(cell) is list:
+                bulletlist = directives.nodes.bullet_list()
+                for item in cell:
+                    i_bullet = directives.nodes.list_item()
+                    i_bullet += directives.nodes.paragraph(text=item)
+                    bulletlist += i_bullet
+                entry = directives.nodes.entry()
+                row += entry
+                entry += bulletlist
+            else:
+                entry = directives.nodes.entry()
+                row += entry
+                entry += nodes.paragraph(text=cell)
         return row
 
 def setup(app):

@@ -14,13 +14,13 @@ class Vlan(Module):
     module_name = 'vlan'
     identifier_attribute = VlanResources.ID
     configuration_attributes = {
+        VlanResources.ID: {
+            'type': int,
+            'allowed_operations': [Op.CREATE, Op.REMOVE]
+        },
         VlanResources.NAME: {
             'type': str,
             'allowed_operations': [Op.DELETE, Op.SET]
-        },
-        VlanResources.ID: {
-            'type': int,
-            'allowed_operations': [Op.DELETE, Op.ADD]
         },
         VlanResources.IPV4_ADDRESSES: {
             'type': list,
