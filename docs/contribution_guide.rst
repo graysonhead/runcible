@@ -19,11 +19,13 @@ Roadmap
 Phase 1
 ^^^^^^^
 
- - Device level API Classes
- - Feature complete Providers for Cumulus Switches
+ - Device level API Classes (done)
+ - Feature complete Providers for Cumulus Switches (80% done)
  - Feature complete Providers for Ubiquity Switches
- - Builtin common modules for switches
- - Basic Naive Executor/Schedulers for running against multiple devices
+ - Builtin common modules for switches (done)
+ - Basic Naive Executor/Schedulers for running against multiple devices (done)
+ - YAML Configuration Layering and Inheritance (done)
+ - YAML directory structure (done)
 
 Phase 2
 ^^^^^^^
@@ -32,12 +34,6 @@ Phase 2
  - Topology Aware Executor/Schedulers
 
 Phase 3
-^^^^^^^
-
- - YAML Configuration Layering and Inheritance
- - YAML directory structure
-
-Phase 4
 ^^^^^^^
 
  - Self Testing/Configuration Rollback functionality
