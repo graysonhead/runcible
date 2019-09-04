@@ -10,6 +10,15 @@ Modules are the primary data-type in Runcible. They are used to represent both t
 device as well as tracking the current state of a device. They can be generated from JSON, YAML, or a Python Dict (if
 you are using the :ref:`api`.)
 
+In general, Modules have a very simple structure, they have a title and attributes:
+
+.. code-block:: yaml
+
+    module_name:
+        attribute1: key1
+        attribute2: key2
+
+
 .. _schedulers:
 
 Schedulers

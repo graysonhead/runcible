@@ -1,0 +1,68 @@
+# examples/yaml/cumulus_switch.yaml
+---
+core:
+  meta:
+    device:
+      default_management_protocol: ssh
+      driver: cumulus
+      ssh:
+        hostname: 192.168.122.166
+        username: cumulus
+  bonds:
+  - mtu: 9000
+    name: po4
+    pvid: 25
+    slaves:
+    - swp4
+    vlans:
+    - 20
+    - 50
+  interfaces:
+  - name: swp1
+    vlans:
+    - 10
+    - 20
+    - 30
+    - 40
+    - 50
+  - name: swp2
+    vlans:
+    - 10
+    - 20
+    - 30
+    - 40
+    - 50
+  - name: swp3
+    vlans:
+    - 10
+    - 20
+    - 30
+    - 40
+    - 50
+  - name: swp5
+    vlans:
+    - 10
+    - 20
+    - 30
+    - 40
+    - 50
+  ntp_client:
+    interface: eth0
+    servers:
+    - 0.cumulusnetworks.pool.ntp.org
+    - 1.cumulusnetworks.pool.ntp.org
+    - 2.cumulusnetworks.pool.ntp.org
+    - 3.cumulusnetworks.pool.ntp.org
+  system:
+    hostname: core
+  vlans:
+  - id: 10
+    name: vlan10
+  - id: 20
+    name: vlan20
+  - id: 30
+    name: vlan30
+  - id: 40
+    name: vlan40
+  - id: 50
+    name: vlan50

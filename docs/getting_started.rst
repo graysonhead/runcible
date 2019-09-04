@@ -4,8 +4,24 @@
 Getting Started
 ===============
 
-Runcible and MergeDB example
-----------------------------
+YAML File
+---------
+
+The easiest way to get started with Runcible is to write some definition files in YAML. This will allow you to become
+familiar with all of Runcible's :ref:`modules` and try out some configurations. If you plan on managing a large
+infrastructure, it is highly recommended to utilize Runcible with it's sister project, :ref:`mergedb`.
+
+
+Definition structure
+^^^^^^^^^^^^^^^^^^^^
+
+Definitions have a relatively simple structure
+
+
+MergeDB Datasource
+------------------
+
+.. _mergedb:
 
 Setting Up MergeDB
 ^^^^^^^^^^^^^^^^^^
@@ -60,16 +76,16 @@ last port is tagged.
 Now we need to create the declarations for our switches. In the device directory, create a .yaml for each of the
 devices:
 
-.. literalinclude:: ../examples/mergedb_getting_started/devices/core.yaml
+.. literalinclude:: ../examples/mergedb_getting_started/switches/core.yaml
 
-.. literalinclude:: ../examples/mergedb_getting_started/devices/dist1.yaml
+.. literalinclude:: ../examples/mergedb_getting_started/switches/dist1.yaml
 
-.. literalinclude:: ../examples/mergedb_getting_started/devices/dist2.yaml
+.. literalinclude:: ../examples/mergedb_getting_started/switches/dist2.yaml
 
 At this point, if you were to run MergeDB, you would get blank output because we haven't added anything to the build
 list. So lets add the rest of our inheritance structure and the build list to the dir.yaml inside the devices directory:
 
-.. literalinclude:: ../examples/mergedb_getting_started/devices/dir.yaml
+.. literalinclude:: ../examples/mergedb_getting_started/switches/dir.yaml
 
 Now, run mergedb and inspect the built configs.
 
