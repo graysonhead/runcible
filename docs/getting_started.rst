@@ -12,10 +12,110 @@ familiar with all of Runcible's :ref:`modules` and try out some configurations. 
 infrastructure, it is highly recommended to utilize Runcible with it's sister project, :ref:`mergedb`.
 
 
-Definition structure
-^^^^^^^^^^^^^^^^^^^^
+For example, to configure a single Cumulus switch, you could generate a yaml file like so:
 
-Definitions have a relatively simple structure
+.. literalinclude:: ../examples/yaml/cumulus_switch.yaml
+
+To understand the contents of this file in depth, visit the :ref:`modules` section of the documentation.
+
+To apply this configuration to the switch in question, simply run:
+
+``runcible -y {path_to_yaml_file} '*.' apply``
+
+You will get output that looks like:
+
+.. code-block::
+
+    The following changes will be applied:
+    Device core:
+    ==========================================
+    bonds needs:
+        bonds.po4.CREATE
+        bonds.po4.mtu.SET: 9000
+        bonds.po4.slaves.ADD: swp4
+        bonds.po4.vlans.ADD: 20
+        bonds.po4.vlans.ADD: 50
+        bonds.po4.pvid.SET: 25
+    interfaces needs:
+        interfaces.swp1.vlans.ADD: 10
+        interfaces.swp1.vlans.ADD: 20
+        interfaces.swp1.vlans.ADD: 30
+        interfaces.swp1.vlans.ADD: 40
+        interfaces.swp1.vlans.ADD: 50
+        interfaces.swp2.vlans.ADD: 10
+        interfaces.swp2.vlans.ADD: 20
+        interfaces.swp2.vlans.ADD: 30
+        interfaces.swp2.vlans.ADD: 40
+        interfaces.swp2.vlans.ADD: 50
+        interfaces.swp3.vlans.ADD: 10
+        interfaces.swp3.vlans.ADD: 20
+        interfaces.swp3.vlans.ADD: 30
+        interfaces.swp3.vlans.ADD: 40
+        interfaces.swp3.vlans.ADD: 50
+        interfaces.swp5.vlans.ADD: 10
+        interfaces.swp5.vlans.ADD: 20
+        interfaces.swp5.vlans.ADD: 30
+        interfaces.swp5.vlans.ADD: 40
+        interfaces.swp5.vlans.ADD: 50
+    ntp_client needs no changes.
+    system needs no changes.
+    vlans needs:
+        vlans.10.CREATE
+        10.name.SET: vlan10
+        vlans.20.CREATE
+        20.name.SET: vlan20
+        vlans.30.CREATE
+        30.name.SET: vlan30
+        vlans.40.CREATE
+        40.name.SET: vlan40
+        vlans.50.CREATE
+        50.name.SET: vlan50
+    Would you like to apply the changes? y/[n]y
+
+
+Accepting these changes will apply them to the device.
+
+.. code-block::
+
+    Device core
+    ==========================================
+        bonds.po4.CREATE
+        bonds.po4.slaves.ADD: swp4
+        bonds.po4.mtu.SET: 9000
+        bonds.po4.vlans.ADD: 20
+        bonds.po4.vlans.ADD: 50
+        bonds.po4.pvid.SET: 25
+        interfaces.swp1.vlans.ADD: 10
+        interfaces.swp1.vlans.ADD: 20
+        interfaces.swp1.vlans.ADD: 30
+        interfaces.swp1.vlans.ADD: 40
+        interfaces.swp1.vlans.ADD: 50
+        interfaces.swp2.vlans.ADD: 10
+        interfaces.swp2.vlans.ADD: 20
+        interfaces.swp2.vlans.ADD: 30
+        interfaces.swp2.vlans.ADD: 40
+        interfaces.swp2.vlans.ADD: 50
+        interfaces.swp3.vlans.ADD: 10
+        interfaces.swp3.vlans.ADD: 20
+        interfaces.swp3.vlans.ADD: 30
+        interfaces.swp3.vlans.ADD: 40
+        interfaces.swp3.vlans.ADD: 50
+        interfaces.swp5.vlans.ADD: 10
+        interfaces.swp5.vlans.ADD: 20
+        interfaces.swp5.vlans.ADD: 30
+        interfaces.swp5.vlans.ADD: 40
+        interfaces.swp5.vlans.ADD: 50
+        vlans.10.CREATE
+        10.name.SET: vlan10
+        vlans.20.CREATE
+        20.name.SET: vlan20
+        vlans.30.CREATE
+        30.name.SET: vlan30
+        vlans.40.CREATE
+        40.name.SET: vlan40
+        vlans.50.CREATE
+        50.name.SET: vlan50
+
 
 
 MergeDB Datasource

@@ -10,16 +10,67 @@ Modules are the primary data-type in Runcible. They are used to represent both t
 device as well as tracking the current state of a device. They can be generated from JSON, YAML, or a Python Dict (if
 you are using the :ref:`api`.)
 
-In general, Modules have a very simple structure, they have a title and attributes:
+In general, Modules have a very simple structure, they have a name and attributes:
 
 .. code-block:: yaml
 
     module_name:
-        attribute1: key1
-        attribute2: key2
+        attribute1: value1
+        attribute2: value2
 
+An example of the ``ntp_client`` module as implemented by the :ref:`cumulus_driver` driver:
+
+.. code-block:: yaml
+
+    ntp_client:
+        interface: eth0
+        servers:
+        - 0.cumulusnetworks.pool.ntp.org
+        - 1.cumulusnetworks.pool.ntp.org
+        - 2.cumulusnetworks.pool.ntp.org
+        - 3.cumulusnetworks.pool.ntp.org
+
+There are also some special modules that behave differently.
+
+Special Modules
+***************
+
+Module Array
+""""""""""""
+
+Module Arrays are a wrapper that allows a number of modules to exist under a parent module. For example:
+
+.. code-block:: yaml
+
+    parent_module:
+        - key: sub_module_1
+          attribute: value
+        - key: sub_module_2
+          attribute: value
+
+The most common use case for Module Arrays are interfaces, bonds, and vlans, for example here is an example of the
+``bonds`` module array as implemented by the :ref:`cumulus_driver` driver:
+
+.. code-block:: yaml
+
+    bonds:
+    - name: po1
+      pvid: 1
+      slaves:
+      - swp1
+      - swp2
+    - name: po2
+      pvid: 1
+      slaves:
+      - swp3
+      - swp4
 
 .. _schedulers:
+
+Meta Modules
+""""""""""""
+
+TBD
 
 Schedulers
 ----------

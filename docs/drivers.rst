@@ -1,6 +1,8 @@
 Driver Index
 ============
 
+.. _cumulus_driver:
+
 Cumulus
 -------
 
