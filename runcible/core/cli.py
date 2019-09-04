@@ -1,7 +1,7 @@
 import argparse
 import runcible
 import os
-from runcible.core.terminalcallbacks import TermCallback
+import yaml
 from runcible.schedulers.naive import NaiveScheduler
 from runcible.core.need import Need, NeedOperation
 from runcible.core.errors import RuncibleSyntaxError
@@ -29,32 +29,58 @@ class Cli(object):
     def __init__(self):
         self.args = None
         self.parseargs()
+        self.validate_args()
         self.run()
 
     def parseargs(self):
         parser = argparse.ArgumentParser(
             description="Runcible is an application to orchestrate network device infrastructure"
         )
-        parser.add_argument('target', type=str, default=None, nargs='?')
-        parser.add_argument('func', type=str, default=None, nargs='?')
-        parser.add_argument('value', type=str, default=None, nargs='?')
-        parser.add_argument('--version', action='store_true')
-        parser.add_argument('--verbose', '-v', action='store_true', dest='verbose')
-        # parser.add_argument(
-        #     '--fabric',
-        #     '-f',
-        #     type=str,
-        #     dest='fabric_file',
-        #     help='YAML Fabric definition',
-        #     default=os.environ.get("RUNCILBE_FABRIC")
-        # )
-        parser.add_argument('-m',
-                            '--mergedb-database',
+        parser.add_argument('target', type=str,
+                            default=None,
+                            nargs='?',
+                            help="Target regular expression that selects the devices to be configured")
+        parser.add_argument('func',
                             type=str,
-                            default=os.environ.get("MERGEDB_DATABASE", None),
-                            dest='mergedb_database'
-                            )
+                            default=None,
+                            nargs='?',
+                            help="The need string/function to be performed against targeted devices")
+        parser.add_argument('value',
+                            type=str,
+                            default=None,
+                            nargs='?',
+                            help="The value provided to the need string, if required")
+        parser.add_argument('--version', action='store_true', help="Show version number and exit")
+        parser.add_argument('--verbose', '-v', action='store_true', dest='verbose', help="Show debug output")
+        datasource_args = parser.add_argument_group("Datasources")
+        datasource_args.add_argument(
+                                '-m',
+                                 '--mergedb-database',
+                                 type=str,
+                                 default=os.environ.get("MERGEDB_DATABASE", None),
+                                 dest='mergedb_database',
+                                 help="Path to the base directory of a MergeDB database. "
+                                 "Can also be specified via environment variable 'MERGEDB_DATABASE'"
+        )
+        datasource_args.add_argument(
+                                '-y',
+                                '--yaml',
+                                type=str,
+                                dest='yaml',
+                                help="Path to a yaml definition file"
+        )
         self.args = parser.parse_args()
+
+    def validate_args(self):
+        """
+        Ensures that the arguments given are sane and don't conflict with each other
+        :raises:
+            RuncibleSyntaxError
+        """
+        if self.args.yaml and self.args.mergedb_database:
+            raise RuncibleSyntaxError(msg="Only one datasource can be specified")
+        if not self.args.yaml and not self.args.mergedb_database:
+            raise RuncibleSyntaxError(msg="You must specify a datasource with -m or -y")
 
     def run(self):
         # If --version is present, display the version number and exit
@@ -63,11 +89,14 @@ class Cli(object):
             exit(0)
         if self.args.verbose:
             logger.basicConfig(level=logging.DEBUG)
+        inp = {}
         if self.args.mergedb_database:
             mdb = Database(self.args.mergedb_database, mergedb_default_config)
             inp = mdb.build()
-        else:
-            raise RuncibleSyntaxError(msg="Runcible requires a datasource, see --help for more information")
+        elif self.args.yaml:
+            with open(self.args.yaml) as file:
+                raw = file.read()
+            inp = yaml.safe_load(raw)
         if self.args.func == 'apply':
             scheduler = NaiveScheduler(inp, self.args.target)
             scheduler.apply()
