@@ -1,6 +1,9 @@
 from runcible.providers.provider_array import ProviderArrayBase
 from runcible.providers.cumulus.bond import CumulusBondProvider
 from runcible.modules.bonds import Bonds
+from runcible.modules.bond import BondResources
+from runcible.core.need import NeedOperation as Op
+import copy
 
 
 class CumulusBondsProvider(ProviderArrayBase):
@@ -32,3 +35,19 @@ class CumulusBondsProvider(ProviderArrayBase):
         bonds_instance = Bonds({})
         bonds_instance.bonds = bond_instances
         return bonds_instance
+
+    def fix_needs(self):
+        needed_actions = copy.deepcopy(self.needed_actions)
+        for need in needed_actions:
+            if need.operation == Op.CREATE:
+                self._create_module(need.attribute)
+                self.complete(need)
+            elif need.operation == Op.REMOVE:
+                self._remove_module(need.attribute)
+                self.complete(need)
+            if need.attribute == BondResources.SLAVES:
+                self.sub_provider.fix_need(need)
+        needed_actions = copy.deepcopy(self.needed_actions)
+        for need in needed_actions:
+            if self.sub_module_provider:
+                self.sub_provider.fix_need(need)
