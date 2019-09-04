@@ -2,7 +2,6 @@ from runcible.core.callbacks import CBMethod, Callbacks
 from runcible.core.callback import CBType, Callback
 from runcible.core.plugin_registry import PluginRegistry
 from runcible.core.errors import RuncibleValidationError, RuncibleNotConnectedError, RuncibleActionFailure
-from runcible.protocols.ssh_protocol import SSHProtocol
 
 
 class Device(object):

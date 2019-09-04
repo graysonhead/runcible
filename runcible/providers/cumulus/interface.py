@@ -7,9 +7,10 @@ from runcible.providers.cumulus.utils import extrapolate_list
 class CumulusInterfaceProvider(SubProviderBase):
     provides_for = Interface
     supported_attributes = [
-        InterfaceResources.BPDUGUARD,
+        InterfaceResources.NAME,
         InterfaceResources.PORTFAST,
         InterfaceResources.PVID,
+        InterfaceResources.BPDUGUARD,
         InterfaceResources.VLANS
     ]
 

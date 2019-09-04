@@ -22,37 +22,55 @@ class Interface(Module):
     configuration_attributes = {
         InterfaceResources.NAME: {
             'type': str,
-            'allowed_operations': []
+            'allowed_operations': [Op.CREATE, Op.REMOVE],
+            'examples': ['swp1', 'ge01/0/1'],
+            'description': "The name of the interface"
         },
         InterfaceResources.PVID: {
             'type': int,
-            'allowed_operations': [Op.SET, Op.DELETE]
+            'allowed_operations': [Op.SET, Op.DELETE],
+            'examples': [10, 20, 30],
+            'description': "Vlan ID of the untagged PVID vlan for this interface."
         },
         InterfaceResources.BPDUGUARD: {
             'type': bool,
             'allowed_operations': [Op.SET],
+            'examples': [False, True],
+            'description': "Enables BPDU Guard on the interface"
             # 'default': False
         },
         InterfaceResources.PORTFAST: {
             'type': bool,
-            'allowed_operations': [Op.SET]
+            'allowed_operations': [Op.SET],
+            'examples': [False, True],
+            'description': "Enables spanning tree portfast on the interface"
         },
         InterfaceResources.VLANS: {
             'type': list,
             'sub_type': int,
-            'allowed_operations': [Op.SET, Op.ADD, Op.DELETE, Op.CLEAR]
+            'allowed_operations': [Op.SET, Op.ADD, Op.DELETE, Op.CLEAR],
+            'examples': [[1, 10, 15, 50], [20, 30, 40], [20]],
+            'description': f"A list of the tagged VLANS trunked to this interface. Depending on the switch and interface "
+                           f"mode, this may be mutually exclusive with {InterfaceResources.PVID}."
         },
         InterfaceResources.MTU: {
             'type': int,
-            'allowed_operations': [Op.SET]
+            'allowed_operations': [Op.SET],
+            'examples': [1500, 9000],
+            'description': "Sets the maximum allowed MTU for the interface"
         },
         InterfaceResources.IPV4_ADDRESS: {
             'type': str,
-            'allowed_operations': [Op.SET, Op.CLEAR]
+            'allowed_operations': [Op.SET, Op.CLEAR],
+            'examples': ['10.0.0.1/16', '192.168.1.1/24'],
+            'description': 'Sets the IPv4 address of the interface in CIDR notation.'
+            #TODO: Make this take a list of IP addresses like the vlan/vlans module
         },
         InterfaceResources.SPEED: {
             'type': str,
             'allowed_operations': [Op.SET, Op.DELETE],
+            'examples': ['1G', '10G', '25G'],
+            'description': 'Sets the line speed of the interface',
             'allowed_values': [
                 '10',
                 '100',
