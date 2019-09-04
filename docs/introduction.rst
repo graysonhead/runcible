@@ -21,15 +21,34 @@ Depending on who you ask, its either a nonsensical word, a word for spork, or a 
 How is This Different from Ansible and Others?
 ----------------------------------------------
 
-Runcible focuses on network devices (Switches, Routers, Firewalls, Wireless Gear), and also has some strong opinions in
-regards to YAML structure. This gives it many advantages for network appliances, chiefly different devices or devices
-from different vendors being able to share a similar interface. Since network devices must comply with networking
-standards, they generally all operate in a similar fashion, and as a result can be abstracted in a similar fashion. This
-makes it rather unsuited to managing operating systems.
+Runcible was created to solve three major problems in regards to Network Automation:
 
-While Ansible is the current de-facto option for managing network device configurations, it doesn't support the concept
-of layering configurations, which is extremely important if you are trying to define a network using DRY (Don't Repeat
-Yourself) principles.
+Interface Commonality
+^^^^^^^^^^^^^^^^^^^^^
+
+One of the core components of Runcible is a datatype known as :ref:`modules`. Modules are plugin-independent interfaces
+that allow data with a common schema to be passed into multiple types of plugins. This allows for a large amount of
+configuration re-use between similar devices produced by different vendors. I.E. the vlans module should be implemented
+by any switch plugin that supports vlans, and the configuration should be identical (assuming the device supports
+the entire featureset of the vlans module.)
+
+Topology Awareness
+^^^^^^^^^^^^^^^^^^
+
+One important aspect of any kind of network automation is ensuring that bad automation runs are dealt with, and that
+you stage your changes in a topology-aware manner. You wouldn't want a bad change to propagate to your entire core
+switch fabric and take your network down. Runcible provides :ref:`schedulers` that allow for intelligent automation runs
+allow you to ensure that your automated changes are made intelligently, and also control rollback and failure behavior.
+
+Protocol Agnosticism
+^^^^^^^^^^^^^^^^^^^^
+
+Runcible doesn't operate on a defined set of protocols. While most providers will go with a text based protocol (SSH,
+telnet, RS232), any protocol is supported. Runcible provides some sane default protocol modules based on paramiko for
+SSH, and pyserial for RS232 terminals, but has loose shim classes that allow plugin writers to implement any protocol
+they deem necessary without inhibiting any of Runcible's features. This allows users to use their same automation
+repository for both bootstrapping devices via a serial connection, as well as making changes via SSH, Telnet, REST, or
+even protocols that haven't been invented yet.
 
 I Want to Get Involved
 ----------------------
