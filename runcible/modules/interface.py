@@ -64,7 +64,7 @@ class Interface(Module):
             'sub_type': str,
             'allowed_operations': [Op.SET, Op.ADD, Op.DELETE, Op.CLEAR],
             'examples': [['192.168.1.2/24', '192.168.1.3/24'], ['10.2.3.2/24']],
-            'description': 'A list of IPV4 addresses of the bond in CIDR notation'
+            'description': 'A list of IPV4 addresses of the interface in CIDR notation'
         },
         InterfaceResources.SPEED: {
             'type': str,
