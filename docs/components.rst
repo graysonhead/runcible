@@ -65,12 +65,14 @@ The most common use case for Module Arrays are interfaces, bonds, and vlans, for
       - swp3
       - swp4
 
-.. _schedulers:
 
 Meta Modules
 """"""""""""
 
 TBD
+
+.. _schedulers:
+
 
 Schedulers
 ----------
