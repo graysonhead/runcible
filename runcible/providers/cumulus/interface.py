@@ -11,7 +11,8 @@ class CumulusInterfaceProvider(SubProviderBase):
         InterfaceResources.PORTFAST,
         InterfaceResources.PVID,
         InterfaceResources.BPDUGUARD,
-        InterfaceResources.VLANS
+        InterfaceResources.VLANS,
+        InterfaceResources.IPV4_ADDRESSES
     ]
 
     @staticmethod
@@ -33,7 +34,11 @@ class CumulusInterfaceProvider(SubProviderBase):
                     interface_config.update({InterfaceResources.BPDUGUARD: True})
                 elif command[1] == 'portadminedge':
                     interface_config.update({InterfaceResources.PORTFAST: True})
-
+            elif command[0] == 'ip':
+                if command[1] == 'address':
+                    if not interface_config.get(InterfaceResources.IPV4_ADDRESSES, None):
+                        interface_config.update({InterfaceResources.IPV4_ADDRESSES: []})
+                    interface_config[InterfaceResources.IPV4_ADDRESSES].append(command[2])
         interface_config.update({'name': name})
         return Interface(interface_config)
 
@@ -45,6 +50,15 @@ class CumulusInterfaceProvider(SubProviderBase):
 
     def _set_pvid(self, interface: str, pvid: int):
         return self.device.send_command(f"net add interface {interface} bridge pvid {pvid}")
+
+    def _add_interface_ipv4_address(self, interface, address):
+        return self.device.send_command(f"net add interface {interface} ip address {address}")
+
+    def _del_interface_ipv4_address(self, interface, address):
+        return self.device.send_command(f"net del interface {interface} ip address {address}")
+
+    def _clear_interface_ipv4_address(self, interface):
+        return self.device.send_command(f"net del interface {interface} ip address")
 
     def _delete_pvid(self, interface: str):
         return self.device.send_command(f"net del interface {interface} bridge pvid")
@@ -83,4 +97,14 @@ class CumulusInterfaceProvider(SubProviderBase):
                 self.complete(need)
             elif need.operation == Op.DELETE:
                 self._del_vids(need.module, need.value)
+                self.complete(need)
+        elif need.attribute == InterfaceResources.IPV4_ADDRESSES:
+            if need.operation == Op.ADD:
+                self._add_interface_ipv4_address(need.module, need.value)
+                self.complete(need)
+            elif need.operation == Op.DELETE:
+                self._del_interface_ipv4_address(need.module, need.value)
+                self.complete(need)
+            elif need.operation == Op.CLEAR:
+                self._clear_interface_ipv4_address(need.module)
                 self.complete(need)

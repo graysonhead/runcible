@@ -10,7 +10,7 @@ class InterfaceResources(object):
     BPDUGUARD = 'bpduguard'
     PORTFAST = 'portfast'
     MTU = 'mtu'
-    IPV4_ADDRESS = 'ipv4_address'
+    IPV4_ADDRESSES = 'ipv4_addresses'
     SPEED = 'speed'
 
 
@@ -59,12 +59,12 @@ class Interface(Module):
             'examples': [1500, 9000],
             'description': "Sets the maximum allowed MTU for the interface"
         },
-        InterfaceResources.IPV4_ADDRESS: {
-            'type': str,
-            'allowed_operations': [Op.SET, Op.CLEAR],
-            'examples': ['10.0.0.1/16', '192.168.1.1/24'],
-            'description': 'Sets the IPv4 address of the interface in CIDR notation.'
-            #TODO: Make this take a list of IP addresses like the vlan/vlans module
+        InterfaceResources.IPV4_ADDRESSES: {
+            'type': list,
+            'sub_type': str,
+            'allowed_operations': [Op.SET, Op.ADD, Op.DELETE, Op.CLEAR],
+            'examples': [['192.168.1.2/24', '192.168.1.3/24'], ['10.2.3.2/24']],
+            'description': 'A list of IPV4 addresses of the bond in CIDR notation'
         },
         InterfaceResources.SPEED: {
             'type': str,

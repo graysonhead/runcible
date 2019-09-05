@@ -19,12 +19,9 @@ core:
     - 50
   interfaces:
   - name: swp1
-    vlans:
-    - 10
-    - 20
-    - 30
-    - 40
-    - 50
+    ipv4_addresses:
+      - 192.168.2.2/24
+    vlans: []
   - name: swp2
     vlans:
     - 10
