@@ -28,7 +28,8 @@ setuptools.setup(
         'Programming Language :: Python :: 3.7',
     ],
     project_urls={
-        'Repository': 'https://github.com/graysonhead/runcible',
+        'Source': 'https://github.com/graysonhead/runcible',
+        'Bug Reports': 'https://github.com/graysonhead/runcible/issues',
         'Documentation': 'https://runcible.readthedocs.io/en/latest/index.html',
         'Gitter': 'https://gitter.im/runcible_project/community'
     },
