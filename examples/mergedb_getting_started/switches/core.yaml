@@ -11,29 +11,3 @@ meta:
     driver: cumulus
 system:
   hostname: core
-bonds:
-  - name: po4
-    slaves: [swp4]
-    mtu: 9000
-    pvid: 25
-    vlans:
-      - 20
-      - 50
-#    ipv4_addresses:
-#      - 10.2.3.4/24
-#    ipv4_gateway: 10.2.3.1
-vlans:
-  - id: 10
-    name: changeme
-    ipv4_addresses:
-      - 192.168.1.2/24
-      - 192.168.2.3/24
-    ipv4_gateway: false
-    mtu: false
-ntp_client:
-  servers:
-    - 0.cumulusnetworks.pool.ntp.org
-    - 1.cumulusnetworks.pool.ntp.org
-    - 2.cumulusnetworks.pool.ntp.org
-    - 3.cumulusnetworks.pool.ntp.org
-  interface: eth0
