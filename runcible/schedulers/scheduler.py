@@ -2,7 +2,7 @@ from runcible.core.device import Device
 from runcible.core.callbacks import CBMethod
 from runcible.core.terminalcallbacks import TermCallback
 import re
-
+import yaml
 
 class SchedulerBase(object):
 
@@ -31,6 +31,14 @@ class SchedulerBase(object):
                 TermCallback.info(f"Device {device.name}")
                 TermCallback.info("==========================================")
                 device.execute()
+
+    def get_cstate(self):
+        self.set_devices()
+        returned_dict = {}
+        for device in self.devices:
+            device.plan(mute_callbacks=True)
+            returned_dict.update({device.name: device.get_cstate()})
+        print(yaml.safe_dump(returned_dict))
 
     def run_adhoc_command(self, need):
         if not self.devices:

@@ -20,6 +20,7 @@ class Device(object):
         self.providers = []
         self.needs_changes = False
         self.driver = None
+        self.labels = []
         self.default_client = None
         self.callbacks = Callbacks(callback_method=callback_method)
         self._memoized_comands = {}
@@ -33,7 +34,28 @@ class Device(object):
         else:
             self.protocol = self.clients[self.default_client]
 
-    def plan(self):
+    def get_cstate(self):
+        """
+        Renders the cstate of each module and returns it as a single dict
+        :return:
+            A dict of the current state
+        """
+        rendered_dict = {}
+        for provider in self.providers:
+            rendered_dict.update({provider.cstate.module_name: provider.cstate.render()})
+        return rendered_dict
+
+    def plan(self, mute_callbacks=False):
+        """
+        Plan is the stage at which the cstate is fetched from the device and generated
+
+        :param mute_callbacks:
+            Prevents printing callbacks to stdout, used when the user is calling "cstate.GET" and only expects yaml or
+            json output
+
+        :return:
+            List of callbacks
+        """
         self._clear_memoization()
         self.clear_kv_store()
         if getattr(self.driver, 'pre_plan_tasks', None):
@@ -43,9 +65,10 @@ class Device(object):
         if getattr(self.driver, 'post_plan_tasks', None):
             self.driver.post_plan_tasks(self)
         self.needs_as_callbacks()
-        callbacks = self.callbacks.run_callbacks()
-        self.callbacks.clear_callbacks()
-        return callbacks
+        if not mute_callbacks:
+            callbacks = self.callbacks.run_callbacks()
+            self.callbacks.clear_callbacks()
+            return callbacks
 
     def execute(self):
         if self.needs_changes:
@@ -74,6 +97,7 @@ class Device(object):
         self.load_cstate()
         if getattr(self.driver, 'post_plan_tasks', None):
             self.driver.post_plan_tasks()
+        # TODO: Use "next" iterator syntax to extract a single item from these lambdas, as its more concise
         if need.parent_module:
             provider = list(filter(lambda x: x.provides_for.module_name == need.parent_module, self.providers))[0]
         else:
@@ -211,19 +235,6 @@ class Device(object):
             self.load_driver(self.meta_device['driver'])
         else:
             raise RuncibleValidationError("A device must be specified with a driver")
-        # Then load the connection protocols
-        # if 'ssh' in self.meta_device:
-        #     ssh_conf = self.meta_device['ssh']
-        #     if 'hostname' not in ssh_conf or 'username' not in ssh_conf:
-        #         raise RuncibleValidationError("SSH connection method requires a username and hostname at a minimum")
-        #     ssh = SSHProtocol(
-        #         hostname=ssh_conf['hostname'],
-        #         username=ssh_conf['username'],
-        #         password=getattr(ssh_conf, 'password', None),
-        #         port=getattr(ssh_conf, 'port', 22)
-        #
-        #     )
-        #     self.clients.update({'ssh': ssh})
         for client_type in ['ssh', 'telnet']:
             if client_type in self.meta_device:
                 if client_type not in self.driver.protocol_map:
