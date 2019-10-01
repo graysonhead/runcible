@@ -27,12 +27,23 @@ class Device(object):
         self._kvstore = {}
 
         self.load_config_from_meta(config['meta']['device'])
+        if config['meta'].get('labels', None) is not None:
+            self.load_labels(config['meta']['labels'])
         self.load_dstate(config)
         # self.load_module_providers()
         if protocol:
             self.protocol = self.clients[protocol]
         else:
             self.protocol = self.clients[self.default_client]
+
+    def load_labels(self, labels_array):
+        for label_def in labels_array:
+            try:
+                label_class = PluginRegistry.get_label(label_def['type'])
+            except Exception as e:
+                raise e
+            label_instance = label_class(label_def)
+            self.labels.append(label_instance)
 
     def get_cstate(self):
         """

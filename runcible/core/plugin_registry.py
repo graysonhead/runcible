@@ -1,16 +1,19 @@
 import inspect
-from runcible import modules, drivers
+from runcible import modules, drivers, labels
 from runcible.modules.module import Module
 from runcible.drivers.driver import DriverBase
+from runcible.labels.label import LabelBase
 import pkg_resources
 
 
 class PluginRegistry:
     modules = {}
     drivers = {}
+    labels = {}
 
     @classmethod
     def load_drivers(cls):
+        cls.load_core_labels()
         cls.load_core_drivers()
         cls.load_plugin_drivers()
 
@@ -63,9 +66,28 @@ class PluginRegistry:
                 if inspect.isclass(attr):
                     # Ensure its a subclass of Module and ignore the base class
                     if issubclass(attr, parent) and attr is not parent:
-                        # Add it ot the list
+                        # Add it to the list
                         found_classes.append(attr)
         return found_classes
+
+    @classmethod
+    def load_core_labels(cls):
+        label_list = cls.class_loader(
+            labels,
+            LabelBase,
+            'label'
+        )
+        for lab in label_list:
+            cls.add_label_to_registry(lab)
+
+    @classmethod
+    def add_label_to_registry(cls, label):
+        """
+        Adds a label to the registry using label.type_label as a key
+        :param label:
+        :return:
+        """
+        cls.labels.update({label.type_label: label})
 
     @classmethod
     def add_module_to_registry(cls, module):
@@ -96,3 +118,9 @@ class PluginRegistry:
         if not cls.drivers:
             cls.load_drivers()
         return cls.drivers[driver_name]
+
+    @classmethod
+    def get_label(cls, label_name):
+        if not cls.labels:
+            cls.load_core_labels()
+        return cls.labels[label_name]

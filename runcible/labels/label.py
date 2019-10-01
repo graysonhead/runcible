@@ -8,6 +8,7 @@ class LabelBase(object):
     type_label = ""
     description = ""
     attributes = {}
+    type_attribute = {"type": {"type": str, "description": "The type of label, appended to attributes"}}
     # Example: 
     # attributes = {"device": {"type": str, "description": "Help text here"}
 
@@ -15,6 +16,8 @@ class LabelBase(object):
         for key, value in input_dict.items():
             if key in self.attributes:
                 setattr(self, key, value)
+            self.attributes.update(self.type_attribute)
+            setattr(self, 'type', self.type_label)
 
     def validate_input(self, input_dict: dict):
         for key, value in input_dict.items():
@@ -27,7 +30,7 @@ class LabelBase(object):
                     f" must be a {self.attributes[key]['type']}")
 
     def render_as_dict(self):
-        rendered_dict = {self.type_label: {}}
+        rendered_dict = {}
         for key in self.attributes.keys():
-            rendered_dict[self.type_label].update({key: getattr(self, key)})
+            rendered_dict.update({key: getattr(self, key)})
         return rendered_dict
