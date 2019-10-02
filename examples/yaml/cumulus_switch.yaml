@@ -12,6 +12,8 @@ core:
       - type: adjacent_to
         device: dist1
         port: swp6
+  lldp:
+    discover_adjacent: True
   bonds:
   - mtu: 9000
     name: po4
