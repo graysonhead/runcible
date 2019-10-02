@@ -36,6 +36,12 @@ class Device(object):
         else:
             self.protocol = self.clients[self.default_client]
 
+    def get_labels(self):
+        label_array = []
+        for label in self.labels:
+            label_array.append(label.render_as_dict())
+        return label_array
+
     def load_labels(self, labels_array):
         for label_def in labels_array:
             try:

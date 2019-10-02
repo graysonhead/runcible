@@ -104,6 +104,9 @@ class Cli(object):
         if self.args.func == 'cstate.GET':
             scheduler = NaiveScheduler(inp, self.args.target)
             scheduler.get_cstate()
+        elif self.args.func == 'meta.labels.GET':
+            scheduler = NaiveScheduler(inp, self.args.target)
+            scheduler.get_labels()
         elif self.args.func:
             value = self.args.value
             need = self.get_need_from_func(self.args.func, value=value)

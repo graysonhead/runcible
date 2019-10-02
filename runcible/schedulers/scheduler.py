@@ -40,6 +40,17 @@ class SchedulerBase(object):
             returned_dict.update({device.name: device.get_cstate()})
         print(yaml.safe_dump(returned_dict))
 
+    def get_labels(self):
+        self.set_devices()
+        returned_dict = {}
+        for device in self.devices:
+            device.plan(mute_callbacks=True)
+            returned_dict.update({
+                device.name: {"meta": {"labels": device.get_labels()}}
+            })
+        print(yaml.safe_dump(returned_dict))
+
+
     def run_adhoc_command(self, need):
         if not self.devices:
             TermCallback.error("No devices matched")
