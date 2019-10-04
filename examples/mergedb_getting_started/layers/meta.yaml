@@ -1,4 +1,4 @@
 # examples/mergedb_getting_started/layers/lldp.yaml
 meta:
   scheduler:
-    type: naive
+    type: filter

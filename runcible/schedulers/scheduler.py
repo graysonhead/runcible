@@ -2,8 +2,9 @@ from runcible.core.device import Device
 from runcible.core.callbacks import CBMethod
 from runcible.core.terminalcallbacks import TermCallback
 from runcible.core.plugin_registry import PluginRegistry
+from runcible.core.errors import RuncibleNotImplementedError
 import re
-import yaml
+
 
 DEFAULT_SCHEDULER = 'naive'
 
@@ -16,7 +17,7 @@ class SchedulerBase(object):
         scheduler_type = None
         meta_config = fabric_config.get('meta', None)
         if meta_config:
-            meta_scheduler = meta_config.get('scheduler', None)
+            meta_scheduler = meta_config['meta'].get('scheduler', None)
             if meta_scheduler:
                 scheduler_type = meta_scheduler.get('type', None)
         if scheduler_type:
@@ -44,45 +45,17 @@ class SchedulerBase(object):
             TermCallback.error(msg="No devices matched.")
 
     def apply(self):
-        TermCallback.info("The following changes will be applied:")
-        for device in self.devices:
-            TermCallback.info(f"Device {device.name}:")
-            TermCallback.info("==========================================")
-            device.plan()
-        prompt_to_continue = input("Would you like to apply the changes? y/[n]")
-        if prompt_to_continue.lower() == 'y':
-            for device in self.devices:
-                TermCallback.info(f"Device {device.name}")
-                TermCallback.info("==========================================")
-                device.execute()
+        raise RuncibleNotImplementedError
 
     def get_cstate(self):
-        self.set_devices()
-        returned_dict = {}
-        for device in self.devices:
-            device.plan(mute_callbacks=True)
-            returned_dict.update({device.name: device.get_cstate()})
-        print(yaml.safe_dump(returned_dict))
+        raise RuncibleNotImplementedError
 
     def get_labels(self):
-        self.set_devices()
-        returned_dict = {}
-        for device in self.devices:
-            device.plan(mute_callbacks=True)
-            returned_dict.update({
-                device.name: {"meta": {"labels": device.get_labels()}}
-            })
-        print(yaml.safe_dump(returned_dict))
-
+        raise RuncibleNotImplementedError
 
     def run_adhoc_command(self, need):
-        if not self.devices:
-            TermCallback.error("No devices matched")
-            exit(1)
-        for device in self.devices:
-            TermCallback.info(f"Device {device.name}:")
-            TermCallback.info("==========================================")
-            device.ad_hoc_command(need)
+        raise RuncibleNotImplementedError
+
 
 
 

@@ -1,3 +1,2 @@
-from runcible.schedulers import naive
-from runcible.schedulers import scheduler
-__all__ = ['naive', 'scheduler']
+from runcible.schedulers import naive, scheduler, filter
+__all__ = ['naive', 'scheduler', 'filter']
