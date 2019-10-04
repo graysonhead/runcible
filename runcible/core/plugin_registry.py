@@ -1,8 +1,9 @@
 import inspect
-from runcible import modules, drivers, labels
+from runcible import modules, drivers, labels, schedulers
 from runcible.modules.module import Module
 from runcible.drivers.driver import DriverBase
 from runcible.labels.label import LabelBase
+# from runcible.schedulers.scheduler import SchedulerBase
 import pkg_resources
 
 
@@ -10,12 +11,14 @@ class PluginRegistry:
     modules = {}
     drivers = {}
     labels = {}
+    schedulers = {}
 
     @classmethod
     def load_drivers(cls):
         cls.load_core_labels()
         cls.load_core_drivers()
         cls.load_plugin_drivers()
+        cls.load_core_schedulers()
 
     @classmethod
     def load_core_drivers(cls):
@@ -81,6 +84,25 @@ class PluginRegistry:
             cls.add_label_to_registry(lab)
 
     @classmethod
+    def load_core_schedulers(cls):
+        scheduler_list = cls.class_loader(
+            schedulers,
+            schedulers.scheduler.SchedulerBase,
+            'scheduler'
+        )
+        for sched in scheduler_list:
+            cls.add_scheduler_to_registry(sched)
+
+    @classmethod
+    def add_scheduler_to_registry(cls, scheduler):
+        """
+        Adds a scheduler to the registry using scheduler.scheduler_name as a key
+        :param scheduler:
+        :return:
+        """
+        cls.schedulers.update({scheduler.scheduler_name: scheduler})
+
+    @classmethod
     def add_label_to_registry(cls, label):
         """
         Adds a label to the registry using label.type_label as a key
@@ -124,3 +146,9 @@ class PluginRegistry:
         if not cls.labels:
             cls.load_core_labels()
         return cls.labels[label_name]
+
+    @classmethod
+    def get_scheduler(cls, scheduler_name):
+        if not cls.schedulers:
+            cls.load_core_schedulers()
+        return cls.schedulers[scheduler_name]
