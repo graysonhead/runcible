@@ -41,3 +41,6 @@ class LLDPProvider(ProviderBase):
         # using the glob format here seems to work even when the high number overruns the number of switchports
         # on the system
         return self.device.send_command("net show lldp swp1-100")
+
+    def fix_needs(self):
+        pass

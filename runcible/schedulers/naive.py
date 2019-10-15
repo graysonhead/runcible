@@ -12,8 +12,6 @@ class NaiveScheduler(SchedulerBase):
     def apply(self):
         TermCallback.info("The following changes will be applied:")
         for device in self.devices:
-            TermCallback.info(f"Device {device.name}:")
-            TermCallback.info("==========================================")
             device.plan()
         prompt_to_continue = input("Would you like to apply the changes? y/[n]")
         if prompt_to_continue.lower() == 'y':
@@ -26,7 +24,7 @@ class NaiveScheduler(SchedulerBase):
         self.set_devices()
         returned_dict = {}
         for device in self.devices:
-            device.plan(mute_callbacks=True)
+            device.plan(run_callbacks=False)
             returned_dict.update({device.name: device.get_cstate()})
         print(yaml.safe_dump(returned_dict))
 
@@ -34,7 +32,7 @@ class NaiveScheduler(SchedulerBase):
         self.set_devices()
         returned_dict = {}
         for device in self.devices:
-            device.plan(mute_callbacks=True)
+            device.plan(run_callbacks=False)
             returned_dict.update({
                 device.name: {"meta": {"labels": device.get_labels()}}
             })

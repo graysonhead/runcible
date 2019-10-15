@@ -1,0 +1,17 @@
+---
+mergedb:
+  inherit:
+    - mclag_groups/tor1.yaml
+meta:
+  device:
+    ssh:
+      hostname: 192.168.122.210
+      username: cumulus
+    default_management_protocol: ssh
+    driver: cumulus
+system:
+  hostname: tor1b
+cumulus_mclag:
+  interface_ip: 169.254.2.6/30
+  peer_ip: 169.254.2.5
+  priority: 1

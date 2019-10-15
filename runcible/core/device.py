@@ -2,7 +2,7 @@ from runcible.core.callbacks import CBMethod, Callbacks
 from runcible.core.callback import CBType, Callback
 from runcible.core.plugin_registry import PluginRegistry
 from runcible.core.errors import RuncibleValidationError, RuncibleNotConnectedError, RuncibleActionFailure
-
+from runcible.core.terminalcallbacks import TermCallback
 
 class Device(object):
     """
@@ -62,19 +62,19 @@ class Device(object):
             rendered_dict.update({provider.cstate.module_name: provider.cstate.render()})
         return rendered_dict
 
-    def plan(self, mute_callbacks=False):
+    def plan(self, run_callbacks=True):
         """
         Plan is the stage at which the cstate is fetched from the device and generated
 
         :param mute_callbacks:
             Prevents printing callbacks to stdout, used when the user is calling "cstate.GET" and only expects yaml or
-            json output
+            json output.
 
         :return:
             List of callbacks
         """
         self._clear_memoization()
-        self.clear_kv_store()
+        self.store = self.clear_kv_store()
         if getattr(self.driver, 'pre_plan_tasks', None):
             self.driver.pre_plan_tasks(self)
         self.load_cstate()
@@ -82,12 +82,18 @@ class Device(object):
         if getattr(self.driver, 'post_plan_tasks', None):
             self.driver.post_plan_tasks(self)
         self.needs_as_callbacks()
-        if not mute_callbacks:
-            callbacks = self.callbacks.run_callbacks()
-            self.callbacks.clear_callbacks()
-            return callbacks
+        if run_callbacks:
+            return self.run_callbacks("plan")
 
-    def execute(self):
+    def run_callbacks(self, stage: str):
+        if self.callbacks.callback_method == CBMethod.TERMINAL:
+            TermCallback.info(f"Device {self.name} {stage}:")
+            TermCallback.info("==========================================")
+        callbacks = self.callbacks.run_callbacks()
+        self.callbacks.clear_callbacks()
+        return callbacks
+
+    def execute(self, run_callbacks=True):
         if self.needs_changes:
             if getattr(self.driver, 'pre_exec_tasks', None):
                 self.driver.pre_exec_tasks(self)
@@ -102,9 +108,9 @@ class Device(object):
                       decoration=True)
         self.check_complete()
         self.clear_actions()
-        callbacks = self.callbacks.run_callbacks()
-        self.callbacks.clear_callbacks()
-        return callbacks
+        if run_callbacks:
+            return self.run_callbacks("execute")
+        self.disconnect()
 
     def ad_hoc_command(self, need):
         self._clear_memoization()
@@ -166,6 +172,9 @@ class Device(object):
                 self.echo(f"{need.get_formatted_string()}",
                           cb_type=CBType.SUCCESS,
                           indent=True)
+
+    def disconnect(self):
+        self. protocol.disconnect()
 
     def send_command(self, command, memoize: bool = False):
         """
@@ -301,3 +310,6 @@ class Device(object):
         :return:
         """
         self._kvstore = {}
+
+    def __repr__(self):
+        return f"<runcible.core.device.Device: {self.name}>"

@@ -20,6 +20,9 @@ class TerminalProtocolBase(object):
     def connect(self):
         raise RuncibleNotImplementedError(msg=f"Protocol {self.__repr__()} doesn't implement the connect method")
 
+    def disconnect(self):
+        raise RuncibleNotImplementedError(msg=f"Protocol {self.__repr__()} doesn't implement the disconnect method")
+
     def exec(self, command):
         self.exec_command(command)
 

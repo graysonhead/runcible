@@ -101,7 +101,7 @@ class Cli(object):
         if self.args.func == 'apply':
                 scheduler = SchedulerBase.get_scheduler(inp, self.args.target)
                 scheduler.apply()
-        if self.args.func == 'cstate.GET':
+        elif self.args.func == 'cstate.GET':
             scheduler = SchedulerBase.get_scheduler(inp, self.args.target)
             scheduler.get_cstate()
         elif self.args.func == 'meta.labels.GET':

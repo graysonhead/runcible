@@ -53,6 +53,7 @@ class Callbacks(object):
             elif callback.type is CBType.ERROR:
                 callbacks['log'].append(callback.get_dict())
                 callbacks['has_errors'] = True
+        self.clear_callbacks()
         return callbacks
 
     def run_terminal_callbacks(self):
