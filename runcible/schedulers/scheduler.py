@@ -4,6 +4,7 @@ from runcible.core.terminalcallbacks import TermCallback
 from runcible.core.plugin_registry import PluginRegistry
 from runcible.core.errors import RuncibleNotImplementedError
 import re
+import yaml
 
 
 DEFAULT_SCHEDULER = 'naive'
@@ -48,10 +49,22 @@ class SchedulerBase(object):
         raise RuncibleNotImplementedError
 
     def get_cstate(self):
-        raise RuncibleNotImplementedError
+        self.set_devices()
+        returned_dict = {}
+        for device in self.devices:
+            device.plan(run_callbacks=False)
+            returned_dict.update({device.name: device.get_cstate()})
+        print(yaml.safe_dump(returned_dict))
 
     def get_labels(self):
-        raise RuncibleNotImplementedError
+        self.set_devices()
+        returned_dict = {}
+        for device in self.devices:
+            device.plan(run_callbacks=False)
+            returned_dict.update({
+                device.name: {"meta": {"labels": device.get_labels()}}
+            })
+        print(yaml.safe_dump(returned_dict))
 
     def run_adhoc_command(self, need):
         raise RuncibleNotImplementedError

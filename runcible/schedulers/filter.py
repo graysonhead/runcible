@@ -94,15 +94,6 @@ class FilterScheduler(SchedulerBase):
                         current_run.remove(other_device)
         return current_run, next_run
 
-    def get_labels(self):
-        self.set_devices()
-        returned_dict = {}
-        for device in self.devices:
-            device.plan(run_callbacks=False)
-            returned_dict.update({
-                device.name: {"meta": {"labels": device.get_labels()}}
-            })
-        print(yaml.safe_dump(returned_dict))
 
 def adjacency_filter(this, other):
     for other_label in other.labels:
