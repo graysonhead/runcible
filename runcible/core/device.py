@@ -4,6 +4,7 @@ from runcible.core.plugin_registry import PluginRegistry
 from runcible.core.errors import RuncibleValidationError, RuncibleNotConnectedError, RuncibleActionFailure
 from runcible.core.terminalcallbacks import TermCallback
 
+
 class Device(object):
     """
     A device represents a single network device in Runcible. A device will have:
@@ -37,12 +38,34 @@ class Device(object):
             self.protocol = self.clients[self.default_client]
 
     def get_labels(self):
+        """
+        Returns any labels assigned to the device during the Planning stage
+
+        :return:
+            An array containing dict representation of labels
+        """
         label_array = []
         for label in self.labels:
             label_array.append(label.render_as_dict())
         return label_array
 
     def load_labels(self, labels_array):
+        """
+        Takes an array of dict labels and creates/assigns instances of labels to the device instance
+        :param labels_array:
+            An array of labels:
+
+            Example:
+                        [
+                            {
+                                "type": "adjacent_to",
+                                "device": "device1",
+                                "switchport": "swp1"
+                            }
+                        ]
+        :return:
+        """
+
         for label_def in labels_array:
             try:
                 label_class = PluginRegistry.get_label(label_def['type'])
@@ -86,6 +109,15 @@ class Device(object):
             return self.run_callbacks("plan")
 
     def run_callbacks(self, stage: str):
+        """
+        Run all callbacks for the device.
+
+        :param stage:
+            String representing the stage that the callbacks are run for. Usually 'plan' or 'execute'
+
+        :return:
+            If CBmethod is CBMethod.JSON, a DICT of the callbacks will be returned
+        """
         if self.callbacks.callback_method == CBMethod.TERMINAL:
             TermCallback.info(f"Device {self.name} {stage}:")
             TermCallback.info("==========================================")
@@ -94,6 +126,16 @@ class Device(object):
         return callbacks
 
     def execute(self, run_callbacks=True):
+        """
+        Execute all planned actions on the device
+
+        :param run_callbacks:
+            If true, callbacks will be run automatically after execution completion. Set to false if you need run
+            callbacks manually (I.E. When using a multithreaded scheduler.
+
+        :return:
+            If run_callbacks=True and CBMethod.JSON, this will return a DICT representing callbacks
+        """
         if self.needs_changes:
             if getattr(self.driver, 'pre_exec_tasks', None):
                 self.driver.pre_exec_tasks(self)
@@ -113,6 +155,16 @@ class Device(object):
         self.disconnect()
 
     def ad_hoc_command(self, need):
+        """
+        Manually execute a single need on this host
+
+        :param need:
+            String representing the need object
+
+            Example:
+                interface.swp1.ipv4_address.SET: 192.168.1.2/24
+
+        """
         self._clear_memoization()
         self.clear_kv_store()
         if getattr(self.driver, 'pre_plan_tasks', None):
@@ -163,10 +215,16 @@ class Device(object):
             provider.failed_actions = []
 
     def fix_provider_needs(self):
+        """
+        Iterates over the providers and instructs them to fix their needs
+        """
         for provider in self.providers:
             provider.fix_needs()
 
     def completed_as_callbacks(self):
+        """
+        Converts completed needs to callbacks
+        """
         for provider in self.providers:
             for need in provider.completed_actions:
                 self.echo(f"{need.get_formatted_string()}",
@@ -174,6 +232,9 @@ class Device(object):
                           indent=True)
 
     def disconnect(self):
+        """
+        Disconnect the protocol in use by the device
+        """
         self. protocol.disconnect()
 
     def send_command(self, command, memoize: bool = False):
@@ -211,6 +272,12 @@ class Device(object):
             return self.protocol.run_command(command)
 
     def load_dstate(self, dstate):
+        """
+        Loads the desired state from the user-specified datasource
+
+        :param dstate:
+            Dict representing the desired state of the device
+        """
         if not isinstance(dstate, dict):
             raise RuncibleValidationError("load_dstate accepts a dict")
         for key, value in dstate.items():
@@ -230,12 +297,19 @@ class Device(object):
             provider.load_module_cstate()
 
     def determine_needs(self):
+        """
+        Instructs providers to determine and create need objects
+        :return:
+        """
         for provider in self.providers:
             provider.determine_needs()
             if provider.needed_actions:
                 self.needs_changes = True
 
     def needs_as_callbacks(self):
+        """
+        Converts needs to callbacks
+        """
         for provider in self.providers:
             if provider.needed_actions:
                 self.echo(f"{provider.provides_for.module_name} needs:", decoration=True)
@@ -252,9 +326,20 @@ class Device(object):
         )
 
     def _clear_memoization(self):
+        """
+        Clears any cached memoized commands
+        :return:
+        """
         self._memoized_comands = {}
 
     def load_config_from_meta(self, meta_device):
+        """
+        Loads device config from "meta" key
+
+        :param meta_device:
+            The dict of the "meta" key in dstate
+
+        """
         self.meta_device = meta_device
         # First load the driver
         if 'driver' in self.meta_device:
@@ -273,6 +358,12 @@ class Device(object):
             self.default_client = self.meta_device['default_management_protocol']
 
     def load_driver(self, driver_name):
+        """
+        Loads the named driver from the plugin registry class
+
+        :param driver_name:
+            Name of the driver
+        """
         self.driver = PluginRegistry.get_driver(driver_name)
         # Pass the driver an instance of this object so it can call it's methods
         self.driver.device = self
