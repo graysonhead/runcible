@@ -3,7 +3,6 @@
 inherit:
   - layers/ssh_auth.yaml
   - layers/vlans.yaml
-  - layers/lldp.yaml
 build:
   - dist1.yaml
   - dist2.yaml

@@ -2,7 +2,7 @@ import argparse
 import runcible
 import os
 import yaml
-from runcible.schedulers.scheduler import SchedulerBase
+from runcible.schedulers.naive import NaiveScheduler
 from runcible.core.need import Need, NeedOperation
 from runcible.core.errors import RuncibleSyntaxError
 from mergedb.data_types.database import Database
@@ -99,18 +99,12 @@ class Cli(object):
                 raw = file.read()
             inp = yaml.safe_load(raw)
         if self.args.func == 'apply':
-                scheduler = SchedulerBase.get_scheduler(inp, self.args.target)
+                scheduler = NaiveScheduler(inp, self.args.target)
                 scheduler.apply()
-        elif self.args.func == 'cstate.GET':
-            scheduler = SchedulerBase.get_scheduler(inp, self.args.target)
-            scheduler.get_cstate()
-        elif self.args.func == 'meta.labels.GET':
-            scheduler = SchedulerBase.get_scheduler(inp, self.args.target)
-            scheduler.get_labels()
         elif self.args.func:
             value = self.args.value
             need = self.get_need_from_func(self.args.func, value=value)
-            scheduler = SchedulerBase.get_scheduler(inp, self.args.target)
+            scheduler = NaiveScheduler(inp, self.args.target)
             scheduler.run_adhoc_command(need)
 
     def get_need_from_func(self, funcstring, value=None):

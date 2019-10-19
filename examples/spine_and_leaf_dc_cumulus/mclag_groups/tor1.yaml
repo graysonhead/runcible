@@ -1,7 +1,0 @@
----
-cumulus_mclag:
-  system_mac_address: 44:38:39:ff:01:03
-  peerlink_interfaces:
-    - swp4
-  clagd_args:
-    - "--vm"
