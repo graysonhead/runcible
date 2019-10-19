@@ -27,6 +27,11 @@ class Module(object):
     # Override the following classes in each subclass
 
     def get_state_dict(self):
+        """
+        Returns a dict representation of the module
+        :return:
+            Dict representing the module
+        """
         state_dict = {}
         for attribute, attrval in self.configuration_attributes.items():
             if getattr(self, attribute, None):
@@ -58,6 +63,16 @@ class Module(object):
         return needs_list
 
     def _determine_needs_list(self, attribute, other):
+        """
+        Compares cstate and dstate to determine a list of needs to be handled
+
+        :param attribute:
+            dstate
+        :param other:
+            cstate
+        :return:
+            Need Object representing needed action to align states
+        """
         needs_list = []
         if getattr(self, attribute, None) is not None:
             self_list = getattr(self, attribute)
@@ -90,6 +105,18 @@ class Module(object):
         return needs_list
 
     def _determine_needs_string_or_int(self, attribute, other):
+        """
+        Compares cstate and dstate to determine a list of needs to be handled
+
+        This method handles string or int datatypes
+
+        :param attribute:
+            dstate
+        :param other:
+            cstate
+        :return:
+            Need Object representing needed action to align states
+        """
         if getattr(self, attribute, None) is False:
             if getattr(other, attribute, None) is not None:
                 return Need(
@@ -107,7 +134,6 @@ class Module(object):
                     parent_module=self.parent_module,
                     value=getattr(self, attribute)
                 )
-
 
     def _determine_needs_bool(self, attribute, other):
         # If self is set to False or None and other is not False, SET to False
@@ -172,6 +198,18 @@ class Module(object):
                     raise RuncibleValidationError(msg=f"{dictionary} could not validate sub_type for attribute {k}, "
                     f"ensure a sub_type is defined")
         return dictionary
+
+    def render(self):
+        """
+        Render the module as a dict.
+        :return:
+            A dict representing the module
+        """
+        rendered_dict = {}
+        for key in self.configuration_attributes.keys():
+            if getattr(self, key, None) is not None:
+                rendered_dict.update({key: getattr(self, key)})
+        return rendered_dict
 
     def __eq__(self, other):
         # This causes comparison operations between two instances of this class to only take into consideration the

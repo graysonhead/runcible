@@ -1,0 +1,7 @@
+---
+inherit:
+  - layers/lldp.yaml
+  - layers/ssh_auth.yaml
+build:
+  - tor1a.yaml
+  - tor1b.yaml

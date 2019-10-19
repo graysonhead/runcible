@@ -53,9 +53,14 @@ class Callbacks(object):
             elif callback.type is CBType.ERROR:
                 callbacks['log'].append(callback.get_dict())
                 callbacks['has_errors'] = True
+        self.clear_callbacks()
         return callbacks
 
     def run_terminal_callbacks(self):
+        """
+        Terminal callbacks are immediately printed to the terminal with some basic formatting
+        :return:
+        """
         for callback in self.callbacks:
             if callback.type == CBType.INFO:
                 TermCallback.info(callback.message, indent=callback.indent)
