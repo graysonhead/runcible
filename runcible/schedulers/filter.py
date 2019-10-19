@@ -25,22 +25,27 @@ class FilterScheduler(SchedulerBase):
 
     def apply(self):
         planned_devices = []
+        unreachable_devices = []
         # executed_devices = []
         with concurrent.futures.ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
             future_to_device = {executor.submit(device_task_wrapper, device, 'plan'): device for device in self.devices}
             for future in concurrent.futures.as_completed(future_to_device):
                 device = future_to_device[future]
-                planned_devices.append(device)
                 try:
                     data = future.result()
                 except Exception as e:
-                    raise e
+                    print(f"Device {device.name} failed: {e}")
+                    unreachable_devices.append(device)
+                else:
+                    planned_devices.append(device)
         for device in planned_devices:
             device.run_callbacks("plan")
         TermCallback.info("Execution Order:")
         device_stages = self.filter_devices(planned_devices)
         for stage, devices in device_stages.items():
             TermCallback.info(f"Stage {stage}: {devices}")
+        if unreachable_devices:
+            TermCallback.info(f"Unreachable Devices: {unreachable_devices}")
         logger.info("Filtering devices to determine run order")
         prompt_to_continue = input("Would you like to apply the changes? y/[n]")
         if prompt_to_continue.lower() == 'y':
