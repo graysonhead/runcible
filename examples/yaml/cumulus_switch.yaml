@@ -8,11 +8,6 @@ core:
       ssh:
         hostname: 192.168.122.166
         username: cumulus
-    labels:
-      - type: adjacent_to
-        device: dist1
-        port: swp6
-  lldp: {}
   bonds:
   - mtu: 9000
     name: po4

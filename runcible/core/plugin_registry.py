@@ -1,24 +1,18 @@
 import inspect
-from runcible import modules, drivers, labels, schedulers
+from runcible import modules, drivers
 from runcible.modules.module import Module
 from runcible.drivers.driver import DriverBase
-from runcible.labels.label import LabelBase
-# from runcible.schedulers.scheduler import SchedulerBase
 import pkg_resources
 
 
 class PluginRegistry:
     modules = {}
     drivers = {}
-    labels = {}
-    schedulers = {}
 
     @classmethod
     def load_drivers(cls):
-        cls.load_core_labels()
         cls.load_core_drivers()
         cls.load_plugin_drivers()
-        cls.load_core_schedulers()
 
     @classmethod
     def load_core_drivers(cls):
@@ -69,47 +63,9 @@ class PluginRegistry:
                 if inspect.isclass(attr):
                     # Ensure its a subclass of Module and ignore the base class
                     if issubclass(attr, parent) and attr is not parent:
-                        # Add it to the list
+                        # Add it ot the list
                         found_classes.append(attr)
         return found_classes
-
-    @classmethod
-    def load_core_labels(cls):
-        label_list = cls.class_loader(
-            labels,
-            LabelBase,
-            'label'
-        )
-        for lab in label_list:
-            cls.add_label_to_registry(lab)
-
-    @classmethod
-    def load_core_schedulers(cls):
-        scheduler_list = cls.class_loader(
-            schedulers,
-            schedulers.scheduler.SchedulerBase,
-            'scheduler'
-        )
-        for sched in scheduler_list:
-            cls.add_scheduler_to_registry(sched)
-
-    @classmethod
-    def add_scheduler_to_registry(cls, scheduler):
-        """
-        Adds a scheduler to the registry using scheduler.scheduler_name as a key
-        :param scheduler:
-        :return:
-        """
-        cls.schedulers.update({scheduler.scheduler_name: scheduler})
-
-    @classmethod
-    def add_label_to_registry(cls, label):
-        """
-        Adds a label to the registry using label.type_label as a key
-        :param label:
-        :return:
-        """
-        cls.labels.update({label.type_label: label})
 
     @classmethod
     def add_module_to_registry(cls, module):
@@ -140,15 +96,3 @@ class PluginRegistry:
         if not cls.drivers:
             cls.load_drivers()
         return cls.drivers[driver_name]
-
-    @classmethod
-    def get_label(cls, label_name):
-        if not cls.labels:
-            cls.load_core_labels()
-        return cls.labels[label_name]
-
-    @classmethod
-    def get_scheduler(cls, scheduler_name):
-        if not cls.schedulers:
-            cls.load_core_schedulers()
-        return cls.schedulers[scheduler_name]

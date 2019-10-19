@@ -1,9 +1,0 @@
----
-bonds:
-  {% for i in range(1,5) %}
-  - name: po{{ i }}
-    slaves:
-      - swp{{ i }}
-    clag_id: {{ i }}
-    vlans: [10, 20, 30, 40, 50]
-  {% endfor %}
