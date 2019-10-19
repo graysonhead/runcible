@@ -57,6 +57,10 @@ class Callbacks(object):
         return callbacks
 
     def run_terminal_callbacks(self):
+        """
+        Terminal callbacks are immediately printed to the terminal with some basic formatting
+        :return:
+        """
         for callback in self.callbacks:
             if callback.type == CBType.INFO:
                 TermCallback.info(callback.message, indent=callback.indent)
