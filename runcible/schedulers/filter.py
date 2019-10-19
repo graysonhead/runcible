@@ -24,6 +24,11 @@ class FilterScheduler(SchedulerBase):
     """
 
     def apply(self):
+        """
+        Runs the plan stage on each device and then after user approval runs the execution stage on each device
+
+        Unlike the naive scheduler, this one does multithreading
+        """
         planned_devices = []
         unreachable_devices = []
         # executed_devices = []
@@ -45,7 +50,7 @@ class FilterScheduler(SchedulerBase):
         for stage, devices in device_stages.items():
             TermCallback.info(f"Stage {stage}: {devices}")
         if unreachable_devices:
-            TermCallback.info(f"Unreachable Devices: {unreachable_devices}")
+            TermCallback.warning(f"Unreachable Devices: {unreachable_devices}")
         logger.info("Filtering devices to determine run order")
         prompt_to_continue = input("Would you like to apply the changes? y/[n]")
         if prompt_to_continue.lower() == 'y':
@@ -66,6 +71,13 @@ class FilterScheduler(SchedulerBase):
                     device.run_callbacks('execute')
 
     def filter_devices(self, devices: list):
+        """
+        Runs each filter to determine which devices are executed on in which order
+        :param devices:
+            List of device instances to be run
+        :return:
+            Dict containing each stage
+        """
         counter = 1
         run_set = {}
         filter_list = [adjacency_filter]
@@ -80,6 +92,15 @@ class FilterScheduler(SchedulerBase):
         return run_set
 
     def run_device_filter(self, devices: list, filter_function):
+        """
+        Runs a specific filter against a list of devices
+        :param devices:
+            List of devices to filter
+        :param filter_function:
+            function to filter on
+        :return:
+            Tuple containing current run (devices that passed the filter) and next run (devices that failed the filter)
+        """
         current_run = []
         next_run = []
         current_run.append(devices[0])
@@ -101,8 +122,15 @@ class FilterScheduler(SchedulerBase):
 
 
 def adjacency_filter(this, other):
+    """
+    Checks to ensure that the host name of this isn't in the adjacent_to list of other
+    :param this:
+    :param other:
+    :return:
+    """
     for other_label in other.labels:
-        if this.name == other_label.device:
-            return False
+        if isinstance(other_label, AdjacentTo):
+            if this.name == other_label.device:
+                return False
     return True
 
