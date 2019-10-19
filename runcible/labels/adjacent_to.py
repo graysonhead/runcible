@@ -1,4 +1,4 @@
-from runcible.core.label import LabelBase
+from runcible.labels.label import LabelBase
 
 
 class AdjacentTo(LabelBase):

@@ -72,7 +72,11 @@ class ProviderBase(object):
         raise RuncibleNotImplementedError(f"The provider class {str(self)} has not provided a get_cstate method")
 
     def complete(self, need):
-        self.needed_actions.remove(need)
+        # In some cases, modules create meta-needs that aren't exposed to the user. While this is discouraged, there are
+        # some cases where it is necessary. As a result, we don't strictly check if the need was in the list of needed
+        # actions.
+        if need in self.needed_actions:
+            self.needed_actions.remove(need)
         self.completed_actions.append(need)
 
     def get_needs(self):

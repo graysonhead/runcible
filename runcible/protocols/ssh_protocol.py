@@ -27,6 +27,9 @@ class SSHProtocol(TerminalProtocolBase):
                             username=getattr(self, 'username'),
                             password=getattr(self, 'password', None))
 
+    def disconnect(self):
+        self.client.close()
+
     def send_implement(self, command):
         """
         Runs a command via self.ssh object
