@@ -1,11 +1,11 @@
 import inspect
-from runcible import modules, drivers, labels, schedulers
+# from runcible import modules, drivers, labels
+import runcible
 from runcible.modules.module import Module
 from runcible.drivers.driver import DriverBase
 from runcible.labels.label import LabelBase
 # from runcible.schedulers.scheduler import SchedulerBase
 import pkg_resources
-
 
 class PluginRegistry:
     modules = {}
@@ -18,12 +18,15 @@ class PluginRegistry:
         cls.load_core_labels()
         cls.load_core_drivers()
         cls.load_plugin_drivers()
+
+    @classmethod
+    def load_schedulers(cls):
         cls.load_core_schedulers()
 
     @classmethod
     def load_core_drivers(cls):
         driver_list = cls.class_loader(
-            drivers,
+            runcible.drivers,
             DriverBase,
             'driver'
         )
@@ -47,7 +50,7 @@ class PluginRegistry:
     @classmethod
     def load_core_modules(cls):
         mods = cls.class_loader(
-            modules,
+            runcible.modules,
             Module,
             'module'
         )
@@ -76,7 +79,7 @@ class PluginRegistry:
     @classmethod
     def load_core_labels(cls):
         label_list = cls.class_loader(
-            labels,
+            runcible.labels,
             LabelBase,
             'label'
         )
@@ -86,8 +89,8 @@ class PluginRegistry:
     @classmethod
     def load_core_schedulers(cls):
         scheduler_list = cls.class_loader(
-            schedulers,
-            schedulers.scheduler.SchedulerBase,
+            runcible.schedulers,
+            runcible.schedulers.scheduler.SchedulerBase,
             'scheduler'
         )
         for sched in scheduler_list:

@@ -28,6 +28,7 @@ class SchedulerBase(object):
 
     def __init__(self, fabric_config: dict, device_regex: str):
         self.meta_config = fabric_config.get('meta', {})
+        PluginRegistry.load_schedulers()
         self.fabric = fabric_config
         # Purge the 'meta' key from the fabric config, if it exists
         try:
