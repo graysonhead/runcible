@@ -30,6 +30,8 @@ class SerialProtocol(TerminalProtocolBase):
                 response = self.send_implement(self.password)
                 if 'incorrect' in response[-1].decode().lower():
                     raise RuncibleConnectionError(msg=f"Login error occured in {self.__repr__()}: {response}")
+        if '#' in lines[-1].decode():
+            self.send_implement('exit')
 
     def disconnect(self):
         self.client.close()
