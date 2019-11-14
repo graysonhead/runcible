@@ -97,7 +97,7 @@ class Device(object):
             List of callbacks
         """
         self._clear_memoization()
-        self.store = self.clear_kv_store()
+        self.clear_kv_store()
         if getattr(self.driver, 'pre_plan_tasks', None):
             self.driver.pre_plan_tasks(self)
         self.load_cstate()
@@ -346,7 +346,7 @@ class Device(object):
             self.load_driver(self.meta_device['driver'])
         else:
             raise RuncibleValidationError("A device must be specified with a driver")
-        for client_type in ['ssh', 'telnet']:
+        for client_type in ['ssh', 'telnet', 'serial', 'rest']:
             if client_type in self.meta_device:
                 if client_type not in self.driver.protocol_map:
                     raise RuncibleValidationError(msg=f"Provider {self.driver} doesn't have a {client_type} protocol")
