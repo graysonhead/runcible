@@ -41,4 +41,7 @@ class SerialProtocol(TerminalProtocolBase):
             raise RuncibleNotConnectedError("Activate with self.connect() before executing")
         self.client.write(f"{command}\r\n".encode('utf-8'))
         lines = self.client.readlines()
+        decoded_lines = []
+        for line in lines:
+            decoded_lines.append(line.decode())
         return lines

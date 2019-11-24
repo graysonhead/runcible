@@ -20,7 +20,7 @@ class ProviderBase(object):
             this instance so the provider can make use of it's client functions
         """
         self.device = device_instance
-        self.cstate = None
+        self.cstate = self.provides_for({})
         self.dstate = None
         self.needed_actions = []
         self.completed_actions = []

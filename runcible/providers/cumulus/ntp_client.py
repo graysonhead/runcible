@@ -33,6 +33,19 @@ class CumulusNtpClientProvider(ProviderBase):
     def _clear_server(self):
         return self.device.send_command(f"net del time ntp server")
 
+    def _set_server(self, servers):
+        if getattr(self.cstate, 'servers', None):
+            cstate_servers = getattr(self.cstate, 'servers')
+            for server in servers:
+                if server not in cstate_servers:
+                    self._add_server(server)
+            for server in cstate_servers:
+                if server not in servers:
+                    self._del_server(server)
+        else:
+            for server in servers:
+                self._add_server(server)
+
     def _set_interface(self, interface):
         return self.device.send_command(f"net add time ntp source {interface}")
 
@@ -51,10 +64,13 @@ class CumulusNtpClientProvider(ProviderBase):
                 elif need.operation == Op.CLEAR:
                     self._clear_server()
                     self.complete(need)
+                elif need.operation == Op.SET:
+                    self._set_server(need.value)
+                    self.complete(need)
             if need.attribute is NtpClientResources.INTERFACE:
                 if need.operation == Op.SET:
                     self._set_interface(need.value)
                     self.complete(need)
                 elif need.operation == Op.DELETE:
-                    self._del_interface()
+                    self._del_interface(need.value)
                     self.complete(need)
