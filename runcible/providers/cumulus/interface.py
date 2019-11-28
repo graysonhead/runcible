@@ -48,6 +48,14 @@ class CumulusInterfaceProvider(SubProviderBase):
     def _del_vids(self, interface: str, vids):
         return self.device.send_command(f"net del interface {interface} bridge vids {vids}")
 
+    def _clear_vids(self, interface: str):
+        return self.device.send_command(f"net del interface {interface} bridge vids")
+
+    def _set_vids(self, interface: str, vid_list):
+        self._clear_vids(interface)
+        for vid in vid_list:
+            self._add_vids(interface, vid)
+
     def _set_pvid(self, interface: str, pvid: int):
         return self.device.send_command(f"net add interface {interface} bridge pvid {pvid}")
 
@@ -59,6 +67,11 @@ class CumulusInterfaceProvider(SubProviderBase):
 
     def _clear_interface_ipv4_address(self, interface):
         return self.device.send_command(f"net del interface {interface} ip address")
+
+    def _set_ipv4_addresses(self, interface, addresses):
+        self._clear_interface_ipv4_address(interface)
+        for address in addresses:
+            self._add_interface_ipv4_address(interface, address)
 
     def _delete_pvid(self, interface: str):
         return self.device.send_command(f"net del interface {interface} bridge pvid")
@@ -98,6 +111,12 @@ class CumulusInterfaceProvider(SubProviderBase):
             elif need.operation == Op.DELETE:
                 self._del_vids(need.module, need.value)
                 self.complete(need)
+            elif need.operation == Op.CLEAR:
+                self._clear_vids(need.module)
+                self.complete(need)
+            elif need.operation == Op.SET:
+                self._set_vids(need.module, need.value)
+                self.complete(need)
         elif need.attribute == InterfaceResources.IPV4_ADDRESSES:
             if need.operation == Op.ADD:
                 self._add_interface_ipv4_address(need.module, need.value)
@@ -107,4 +126,7 @@ class CumulusInterfaceProvider(SubProviderBase):
                 self.complete(need)
             elif need.operation == Op.CLEAR:
                 self._clear_interface_ipv4_address(need.module)
+                self.complete(need)
+            elif need.operation == Op.SET:
+                self._set_ipv4_addresses(need.module, need.value)
                 self.complete(need)

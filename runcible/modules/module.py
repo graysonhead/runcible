@@ -173,6 +173,12 @@ class Module(object):
         :raises:
             ValidationError on syntax/type errors
         """
+        # Get list of Required Attributes
+        required_attributes = []
+        for k, v in self.configuration_attributes.items():
+            if v.get('required', False):
+                if k not in dictionary.keys():
+                    raise RuncibleValidationError(f"{self.module_name} is missing required attribute {k}")
         for k, v in dictionary.items():
             # First ensure that all of the keys supplied in the configuration dictionary exist in
             # self.configuration_attributes
@@ -197,6 +203,7 @@ class Module(object):
                 except KeyError:
                     raise RuncibleValidationError(msg=f"{dictionary} could not validate sub_type for attribute {k}, "
                     f"ensure a sub_type is defined")
+
         return dictionary
 
     def render(self):

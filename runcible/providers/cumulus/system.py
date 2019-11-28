@@ -7,7 +7,7 @@ class CumulusSystemProvider(ProviderBase):
     provides_for = System
     supported_attributes = [
         'hostname',
-        'dns'
+        # 'dns'
     ]
 
     def get_cstate(self):

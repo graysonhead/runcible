@@ -173,6 +173,7 @@ class Device(object):
         if getattr(self.driver, 'post_plan_tasks', None):
             self.driver.post_plan_tasks()
         # TODO: Use "next" iterator syntax to extract a single item from these lambdas, as its more concise
+        # TODO: Better error handling for when wrong parent module is selected
         if need.parent_module:
             provider = list(filter(lambda x: x.provides_for.module_name == need.parent_module, self.providers))[0]
         else:

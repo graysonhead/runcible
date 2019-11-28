@@ -7,6 +7,14 @@ class RuncibleError(Exception):
         self.msg = msg
 
 
+class RuncibleExecutionError(Exception):
+    """
+    Raised when an error or anomolous situation occurs during execution
+    """
+    def __init__(self, msg):
+        self.msg = msg
+
+
 class RuncibleValidationError(RuncibleError):
 
     def __init__(self, msg=None):
