@@ -39,7 +39,10 @@ class ProviderBase(object):
         return self.supported_attributes
 
     def load_module_dstate(self, dstate):
-        self.dstate = self.provides_for(dstate)
+        try:
+            self.dstate = self.provides_for(dstate)
+        except RuncibleValidationError as e:
+            raise RuncibleValidationError(msg=f"Desired State for {self.device.name} failed validation: {e.msg}")
 
     def load_module_cstate(self):
         self.cstate = self.get_cstate()
