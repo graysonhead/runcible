@@ -214,7 +214,8 @@ class Module(object):
         rendered_dict = {}
         for key, config_value in self.configuration_attributes.items():
             if issubclass(config_value['type'], Module) or issubclass(config_value['type'], ModuleArray):
-                rendered_dict.update({key: getattr(self, key).render()})
+                if getattr(self, key, None) is not None:
+                    rendered_dict.update({key: getattr(self, key).render()})
             elif getattr(self, key, None) is not None:
                 rendered_dict.update({key: getattr(self, key)})
         return rendered_dict
