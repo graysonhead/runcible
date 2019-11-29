@@ -1,6 +1,7 @@
 from runcible.core.errors import RuncibleValidationError, RuncibleNotImplementedError
 from runcible.core.need import Need, NeedOperation as Op
 from runcible.core.utilities import smart_append, compare_lists
+from runcible.modules.module_array import ModuleArray
 
 
 class Module(object):
@@ -22,24 +23,14 @@ class Module(object):
         """
         validated_config = self.validate(config_dictionary)
         for k, v in validated_config.items():
-            setattr(self, k, v)
+            if issubclass(self.configuration_attributes[k]['type'], ModuleArray) \
+                    or issubclass(self.configuration_attributes[k]['type'], Module):
+                setattr(self, k, self.configuration_attributes[k]['type'](v))
+            else:
+                setattr(self, k, v)
         if self.parent_module and not self.parent_modules:
             self.parent_modules = [self.parent_module]
         self.provider = None
-
-    # Override the following classes in each subclass
-
-    def get_state_dict(self):
-        """
-        Returns a dict representation of the module
-        :return:
-            Dict representing the module
-        """
-        state_dict = {}
-        for attribute, attrval in self.configuration_attributes.items():
-            if getattr(self, attribute, None):
-                state_dict.update({attribute: getattr(self, attribute)})
-        return state_dict
 
     def determine_needs(self, other):
         """
@@ -192,20 +183,25 @@ class Module(object):
                 if v.isdigit():
                     v = int(v)
                     dictionary[k] = v
-            # Then ensure the values match the supplied type attribute
-            if not isinstance(v, self.configuration_attributes[k]['type']) and v is not False:
-                raise RuncibleValidationError(f"Value {v} of key {k} in {self.module_name} "
-                                      f"must be a {self.configuration_attributes[k]['type']}")
-            if isinstance(v, list):
-                try:
-                    if self.configuration_attributes[k]['sub_type']:
-                        for item in v:
-                            if not isinstance(item, self.configuration_attributes[k]['sub_type']):
-                                raise RuncibleValidationError(f"Value {item} in {k}: {v} must be a "
-                                                              f"{self.configuration_attributes[k]['sub_type']}")
-                except KeyError:
-                    raise RuncibleValidationError(msg=f"{dictionary} could not validate sub_type for attribute {k}, "
-                    f"ensure a sub_type is defined")
+            # If this attribute is another module, perform tail recursion
+            if issubclass(self.configuration_attributes[k]['type'], ModuleArray) \
+                    or issubclass(self.configuration_attributes[k]['type'], Module):
+                self.configuration_attributes[k]['type'](v)
+            else:
+                # Then ensure the values match the supplied type attribute
+                if not isinstance(v, self.configuration_attributes[k]['type']) and v is not False:
+                    raise RuncibleValidationError(f"Value {v} of key {k} in {self.module_name} "
+                                          f"must be a {self.configuration_attributes[k]['type']}")
+                if isinstance(v, list):
+                    try:
+                        if self.configuration_attributes[k]['sub_type']:
+                            for item in v:
+                                if not isinstance(item, self.configuration_attributes[k]['sub_type']):
+                                    raise RuncibleValidationError(f"Value {item} in {k}: {v} must be a "
+                                                                  f"{self.configuration_attributes[k]['sub_type']}")
+                    except KeyError:
+                        raise RuncibleValidationError(msg=f"{dictionary} could not validate sub_type for attribute {k}, "
+                        f"ensure a sub_type is defined")
 
         return dictionary
 
@@ -216,8 +212,10 @@ class Module(object):
             A dict representing the module
         """
         rendered_dict = {}
-        for key in self.configuration_attributes.keys():
-            if getattr(self, key, None) is not None:
+        for key, config_value in self.configuration_attributes.items():
+            if issubclass(config_value['type'], Module) or issubclass(config_value['type'], ModuleArray):
+                rendered_dict.update({key: getattr(self, key).render()})
+            elif getattr(self, key, None) is not None:
                 rendered_dict.update({key: getattr(self, key)})
         return rendered_dict
 
