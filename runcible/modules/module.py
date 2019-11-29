@@ -6,6 +6,7 @@ from runcible.core.utilities import smart_append, compare_lists
 class Module(object):
     module_name = ''
     configuration_attributes = {}
+    parent_modules = []
     parent_module = None
     identifier_attribute = None
 
@@ -22,6 +23,8 @@ class Module(object):
         validated_config = self.validate(config_dictionary)
         for k, v in validated_config.items():
             setattr(self, k, v)
+        if self.parent_module and not self.parent_modules:
+            self.parent_modules = [self.parent_module]
         self.provider = None
 
     # Override the following classes in each subclass
@@ -81,7 +84,7 @@ class Module(object):
                     self._get_instance_name(),
                     attribute,
                     Op.CLEAR,
-                    parent_module=self.parent_module
+                    parent_modules=self.parent_modules
                 ))
                 return needs_list
             other_list = getattr(other, attribute, [])
@@ -91,7 +94,7 @@ class Module(object):
                     self._get_instance_name(),
                     attribute,
                     Op.ADD,
-                    parent_module=self.parent_module,
+                    parent_modules=self.parent_modules,
                     value=add_item
                 ))
             for del_item in missing_items['missing_left']:
@@ -99,7 +102,7 @@ class Module(object):
                     self._get_instance_name(),
                     attribute,
                     Op.DELETE,
-                    parent_module=self.parent_module,
+                    parent_modules=self.parent_modules,
                     value=del_item
                 ))
         return needs_list
@@ -123,7 +126,7 @@ class Module(object):
                     self._get_instance_name(),
                     attribute,
                     Op.DELETE,
-                    parent_module=self.parent_module
+                    parent_modules=self.parent_modules
                 )
         if getattr(self, attribute, None) is not None and getattr(self, attribute, None) is not False:
             if getattr(self, attribute) != getattr(other, attribute, None):
@@ -131,7 +134,7 @@ class Module(object):
                     self._get_instance_name(),
                     attribute,
                     Op.SET,
-                    parent_module=self.parent_module,
+                    parent_modules=self.parent_modules,
                     value=getattr(self, attribute)
                 )
 
@@ -144,7 +147,7 @@ class Module(object):
                     self._get_instance_name(),
                     attribute,
                     Op.SET,
-                    parent_module=self.parent_module,
+                    parent_modules=self.parent_modules,
                     value=False
                 )
             # If self is set to true and other is False or None, SET it to True
@@ -155,7 +158,7 @@ class Module(object):
                         self._get_instance_name(),
                         attribute,
                         Op.SET,
-                        parent_module=self.parent_module,
+                        parent_modules=self.parent_modules,
                         value=True
                     )
 
