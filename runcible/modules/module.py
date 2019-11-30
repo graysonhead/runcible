@@ -7,7 +7,6 @@ from runcible.modules.module_array import ModuleArray
 class Module(object):
     module_name = ''
     configuration_attributes = {}
-    parent_modules = []
     parent_module = None
     identifier_attribute = None
 
@@ -15,21 +14,27 @@ class Module(object):
         if self.identifier_attribute:
             return getattr(self, self.identifier_attribute, None)
 
-    def __init__(self, config_dictionary: dict):
+    def __init__(self, config_dictionary: dict, parent_modules=None):
         """
         This class is the base class for all Modules in Runcible.
         :param config_dictionary:
             The section of the dstate or cstate after the module key in each host definition
         """
+        if self.parent_module and not self.parent_modules:
+            self.parent_modules = [self.parent_module]
+        if parent_modules:
+            if self.module_name:
+                parent_modules.append(self.module_name)
+            self.parent_modules = parent_modules
+        else:
+            self.parent_modules = [self.module_name]
         validated_config = self.validate(config_dictionary)
         for k, v in validated_config.items():
             if issubclass(self.configuration_attributes[k]['type'], ModuleArray) \
                     or issubclass(self.configuration_attributes[k]['type'], Module):
-                setattr(self, k, self.configuration_attributes[k]['type'](v))
+                setattr(self, k, self.configuration_attributes[k]['type'](v, parent_modules=self.parent_modules))
             else:
                 setattr(self, k, v)
-        if self.parent_module and not self.parent_modules:
-            self.parent_modules = [self.parent_module]
         self.provider = None
 
     def determine_needs(self, other):
@@ -48,6 +53,12 @@ class Module(object):
         for attribute, options in self.configuration_attributes.items():
             # Boolean Logic
             if attribute != self.identifier_attribute:
+                if issubclass(options['type'], Module) or issubclass(options['type'], ModuleArray):
+                    our_module = getattr(self, attribute, options['type']({}))
+                    other_module = getattr(other, attribute, options['type']({}))
+                    submod_need_list = our_module.determine_needs(other_module)
+                    for need in submod_need_list:
+                        needs_list.append(need)
                 if options['type'] is bool:
                     smart_append(needs_list, self._determine_needs_bool(attribute, other), Need)
                 if options['type'] is str or options['type'] is int:
@@ -187,6 +198,10 @@ class Module(object):
             if issubclass(self.configuration_attributes[k]['type'], ModuleArray) \
                     or issubclass(self.configuration_attributes[k]['type'], Module):
                 self.configuration_attributes[k]['type'](v)
+                if k != self.configuration_attributes[k]['type'].module_name:
+                    raise RuncibleValidationError(msg=f"The attribute of a sub module must match it's name, module {self}"
+                    f"has sub_module {self.configuration_attributes[k]['type'].module_name} assigned to attribute {k}")
+
             else:
                 # Then ensure the values match the supplied type attribute
                 if not isinstance(v, self.configuration_attributes[k]['type']) and v is not False:

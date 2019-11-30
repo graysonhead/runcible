@@ -26,6 +26,7 @@ class ProviderBase(object):
         self.completed_actions = []
         self.failed_actions = []
         self.load_module_dstate(dstate)
+        self.attribute_providers = {}
 
     def adhoc_need(self, need):
         if need.operation == Op.GET:

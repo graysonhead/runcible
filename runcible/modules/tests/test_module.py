@@ -1,7 +1,7 @@
 from unittest import TestCase
 from runcible.modules.module import Module
 from runcible.modules.module_array import ModuleArray
-from runcible.core.need import NeedOperation as Op
+from runcible.core.need import Need, NeedOperation as Op
 from runcible.core.errors import RuncibleValidationError
 
 
@@ -17,7 +17,6 @@ class TestSubModule(Module):
 
 
 class TestSubMod(Module):
-    module_name = 'test_sub_mod'
     configuration_attributes = {
         'name': {
             'type': str,
@@ -34,6 +33,7 @@ class TestSubMod(Module):
 
 class TestSubModuleArray(ModuleArray):
     module_name = "sub_mod_array"
+    sort_key = 'name'
     sub_module = TestSubMod
 
 
@@ -95,3 +95,13 @@ class TestModuleRendering(TestCase):
         mod = TestModule({'test_attribute1': 'string', 'sub_mod_array': [{'name': 'sub1', 'test_value': 5}]})
         rendered = mod.render()
         self.assertEqual({'test_attribute1': 'string', 'sub_mod_array': [{'name': 'sub1', 'test_value': 5}]}, rendered)
+
+
+class TestModuleNeedsGeneration(TestCase):
+
+    def test_need_generation_subarray(self):
+        mod = TestModule({'test_attribute1': 'string', 'sub_mod_array': [{'name': 'sub1', 'test_value': 5}]})
+        mod2 = TestModule({'test_attribute1': 'string', 'sub_mod_array': [{'name': 'sub1', 'test_value': 4}]})
+        need = mod.determine_needs(mod2)
+        expected_need = Need('sub1', 'test_value', Op.SET, value=5, parent_modules=['test_module', 'sub_mod_array'])
+        self.assertEqual(expected_need, need[0])

@@ -7,18 +7,25 @@ class ModuleArray(object):
     sort_key = ''
     sub_module = None
 
-    def __init__(self, configuration_array: list):
+    def __init__(self, configuration_array: list, parent_modules=None):
         """
         This class is a contianer for other modules in an array with pass through methods for the
         nested modules.
 
         :param configuration_array:
         """
+        if parent_modules:
+            parent_modules.append(self.module_name)
+            self.parent_modules = parent_modules
+        else:
+            self.parent_modules = [self.module_name]
         if self.sub_module is None:
             raise RuncibleNotImplementedError(f"The module {self.__str__()} does not set a sub_module attribute")
         setattr(self, self.module_name, [])
         for list_item in configuration_array:
-            getattr(self, self.module_name).append(self.sub_module(list_item))
+            parent_mod_list = self.parent_modules
+            parent_mod_list.append(list_item.get(self.sort_key))
+            getattr(self, self.module_name).append(self.sub_module(list_item, parent_modules=self.parent_modules))
 
     def determine_needs(self, other):
         """
@@ -51,7 +58,8 @@ class ModuleArray(object):
                 needs_list.append(Need(
                     self.module_name,
                     getattr(item, self.sort_key),
-                    Op.CREATE
+                    Op.CREATE,
+                    parent_modules=self.parent_modules
                 ))
             needs_list.extend(item.determine_needs(other_item))
         return needs_list

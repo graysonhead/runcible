@@ -75,8 +75,12 @@ class Need(object):
             raise TypeError("Operation parameter for Need object must be an instance of NeedOperation")
         self.operation = operation
         self.value = value
-        self.module = module
         self.parent_modules = parent_modules
+        if module:
+            self.module = module
+        else:
+            self.module = parent_modules[-1]
+            del self.parent_modules[-1]
 
     def get_formatted_string(self):
         """
