@@ -1,5 +1,6 @@
 from runcible.core.errors import RuncibleNotImplementedError
 from runcible.core.need import Need, NeedOperation as Op
+from copy import deepcopy
 
 
 class ModuleArray(object):
@@ -23,7 +24,7 @@ class ModuleArray(object):
             raise RuncibleNotImplementedError(f"The module {self.__str__()} does not set a sub_module attribute")
         setattr(self, self.module_name, [])
         for list_item in configuration_array:
-            parent_mod_list = self.parent_modules
+            parent_mod_list = deepcopy(self.parent_modules)
             parent_mod_list.append(list_item.get(self.sort_key))
             getattr(self, self.module_name).append(self.sub_module(list_item, parent_modules=self.parent_modules))
 
@@ -59,7 +60,6 @@ class ModuleArray(object):
                     self.module_name,
                     getattr(item, self.sort_key),
                     Op.CREATE,
-                    parent_modules=self.parent_modules
                 ))
             needs_list.extend(item.determine_needs(other_item))
         return needs_list

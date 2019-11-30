@@ -9,6 +9,7 @@ class Module(object):
     configuration_attributes = {}
     parent_module = None
     identifier_attribute = None
+    parent_modules = []
 
     def _get_instance_name(self):
         if self.identifier_attribute:

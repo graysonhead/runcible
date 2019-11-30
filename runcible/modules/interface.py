@@ -16,7 +16,7 @@ class InterfaceResources(object):
 
 class Interface(Module):
     parent_module = 'interfaces'
-    module_name = 'interface'
+    # module_name = 'interface'
     identifier_attribute = InterfaceResources.NAME
 
     configuration_attributes = {

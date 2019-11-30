@@ -11,7 +11,7 @@ class VlanResources(object):
 
 
 class Vlan(Module):
-    module_name = 'vlan'
+    # module_name = 'vlan'
     identifier_attribute = VlanResources.ID
     configuration_attributes = {
         VlanResources.ID: {
