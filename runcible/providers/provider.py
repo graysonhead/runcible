@@ -20,7 +20,7 @@ class ProviderBase(object):
             this instance so the provider can make use of it's client functions
         """
         self.device = device_instance
-        self.cstate = None
+        self.cstate = self.provides_for({})
         self.dstate = None
         self.needed_actions = []
         self.completed_actions = []
@@ -39,7 +39,10 @@ class ProviderBase(object):
         return self.supported_attributes
 
     def load_module_dstate(self, dstate):
-        self.dstate = self.provides_for(dstate)
+        try:
+            self.dstate = self.provides_for(dstate)
+        except RuncibleValidationError as e:
+            raise RuncibleValidationError(msg=f"Desired State for {self.device.name} failed validation: {e.msg}")
 
     def load_module_cstate(self):
         self.cstate = self.get_cstate()
